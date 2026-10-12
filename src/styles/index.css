@@ -107,6 +107,36 @@
     background: var(--color-tinta);
     color: var(--color-blanco);
   }
+  .btn:disabled {
+    opacity: 0.5;
+  }
+  .btn-primario {
+    background: var(--color-tinta);
+    color: var(--color-blanco);
+  }
+  .btn-primario:hover {
+    background: var(--color-blanco);
+    color: var(--color-tinta);
+  }
+  /* Campos de formulario: solo una línea fina, como un cuaderno. */
+  .campo {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid var(--color-linea);
+    border-radius: 0;
+    background: transparent;
+    padding: 0.75rem 0;
+    font: inherit;
+    color: inherit;
+  }
+  .campo:hover,
+  .campo:focus {
+    border-bottom-color: var(--color-tinta);
+  }
+  .campo[aria-invalid='true'] {
+    border-bottom: 2px solid var(--color-tinta);
+  }
   .enlace {
     display: inline-flex;
     min-height: 2.75rem;
