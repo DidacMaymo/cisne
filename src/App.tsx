@@ -1,6 +1,9 @@
 import { Route, Routes } from 'react-router-dom'
 import { Layout } from './components/layout/Layout'
+import { AuthorPage } from './pages/AuthorPage'
 import { Home } from './pages/Home'
+import { PoemPage } from './pages/PoemPage'
+import { TagPage } from './pages/TagPage'
 import { NotFound } from './pages/NotFound'
 import { Soon } from './pages/Soon'
 
@@ -8,11 +11,8 @@ import { Soon } from './pages/Soon'
 // la navegación nunca lleve a un callejón sin salida.
 const soon: ReadonlyArray<[path: string, title: string]> = [
   ['/explorar', 'Explorar'],
-  ['/etiqueta/:tag', 'Etiqueta'],
-  ['/poema/:id', 'Poema'],
   ['/escribir', 'Escribir un poema'],
   ['/escribir/:id', 'Escribir un poema'],
-  ['/autor/:accountName', 'Autor'],
   ['/coleccion/:id', 'Colección'],
   ['/colecciones', 'Colecciones'],
   ['/mis/poemas', 'Mis poemas'],
@@ -32,6 +32,9 @@ export function App() {
     <Routes>
       <Route element={<Layout />}>
         <Route index element={<Home />} />
+        <Route path="/poema/:id" element={<PoemPage />} />
+        <Route path="/etiqueta/:tag" element={<TagPage />} />
+        <Route path="/autor/:accountName" element={<AuthorPage />} />
         {soon.map(([path, title]) => (
           <Route key={path} path={path} element={<Soon title={title} />} />
         ))}

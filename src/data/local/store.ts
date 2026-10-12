@@ -1,0 +1,76 @@
+// Almacén local: un único objeto JSON en localStorage. Hace de "base de datos"
+// del navegador hasta que llegue Supabase (fase 5).
+import type { Collection, CollectionPoem, Favorite, Poem, Profile, Tag } from '../types'
+
+export const LOCAL_USER_ID = 'local-user'
+const KEY = 'cisne:local:v1'
+
+/** Poema guardado: las etiquetas van por id, como en la tabla PoemTags. */
+export type StoredPoem = Omit<Poem, 'tags' | 'collectionId'> & { tagIds: string[] }
+
+export type Store = {
+  profile: Profile
+  poems: StoredPoem[]
+  tags: Tag[]
+  collections: Collection[]
+  collectionPoems: CollectionPoem[]
+  favorites: Favorite[]
+}
+
+function fresh(): Store {
+  const now = new Date().toISOString()
+  return {
+    profile: { id: LOCAL_USER_ID, accountName: 'yo', displayName: '', createdAt: now, updatedAt: now },
+    poems: [],
+    tags: [],
+    collections: [],
+    collectionPoems: [],
+    favorites: [],
+  }
+}
+
+let cache: Store | null = null
+const listeners = new Set<() => void>()
+
+export function readStore(): Store {
+  if (cache) return cache
+  try {
+    const raw = localStorage.getItem(KEY)
+    if (raw) {
+      cache = { ...fresh(), ...(JSON.parse(raw) as Partial<Store>) }
+      return cache
+    }
+  } catch {
+    // almacenamiento no disponible o corrupto: se empieza de cero en memoria
+  }
+  cache = fresh()
+  return cache
+}
+
+/** Aplica un cambio de forma atómica: si no se puede persistir, no cambia nada. */
+export function commit(mutate: (draft: Store) => void): void {
+  const next = structuredClone(readStore())
+  mutate(next)
+  try {
+    localStorage.setItem(KEY, JSON.stringify(next))
+  } catch {
+    throw new Error('No se pudo guardar en este navegador. Tu texto no se ha perdido: inténtalo de nuevo.')
+  }
+  cache = next
+  listeners.forEach((l) => l())
+}
+
+/** Avisa a la UI de que los datos cambiaron (también desde otra pestaña). */
+export function onDataChange(listener: () => void): () => void {
+  listeners.add(listener)
+  return () => listeners.delete(listener)
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (e) => {
+    if (e.key === KEY) {
+      cache = null
+      listeners.forEach((l) => l())
+    }
+  })
+}
