@@ -43,9 +43,14 @@ export interface AuthRepository {
   /** Sesión actual, o `null` si nadie ha entrado. */
   current(): Promise<Session | null>
   account(): Promise<Account | null>
-  signUp(input: { displayName: string; email: string; password: string }): Promise<Session>
+  /** `null` si hay que confirmar el email antes de entrar. */
+  signUp(input: { displayName: string; email: string; password: string }): Promise<Session | null>
   signIn(input: { email: string; password: string }): Promise<Session>
   signOut(): Promise<void>
+  /** Envía un enlace para elegir otra contraseña. */
+  requestPasswordReset(email: string): Promise<void>
+  /** Cambia la contraseña de la sesión actual (también tras abrir ese enlace). */
+  updatePassword(password: string): Promise<void>
   /** Borra la cuenta y todo lo suyo: poemas, colecciones y biblioteca. */
   deleteAccount(): Promise<void>
 }

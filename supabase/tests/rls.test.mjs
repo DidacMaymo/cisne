@@ -1,0 +1,169 @@
+// Prueba la migración de CISNE en PGlite con un «Supabase» mínimo simulado.
+import { PGlite } from '@electric-sql/pglite'
+import { readdirSync, readFileSync } from 'node:fs'
+
+// Aplica todas las migraciones en orden.
+const dir = new URL('../migrations/', import.meta.url)
+const files = readdirSync(dir).filter((f) => f.endsWith('.sql')).sort()
+let sql = files.map((f) => readFileSync(new URL(f, dir), 'utf8')).join('\n')
+
+const stub = `
+create schema extensions;
+-- Diccionario y función que imitan a la extensión unaccent (no existe en PGlite).
+create text search dictionary extensions.unaccent (template = pg_catalog.simple);
+create function extensions.unaccent(regdictionary, text) returns text language sql immutable as
+  $$ select translate($2, 'áéíóúüñÁÉÍÓÚÜÑàèìòù', 'aeiouunAEIOUUNaeiou') $$;
+`
+sql = sql.replace('create extension if not exists unaccent with schema extensions;', () => stub)
+
+const db = new PGlite()
+await db.exec(`
+  create role anon nologin;
+  create role authenticated nologin;
+  create schema auth;
+  grant usage on schema auth to anon, authenticated;
+  grant usage on schema public to anon, authenticated;
+  create table auth.users (id uuid primary key, email text, raw_user_meta_data jsonb default '{}');
+  create function auth.uid() returns uuid language sql stable as
+    $$ select nullif(current_setting('request.jwt.claim.sub', true), '')::uuid $$;
+  grant execute on function auth.uid() to anon, authenticated;
+  -- Como en Supabase: permisos por defecto sobre lo que se cree en public.
+  alter default privileges in schema public grant all on tables to anon, authenticated;
+  alter default privileges in schema public grant all on functions to anon, authenticated;
+`)
+await db.exec(sql)
+console.log('✓ migración aplicada')
+
+const ANA = '11111111-1111-1111-1111-111111111111'
+const BEA = '22222222-2222-2222-2222-222222222222'
+await db.exec(`
+  insert into auth.users (id, email, raw_user_meta_data) values
+    ('${ANA}', 'ana@x.test', '{"display_name":"Ana Lía"}'),
+    ('${BEA}', 'bea@x.test', '{"display_name":"Ana Lía"}');
+`)
+
+let failures = 0
+function check(name, ok, extra = '') {
+  console.log(`${ok ? '✓' : '✗'} ${name}${extra ? ' — ' + extra : ''}`)
+  if (!ok) failures++
+}
+
+async function as(user, fn) {
+  await db.exec(`reset role; select set_config('request.jwt.claim.sub', '${user ?? ''}', false);`)
+  await db.exec(user ? 'set role authenticated' : 'set role anon')
+  try {
+    return await fn()
+  } finally {
+    await db.exec('reset role')
+  }
+}
+const q = async (text, params) => (await db.query(text, params)).rows
+async function fails(text, params) {
+  try {
+    await db.query(text, params)
+    return null
+  } catch (e) {
+    return e.message
+  }
+}
+
+// Perfiles creados por el trigger, con nombres de cuenta únicos.
+const profiles = await q('select id, account_name, display_name from public.profiles order by account_name')
+check('perfiles creados al registrarse', profiles.length === 2, profiles.map((p) => p.account_name).join(', '))
+check('nombre de cuenta único', profiles[0].account_name === 'ana-lia' && profiles[1].account_name === 'ana-lia-2')
+
+// Ana publica: uno con su nombre, uno anónimo, uno privado, un borrador y uno con pseudónimo.
+const save = (args) =>
+  q('select public.save_poem($1,$2,$3,$4,$5,$6,$7,$8,$9) as id', args).then((r) => r[0].id)
+const ids = await as(ANA, async () => ({
+  named: await save([null, 'Casa de agua', 'Mi casa era un río\n\nque no sabía irse', 'published', 'public', 'profile_name', null, ['#Nostalgia ', 'infancia'], null]),
+  anon: await save([null, 'Secreto', 'Nadie sabrá que lo escribí', 'published', 'public', 'anonymous', null, ['nostalgia'], null]),
+  priv: await save([null, 'Privado', 'Solo para mí', 'published', 'private', 'profile_name', null, ['diario-intimo'], null]),
+  draft: await save([null, null, 'Borrador sin título', 'draft', 'public', 'profile_name', null, [], null]),
+  pseudo: await save([null, 'Máscara', 'Con otro nombre', 'published', 'public', 'pseudonym', 'La Garza', [], null]),
+}))
+check('save_poem crea los poemas', Object.values(ids).every(Boolean))
+
+// Lectura pública (anon).
+await as(null, async () => {
+  const pub = await q('select * from public.public_poems order by title')
+  check('público: solo publicados y públicos', pub.length === 3, pub.map((p) => p.title).join(', '))
+  const anon = pub.find((p) => p.title === 'Secreto')
+  check('anónimo: sin autor ni enlace', anon.author_name === 'Anónimo' && anon.author_account_name === null)
+  check('la vista no expone author_id', !('author_id' in anon))
+  const pseudo = pub.find((p) => p.title === 'Máscara')
+  check('pseudónimo sin enlace al perfil', pseudo.author_name === 'La Garza' && pseudo.author_account_name === null)
+  const named = pub.find((p) => p.title === 'Casa de agua')
+  check('saltos de línea intactos', named.content === 'Mi casa era un río\n\nque no sabía irse')
+  check('etiquetas normalizadas', JSON.stringify(named.tags.map((t) => t.normalizedName)) === '["infancia","nostalgia"]')
+  check('anon no lee la tabla poems', (await q('select * from public.poems')).length === 0)
+  check('anon no lee perfiles (pseudónimo privado)', (await q('select * from public.profiles')).length === 0)
+  const tags = await q('select normalized_name from public.public_tags order by 1')
+  check('etiquetas de poemas privados no se publican', !tags.some((t) => t.normalized_name === 'diario-intimo'))
+  const s1 = await q(`select title from public.search_public_poems('RIO', null)`)
+  check('búsqueda sin tildes ni mayúsculas', s1.length === 1 && s1[0].title === 'Casa de agua')
+  const s2 = await q(`select title from public.search_public_poems('', 'nostalgia')`)
+  check('filtro por etiqueta', s2.length === 2)
+  const s3 = await q(`select title from public.search_public_poems('ana lia', null)`)
+  check('búsqueda por autor no destapa anónimos', s3.length === 1 && s3[0].title === 'Casa de agua')
+  const s4 = await q(`select title from public.search_public_poems('solo para mi', null)`)
+  check('la búsqueda no encuentra privados', s4.length === 0)
+  check('anon no puede guardar poemas', !!(await fails(`select public.save_poem(null,null,'x','published','public','anonymous',null,'{}',null)`)))
+})
+
+// Bea: no ve lo privado de Ana, no puede tocarlo.
+await as(BEA, async () => {
+  check('Bea no ve poemas de Ana en la tabla', (await q('select * from public.poems')).length === 0)
+  check('Bea no puede editar el poema de Ana', !!(await fails(
+    `select public.save_poem($1,'hack','x','published','public','profile_name',null,'{}',null)`, [ids.named])))
+  const del = await db.query('delete from public.poems where id = $1', [ids.named])
+  check('Bea no puede borrar el poema de Ana', del.affectedRows === 0)
+  check('Bea no ve el perfil de Ana', (await q('select * from public.profiles where id = $1', [ANA])).length === 0)
+  check('Bea puede guardar un poema público', !(await fails('insert into public.favorites (poem_id) values ($1)', [ids.named])))
+  check('Bea no puede guardar uno privado', !!(await fails('insert into public.favorites (poem_id) values ($1)', [ids.priv])))
+  check('Bea no puede guardar un borrador', !!(await fails('insert into public.favorites (poem_id) values ($1)', [ids.draft])))
+  check('favorito con user_id ajeno rechazado', !!(await fails('insert into public.favorites (user_id, poem_id) values ($1, $2)', [ANA, ids.anon])))
+  // Antología de Bea con el anónimo de Ana: aquí sí puede salir (no delata a nadie).
+  const [{ id: col }] = await q(`insert into public.collections (title, visibility) values ('Antología', 'public') returning id`)
+  await q('select public.add_poem_to_collection($1, $2)', [col, ids.anon])
+  await q('select public.add_poem_to_collection($1, $2)', [col, ids.named])
+  check('Bea no puede añadir un privado', !!(await fails('select public.add_poem_to_collection($1, $2)', [col, ids.priv])))
+  await q('select public.move_collection_poem($1, $2, -1)', [col, ids.named])
+  const order = await q('select poem_id from public.collection_poems where collection_id = $1 order by position', [col])
+  check('reordenar colección', order[0].poem_id === ids.named)
+  check('Bea no puede cambiar su nombre de cuenta', !!(await fails(`update public.profiles set account_name = 'otra' where id = $1`, [BEA])))
+  check('Bea sí puede editar su bio', !(await fails(`update public.profiles set bio = 'hola' where id = $1`, [BEA])))
+})
+
+// Colección pública de Ana con su anónimo: el anónimo no debe aparecer.
+await as(ANA, async () => {
+  const [{ id: col }] = await q(`insert into public.collections (title, visibility) values ('Mis poemas', 'public') returning id`)
+  for (const id of [ids.named, ids.anon, ids.priv]) await q('select public.add_poem_to_collection($1, $2)', [col, id])
+  await as(null, async () => {
+    const shown = await q('select title from public.public_collection_poems where collection_id = $1', [col])
+    check('colección pública del autor oculta su anónimo y su privado', shown.length === 1 && shown[0].title === 'Casa de agua')
+    const [c] = await q('select poem_count, owner_account_name from public.public_collections where id = $1', [col])
+    check('recuento coherente', c.poem_count === 1)
+    const [p] = await q('select collection from public.public_poems where id = $1', [ids.anon])
+    check('el anónimo no dice «Del poemario»', p.collection === null)
+    const [n] = await q('select collection from public.public_poems where id = $1', [ids.named])
+    check('el firmado sí', n.collection?.title === 'Mis poemas')
+  })
+})
+await as(ANA, async () => {
+  // Publicar fija fecha; editar la conserva.
+  const [{ published_at: first }] = await q('select published_at from public.poems where id = $1', [ids.named])
+  await save([ids.named, 'Casa de agua', 'Mi casa era un río', 'published', 'public', 'profile_name', null, [], null])
+  const [{ published_at: again }] = await q('select published_at from public.poems where id = $1', [ids.named])
+  check('editar conserva la fecha de publicación', +first === +again)
+})
+
+// Bea borra su cuenta: desaparece todo lo suyo.
+await as(BEA, () => q('select public.delete_my_account()'))
+const left = await q(`select (select count(*) from public.profiles where id = $1)::int as p,
+  (select count(*) from public.collections where owner_id = $1)::int as c,
+  (select count(*) from public.favorites where user_id = $1)::int as f`, [BEA])
+check('borrar cuenta borra perfil, colecciones y favoritos', left[0].p === 0 && left[0].c === 0 && left[0].f === 0)
+
+console.log(failures ? `\n${failures} comprobaciones fallaron` : '\nTodo correcto')
+process.exit(failures ? 1 : 0)

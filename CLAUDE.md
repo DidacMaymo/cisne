@@ -90,6 +90,7 @@ Esta es la lista de tareas del proyecto. Trabaja una fase cada vez. Al terminar 
 - Implementación `supabase` de los repositorios; Auth real (registro, entrar, salir, recuperar contraseña, rutas protegidas, eliminar cuenta). Eliminar la implementación local o dejarla solo para desarrollo.
 - Solo la clave pública va al frontend (`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`; en proyectos antiguos se llama `anon key`). Nunca la `secret`/`service_role`.
 - Antes de empezar esta fase, pide al usuario la URL del proyecto y la clave pública; no inventes valores.
+- Estado: hechos la migración (`supabase/migrations/20261018120000_init.sql`, probada con `npm run test:db`), la implementación `src/data/supabase/` (se activa sola si existen las variables `VITE_SUPABASE_*`; sin ellas, modo local) y la auth en la UI (confirmar email, recuperar, `/nueva-contrasena`). **Falta**: que el usuario cree el proyecto y pase URL + clave, y probarlo de punta a punta contra Supabase real. Guía: [docs/SUPABASE.md](docs/SUPABASE.md).
 
 ### [ ] Fase 6 — Revisión
 - Criterios de aceptación del brief §22 completos, probando con dos usuarios que lo privado y lo anónimo no se filtran. Accesibilidad con teclado, rendimiento, móvil.

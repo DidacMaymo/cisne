@@ -10,6 +10,7 @@ import { Home } from './pages/Home'
 import { Library } from './pages/Library'
 import { MyCollections } from './pages/MyCollections'
 import { MyPoems } from './pages/MyPoems'
+import { NewPassword } from './pages/NewPassword'
 import { NotFound } from './pages/NotFound'
 import { PoemPage } from './pages/PoemPage'
 import { ProfileSettings } from './pages/ProfileSettings'
@@ -44,6 +45,7 @@ export function App() {
         <Route path="/entrar" element={<SignIn key="entrar" mode="entrar" />} />
         <Route path="/registro" element={<SignIn key="registro" mode="registro" />} />
         <Route path="/recuperar" element={<Recover />} />
+        <Route path="/nueva-contrasena" element={<NewPassword />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>

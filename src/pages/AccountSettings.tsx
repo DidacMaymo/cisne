@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { repos } from '../data'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { LoadState } from '../components/LoadState'
@@ -51,6 +51,9 @@ export function AccountSettings() {
           </dl>
 
           <div className="mt-12 flex flex-wrap justify-center gap-3 border-t border-linea pt-10">
+            <Link to="/nueva-contrasena" className="btn">
+              Cambiar contraseña
+            </Link>
             <button type="button" className="btn" onClick={signOut}>
               Cerrar sesión
             </button>

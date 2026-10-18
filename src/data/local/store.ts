@@ -1,5 +1,6 @@
 // Almacén local: un único objeto JSON en localStorage. Hace de "base de datos"
 // del navegador hasta que llegue Supabase (fase 5).
+import { emitDataChange } from '../events'
 import type { Account, Collection, CollectionPoem, Favorite, Poem, Profile, Tag } from '../types'
 
 export const LOCAL_USER_ID = 'local-user'
@@ -40,7 +41,6 @@ export function fresh(): Store {
 }
 
 let cache: Store | null = null
-const listeners = new Set<() => void>()
 
 export function readStore(): Store {
   if (cache) return cache
@@ -67,20 +67,15 @@ export function commit(mutate: (draft: Store) => void): void {
     throw new Error('No se pudo guardar en este navegador. Tu texto no se ha perdido: inténtalo de nuevo.')
   }
   cache = next
-  listeners.forEach((l) => l())
-}
-
-/** Avisa a la UI de que los datos cambiaron (también desde otra pestaña). */
-export function onDataChange(listener: () => void): () => void {
-  listeners.add(listener)
-  return () => listeners.delete(listener)
+  emitDataChange()
 }
 
 if (typeof window !== 'undefined') {
   window.addEventListener('storage', (e) => {
     if (e.key === KEY) {
+      // Cambios desde otra pestaña.
       cache = null
-      listeners.forEach((l) => l())
+      emitDataChange()
     }
   })
 }

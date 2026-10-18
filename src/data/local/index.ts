@@ -201,6 +201,19 @@ export const localRepositories: Repositories = {
       })
     },
 
+    async requestPasswordReset() {
+      throw new Error('En esta versión de prueba no se envían correos.')
+    },
+
+    async updatePassword(password) {
+      const salt = crypto.randomUUID()
+      const passwordHash = await hash(salt, password)
+      commit((s) => {
+        requireMe(s)
+        if (s.account) s.account = { ...s.account, salt, passwordHash }
+      })
+    },
+
     async deleteAccount() {
       requireMe(readStore())
       commit((s) => Object.assign(s, fresh()))

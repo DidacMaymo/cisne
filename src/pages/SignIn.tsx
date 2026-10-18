@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { Link, Navigate, useNavigate, useSearchParams } from 'react-router-dom'
 import { repos } from '../data'
 import { AuthForm } from '../components/AuthForm'
+import { EmptyState } from '../components/EmptyState'
 import { signInSchema, signUpSchema, toErrors } from '../data/schemas'
 import { useSession } from '../hooks/useSession'
 import { safeReturn } from '../lib/links'
@@ -42,6 +43,7 @@ export function SignIn({ mode }: { mode: Mode }) {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [problem, setProblem] = useState('')
   const [busy, setBusy] = useState(false)
+  const [sentTo, setSentTo] = useState('')
 
   if (session && !busy) return <Navigate to={volver} replace />
 
@@ -52,8 +54,17 @@ export function SignIn({ mode }: { mode: Mode }) {
     setErrors({})
     setBusy(true)
     try {
-      if (mode === 'entrar') await repos.auth.signIn(parsed.data as { email: string; password: string })
-      else await repos.auth.signUp(parsed.data as { displayName: string; email: string; password: string })
+      if (mode === 'entrar') {
+        await repos.auth.signIn(parsed.data as { email: string; password: string })
+      } else {
+        const data = parsed.data as { displayName: string; email: string; password: string }
+        if (!(await repos.auth.signUp(data))) {
+          // Hay que confirmar el email antes de poder entrar.
+          setSentTo(data.email)
+          setBusy(false)
+          return
+        }
+      }
       navigate(volver, { replace: true })
     } catch (e) {
       setProblem(e instanceof Error ? e.message : 'No se pudo completar. Inténtalo de nuevo.')
@@ -61,7 +72,24 @@ export function SignIn({ mode }: { mode: Mode }) {
     }
   }
 
-  const keep = params.get('volver') ? `?volver=${encodeURIComponent(volver)}` : ''
+  if (sentTo) {
+    return (
+      <>
+        <h1 className="sr-only">Confirma tu email</h1>
+        <EmptyState title="Te hemos escrito.">
+          <p className="mx-auto max-w-[40ch] text-ui">
+            Abre el enlace que hemos enviado a <strong className="font-medium">{sentTo}</strong> para confirmar tu
+            cuenta. Después podrás entrar y publicar. Lo que estabas escribiendo sigue guardado en este navegador.
+          </p>
+          <Link to={`/entrar?volver=${encodeURIComponent(volver)}`} className="enlace mt-4">
+            Ir a entrar
+          </Link>
+        </EmptyState>
+      </>
+    )
+  }
+
+  const keep = params.get('volver') ?`?volver=${encodeURIComponent(volver)}` : ''
 
   return (
     <AuthForm

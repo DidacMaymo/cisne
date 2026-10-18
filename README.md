@@ -30,4 +30,6 @@ Es una SPA estática: Pages sirve los ficheros de `dist/` desde su CDN, sin serv
 3. Variable de entorno `NODE_VERSION=20` (o superior).
 4. `public/_redirects` (`/* /index.html 200`) hace que las rutas de la SPA, como `/poema/123`, funcionen al recargar.
 
-El backend (Supabase) llega en la Fase 5; hasta entonces no hacen falta claves.
+## Backend (Supabase)
+
+Sin claves, CISNE funciona en **modo local** (todo en el navegador). Para usar cuentas y datos reales, sigue [docs/SUPABASE.md](docs/SUPABASE.md): aplicar `supabase/migrations/`, configurar Auth y crear `.env.local` a partir de `.env.example`. `npm run test:db` comprueba las reglas de seguridad de la base de datos sin necesidad de Supabase.
