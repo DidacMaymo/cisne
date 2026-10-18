@@ -1,12 +1,12 @@
-import { pickDiverse } from '../discover'
-import { normalizePoemText, normalizeTag } from '../normalize'
+import { shuffleDiverse } from '../discover'
+import { foldText, normalizePoemText, normalizeTag, slugify } from '../normalize'
 import type { Repositories } from '../repositories'
-import type { Collection, Poem, PoemView, Profile, Tag } from '../types'
-import { commit, LOCAL_USER_ID, readStore, type Store, type StoredPoem } from './store'
+import type { Collection, CollectionView, Poem, PoemView, Profile, Session, Tag } from '../types'
+import { commit, fresh, LOCAL_USER_ID, readStore, type Store, type StoredPoem } from './store'
 
 type World = Store & { profiles: Profile[] }
 
-/** Datos del usuario + (solo en desarrollo) los poemas de ejemplo, que no se persisten. */
+/** Datos del usuario + (solo en desarrollo) los de ejemplo, que no se persisten. */
 async function world(): Promise<World> {
   const s = readStore()
   const seed = import.meta.env.DEV ? (await import('../dev-seed')).devSeed : null
@@ -15,20 +15,29 @@ async function world(): Promise<World> {
     profiles: [s.profile, ...(seed?.profiles ?? [])],
     poems: [...s.poems, ...(seed?.poems ?? [])],
     tags: [...s.tags, ...(seed?.tags ?? [])],
+    collections: [...s.collections, ...(seed?.collections ?? [])],
+    collectionPoems: [...s.collectionPoems, ...(seed?.collectionPoems ?? [])],
   }
 }
 
+/** Id del usuario con sesión, o `null`. */
+const me = (s: Store) => (s.signedIn ? LOCAL_USER_ID : null)
+
+function requireMe(s: Store): string {
+  const id = me(s)
+  if (!id) throw new Error('Necesitas entrar en tu cuenta para hacer esto.')
+  return id
+}
+
 const isPublic = (p: StoredPoem) => p.status === 'published' && p.visibility === 'public'
-const canView = (p: StoredPoem) => isPublic(p) || p.authorId === LOCAL_USER_ID
+const isMine = (w: World, p: { authorId?: string; ownerId?: string }) =>
+  !!me(w) && (p.authorId ?? p.ownerId) === me(w)
+const canView = (w: World, p: StoredPoem) => isPublic(p) || isMine(w, p)
 const byRecent = (a: StoredPoem, b: StoredPoem) =>
   (b.publishedAt ?? b.updatedAt).localeCompare(a.publishedAt ?? a.updatedAt)
 
 function tagsOf(w: World, p: StoredPoem): Tag[] {
   return p.tagIds.map((id) => w.tags.find((t) => t.id === id)).filter((t): t is Tag => !!t)
-}
-
-function collectionIdOf(w: World, poemId: string): string | undefined {
-  return w.collectionPoems.find((cp) => cp.poemId === poemId)?.collectionId
 }
 
 function authorOf(w: World, p: StoredPoem): { name: string; account: string | null } {
@@ -39,15 +48,50 @@ function authorOf(w: World, p: StoredPoem): { name: string; account: string | nu
   }
   return {
     name: profile?.displayName || profile?.accountName || 'Anónimo',
-    account: profile?.accountName ?? null,
+    account: profile?.displayName ? profile.accountName : null,
+  }
+}
+
+/**
+ * Un poema firmado con pseudónimo o anónimo no puede aparecer en una colección
+ * pública de su propio autor: delataría quién lo escribió.
+ */
+const revealsAuthor = (c: Collection, p: StoredPoem) =>
+  p.authorId === c.ownerId && p.publicationIdentity !== 'profile_name'
+
+/** Poemas de una colección que puede ver quien mira, en orden. */
+function poemsIn(w: World, c: Collection): StoredPoem[] {
+  const owner = isMine(w, c)
+  return w.collectionPoems
+    .filter((cp) => cp.collectionId === c.id)
+    .sort((a, b) => a.position - b.position)
+    .map((cp) => w.poems.find((p) => p.id === cp.poemId))
+    .filter((p): p is StoredPoem => !!p)
+    .filter((p) => (owner ? canView(w, p) : isPublic(p) && !revealsAuthor(c, p)))
+}
+
+function collectionView(w: World, c: Collection): CollectionView {
+  const owner = w.profiles.find((p) => p.id === c.ownerId)
+  return {
+    ...c,
+    ownerName: owner?.displayName || 'Sin nombre',
+    ownerAccountName: owner?.displayName ? owner.accountName : null,
+    isOwner: isMine(w, c),
+    poemCount: poemsIn(w, c).length,
   }
 }
 
 function toView(w: World, p: StoredPoem): PoemView {
   const author = authorOf(w, p)
-  const cid = collectionIdOf(w, p.id)
-  const col = cid ? w.collections.find((c) => c.id === cid) : undefined
-  const isOwner = p.authorId === LOCAL_USER_ID
+  const isOwner = isMine(w, p)
+  // «Del poemario…»: solo colecciones del propio autor y sin romper su anonimato.
+  const col = w.collectionPoems
+    .filter((cp) => cp.poemId === p.id)
+    .map((cp) => w.collections.find((c) => c.id === cp.collectionId))
+    .find(
+      (c): c is Collection =>
+        !!c && c.ownerId === p.authorId && (isOwner || (c.visibility === 'public' && !revealsAuthor(c, p))),
+    )
   return {
     id: p.id,
     title: p.title,
@@ -55,7 +99,7 @@ function toView(w: World, p: StoredPoem): PoemView {
     authorName: author.name,
     authorAccountName: author.account,
     tags: tagsOf(w, p),
-    collection: col && (col.visibility === 'public' || isOwner) ? { id: col.id, title: col.title } : null,
+    collection: col ? { id: col.id, title: col.title } : null,
     status: p.status,
     visibility: p.visibility,
     isOwner,
@@ -68,7 +112,10 @@ function toView(w: World, p: StoredPoem): PoemView {
 function toOwnPoem(w: World, p: StoredPoem): Poem {
   const { tagIds: _tagIds, ...rest } = p
   void _tagIds
-  return { ...rest, tags: tagsOf(w, p), collectionId: collectionIdOf(w, p.id) }
+  const own = w.collectionPoems.find(
+    (cp) => cp.poemId === p.id && w.collections.some((c) => c.id === cp.collectionId && c.ownerId === p.authorId),
+  )
+  return { ...rest, tags: tagsOf(w, p), collectionId: own?.collectionId }
 }
 
 function ensureTag(s: Store, raw: string): string | null {
@@ -81,7 +128,85 @@ function ensureTag(s: Store, raw: string): string | null {
   return tag.id
 }
 
+function ownCollection(s: Store, id: string): Collection {
+  const userId = requireMe(s)
+  const c = s.collections.find((x) => x.id === id && x.ownerId === userId)
+  if (!c) throw new Error('Esa colección ya no existe.')
+  return c
+}
+
+/** Vuelve a numerar las posiciones 0..n de una colección. */
+function renumber(s: Store, collectionId: string) {
+  s.collectionPoems
+    .filter((cp) => cp.collectionId === collectionId)
+    .sort((a, b) => a.position - b.position)
+    .forEach((cp, i) => (cp.position = i))
+}
+
+async function hash(salt: string, password: string): Promise<string> {
+  const bytes = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(`${salt}:${password}`))
+  return [...new Uint8Array(bytes)].map((b) => b.toString(16).padStart(2, '0')).join('')
+}
+
+function session(s: Store): Session | null {
+  return s.signedIn ? { accountName: s.profile.accountName, displayName: s.profile.displayName } : null
+}
+
 export const localRepositories: Repositories = {
+  auth: {
+    async current() {
+      return session(readStore())
+    },
+
+    async account() {
+      const s = readStore()
+      if (!s.signedIn || !s.account) return null
+      const { email, accountName, createdAt } = s.account
+      return { email, accountName, createdAt }
+    },
+
+    async signUp({ displayName, email, password }) {
+      const w = await world()
+      if (w.account) throw new Error('En este navegador ya hay una cuenta. Entra con ella.')
+      const taken = new Set(w.profiles.filter((p) => p.id !== LOCAL_USER_ID).map((p) => p.accountName))
+      const base = slugify(displayName) || 'autor'
+      let accountName = base
+      for (let n = 2; taken.has(accountName); n++) accountName = `${base}-${n}`
+      const salt = crypto.randomUUID()
+      const passwordHash = await hash(salt, password)
+      const now = new Date().toISOString()
+      commit((s) => {
+        s.account = { email: email.trim().toLowerCase(), accountName, createdAt: now, salt, passwordHash }
+        s.signedIn = true
+        s.profile = { ...s.profile, accountName, displayName: displayName.trim(), updatedAt: now }
+      })
+      return session(readStore())!
+    },
+
+    async signIn({ email, password }) {
+      const s = readStore()
+      const a = s.account
+      if (!a || a.email !== email.trim().toLowerCase() || a.passwordHash !== (await hash(a.salt, password))) {
+        throw new Error('El email o la contraseña no coinciden.')
+      }
+      commit((d) => {
+        d.signedIn = true
+      })
+      return session(readStore())!
+    },
+
+    async signOut() {
+      commit((s) => {
+        s.signedIn = false
+      })
+    },
+
+    async deleteAccount() {
+      requireMe(readStore())
+      commit((s) => Object.assign(s, fresh()))
+    },
+  },
+
   poems: {
     async listPublic(filter) {
       const w = await world()
@@ -92,36 +217,45 @@ export const localRepositories: Repositories = {
         .filter((p) => {
           if (!filter?.authorAccountName) return true
           // Bajo el perfil de una cuenta solo salen los poemas firmados con su nombre.
-          const a = authorOf(w, p)
-          return a.account === filter.authorAccountName
+          return authorOf(w, p).account === filter.authorAccountName
         })
         .sort(byRecent)
         .map((p) => toView(w, p))
     },
 
-    async discover(seed, limit) {
+    async search({ q, tag, order, seed = 0 }) {
       const w = await world()
-      return pickDiverse(w.poems.filter(isPublic), (p) => p.authorId, seed, 2)
-        .slice(0, limit)
-        .map((p) => toView(w, p))
+      const words = foldText(q ?? '').split(/\s+/).filter(Boolean)
+      const tagName = tag ? normalizeTag(tag) : null
+      const found = w.poems.filter(isPublic).filter((p) => {
+        const tags = tagsOf(w, p)
+        if (tagName && !tags.some((t) => t.normalizedName === tagName)) return false
+        if (words.length === 0) return true
+        const haystack = foldText(
+          [p.title ?? '', p.content, authorOf(w, p).name, ...tags.map((t) => t.normalizedName)].join(' '),
+        )
+        return words.every((word) => haystack.includes(word))
+      })
+      const ordered = order === 'recent' ? found.sort(byRecent) : shuffleDiverse(found, (p) => p.authorId, seed)
+      return ordered.map((p) => toView(w, p))
     },
 
     async get(id) {
       const w = await world()
       const p = w.poems.find((x) => x.id === id)
-      return p && canView(p) ? toView(w, p) : null
+      return p && canView(w, p) ? toView(w, p) : null
     },
 
     async getOwn(id) {
       const w = await world()
-      const p = w.poems.find((x) => x.id === id && x.authorId === LOCAL_USER_ID)
+      const p = w.poems.find((x) => x.id === id && isMine(w, x))
       return p ? toOwnPoem(w, p) : null
     },
 
     async listMine(status) {
       const w = await world()
       return w.poems
-        .filter((p) => p.authorId === LOCAL_USER_ID && p.status === status)
+        .filter((p) => isMine(w, p) && p.status === status)
         .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
         .map((p) => toView(w, p))
     },
@@ -145,9 +279,10 @@ export const localRepositories: Repositories = {
       const savedId = input.id ?? crypto.randomUUID()
       const now = new Date().toISOString()
       commit((s) => {
+        const userId = requireMe(s)
         let existing: StoredPoem | undefined
         if (input.id) {
-          existing = s.poems.find((p) => p.id === input.id && p.authorId === LOCAL_USER_ID)
+          existing = s.poems.find((p) => p.id === input.id && p.authorId === userId)
           if (!existing) throw new Error('No encontramos ese poema entre los tuyos.')
         }
         const tagIds = [...new Set(input.tags.map((t) => ensureTag(s, t)).filter((id): id is string => !!id))]
@@ -155,7 +290,7 @@ export const localRepositories: Repositories = {
           input.publicationIdentity === 'pseudonym' ? input.displayedPseudonym?.trim() || undefined : undefined
         const poem: StoredPoem = {
           id: savedId,
-          authorId: LOCAL_USER_ID,
+          authorId: userId,
           title: input.title?.trim() || undefined,
           content: normalizePoemText(input.content),
           status: input.status,
@@ -169,13 +304,12 @@ export const localRepositories: Repositories = {
         }
         s.poems = existing ? s.poems.map((p) => (p.id === poem.id ? poem : p)) : [...s.poems, poem]
 
-        // El editor maneja una sola colección por poema.
-        s.collectionPoems = s.collectionPoems.filter((cp) => cp.poemId !== poem.id)
         if (input.collectionId) {
-          const target = s.collections.find((c) => c.id === input.collectionId && c.ownerId === LOCAL_USER_ID)
-          if (!target) throw new Error('La colección elegida ya no existe.')
-          const position = s.collectionPoems.filter((cp) => cp.collectionId === target.id).length
-          s.collectionPoems.push({ collectionId: target.id, poemId: poem.id, position })
+          const target = ownCollection(s, input.collectionId)
+          if (!s.collectionPoems.some((cp) => cp.collectionId === target.id && cp.poemId === poem.id)) {
+            const position = s.collectionPoems.filter((cp) => cp.collectionId === target.id).length
+            s.collectionPoems.push({ collectionId: target.id, poemId: poem.id, position })
+          }
         }
       })
       const w = await world()
@@ -184,7 +318,8 @@ export const localRepositories: Repositories = {
 
     async remove(id) {
       commit((s) => {
-        if (!s.poems.some((p) => p.id === id && p.authorId === LOCAL_USER_ID)) {
+        const userId = requireMe(s)
+        if (!s.poems.some((p) => p.id === id && p.authorId === userId)) {
           throw new Error('No encontramos ese poema entre los tuyos.')
         }
         s.poems = s.poems.filter((p) => p.id !== id)
@@ -201,6 +336,7 @@ export const localRepositories: Repositories = {
 
     async updateMine(patch) {
       commit((s) => {
+        requireMe(s)
         s.profile = { ...s.profile, ...patch, updatedAt: new Date().toISOString() }
       })
       return readStore().profile
@@ -209,14 +345,14 @@ export const localRepositories: Repositories = {
     async getPublicByAccountName(accountName) {
       const w = await world()
       const p = w.profiles.find((x) => x.accountName === accountName)
-      if (!p) return null
       // Una cuenta sin nombre público todavía no tiene página de autor.
-      if (!p.displayName) return null
-      return { accountName: p.accountName, displayName: p.displayName, bio: p.bio }
+      if (!p || !p.displayName) return null
+      return { accountName: p.accountName, displayName: p.displayName, bio: p.bio, links: p.links }
     },
 
     async listPseudonyms() {
       const s = readStore()
+      if (!me(s)) return []
       const used = s.poems.map((p) => p.displayedPseudonym).filter((x): x is string => !!x)
       return [...new Set([s.profile.primaryPseudonym, ...used].filter((x): x is string => !!x))]
     },
@@ -226,7 +362,7 @@ export const localRepositories: Repositories = {
     async suggest() {
       const w = await world()
       const used = new Map<string, Tag>()
-      for (const p of w.poems.filter((x) => isPublic(x) || x.authorId === LOCAL_USER_ID)) {
+      for (const p of w.poems.filter((x) => canView(w, x))) {
         for (const t of tagsOf(w, p)) if (!used.has(t.normalizedName)) used.set(t.normalizedName, t)
       }
       return [...used.values()].sort((a, b) => a.name.localeCompare(b.name, 'es'))
@@ -235,41 +371,142 @@ export const localRepositories: Repositories = {
 
   collections: {
     async listMine() {
-      return readStore().collections.filter((c) => c.ownerId === LOCAL_USER_ID)
+      const w = await world()
+      return w.collections
+        .filter((c) => isMine(w, c))
+        .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+        .map((c) => collectionView(w, c))
     },
 
-    async create({ title }) {
+    async listPublicByOwner(accountName) {
+      const w = await world()
+      const owner = w.profiles.find((p) => p.accountName === accountName)
+      if (!owner) return []
+      return w.collections
+        .filter((c) => c.ownerId === owner.id && c.visibility === 'public')
+        .sort((a, b) => b.updatedAt.localeCompare(a.updatedAt))
+        .map((c) => collectionView(w, c))
+    },
+
+    async get(id) {
+      const w = await world()
+      const c = w.collections.find((x) => x.id === id)
+      if (!c || (c.visibility === 'private' && !isMine(w, c))) return null
+      return { collection: collectionView(w, c), poems: poemsIn(w, c).map((p) => toView(w, p)) }
+    },
+
+    async create({ title, description, visibility }) {
       const now = new Date().toISOString()
-      const collection: Collection = {
-        id: crypto.randomUUID(),
-        ownerId: LOCAL_USER_ID,
-        title: title.trim(),
-        visibility: 'private',
-        createdAt: now,
-        updatedAt: now,
-      }
+      let collection: Collection | undefined
       commit((s) => {
+        collection = {
+          id: crypto.randomUUID(),
+          ownerId: requireMe(s),
+          title: title.trim(),
+          description: description?.trim() || undefined,
+          visibility,
+          createdAt: now,
+          updatedAt: now,
+        }
         s.collections.push(collection)
       })
-      return collection
+      return collection!
+    },
+
+    async update(id, { title, description, visibility }) {
+      let updated: Collection | undefined
+      commit((s) => {
+        const c = ownCollection(s, id)
+        c.title = title.trim()
+        c.description = description?.trim() || undefined
+        c.visibility = visibility
+        c.updatedAt = new Date().toISOString()
+        updated = c
+      })
+      return updated!
+    },
+
+    async remove(id) {
+      commit((s) => {
+        ownCollection(s, id)
+        s.collections = s.collections.filter((c) => c.id !== id)
+        s.collectionPoems = s.collectionPoems.filter((cp) => cp.collectionId !== id)
+      })
+    },
+
+    async containing(poemId) {
+      const s = readStore()
+      const userId = me(s)
+      if (!userId) return []
+      return s.collectionPoems
+        .filter((cp) => cp.poemId === poemId && s.collections.some((c) => c.id === cp.collectionId && c.ownerId === userId))
+        .map((cp) => cp.collectionId)
+    },
+
+    async addPoem(collectionId, poemId) {
+      const w = await world()
+      const poem = w.poems.find((p) => p.id === poemId)
+      if (!poem || !canView(w, poem)) throw new Error('Ese poema ya no está disponible.')
+      commit((s) => {
+        const c = ownCollection(s, collectionId)
+        if (s.collectionPoems.some((cp) => cp.collectionId === c.id && cp.poemId === poemId)) return
+        const position = s.collectionPoems.filter((cp) => cp.collectionId === c.id).length
+        s.collectionPoems.push({ collectionId: c.id, poemId, position })
+        c.updatedAt = new Date().toISOString()
+      })
+    },
+
+    async removePoem(collectionId, poemId) {
+      commit((s) => {
+        const c = ownCollection(s, collectionId)
+        s.collectionPoems = s.collectionPoems.filter((cp) => !(cp.collectionId === c.id && cp.poemId === poemId))
+        renumber(s, c.id)
+        c.updatedAt = new Date().toISOString()
+      })
+    },
+
+    async movePoem(collectionId, poemId, delta) {
+      commit((s) => {
+        const c = ownCollection(s, collectionId)
+        renumber(s, c.id)
+        const list = s.collectionPoems.filter((cp) => cp.collectionId === c.id).sort((a, b) => a.position - b.position)
+        const i = list.findIndex((cp) => cp.poemId === poemId)
+        const j = i + delta
+        if (i === -1 || j < 0 || j >= list.length) return
+        ;[list[i].position, list[j].position] = [list[j].position, list[i].position]
+        c.updatedAt = new Date().toISOString()
+      })
     },
   },
 
   favorites: {
     async listIds() {
-      return readStore()
-        .favorites.filter((f) => f.userId === LOCAL_USER_ID)
-        .map((f) => f.poemId)
+      const s = readStore()
+      const userId = me(s)
+      return userId ? s.favorites.filter((f) => f.userId === userId).map((f) => f.poemId) : []
+    },
+
+    async list() {
+      const w = await world()
+      const userId = me(w)
+      if (!userId) return []
+      return w.favorites
+        .filter((f) => f.userId === userId)
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+        .map((f) => w.poems.find((p) => p.id === f.poemId))
+        .filter((p): p is StoredPoem => !!p && canView(w, p))
+        .map((p) => toView(w, p))
     },
 
     async toggle(poemId) {
       let saved = false
       commit((s) => {
-        const has = s.favorites.some((f) => f.userId === LOCAL_USER_ID && f.poemId === poemId)
+        const userId = requireMe(s)
+        const has = s.favorites.some((f) => f.userId === userId && f.poemId === poemId)
         saved = !has
         s.favorites = has
-          ? s.favorites.filter((f) => !(f.userId === LOCAL_USER_ID && f.poemId === poemId))
-          : [...s.favorites, { userId: LOCAL_USER_ID, poemId, createdAt: new Date().toISOString() }]
+          ? s.favorites.filter((f) => !(f.userId === userId && f.poemId === poemId))
+          : [...s.favorites, { userId, poemId, createdAt: new Date().toISOString() }]
       })
       return saved
     },

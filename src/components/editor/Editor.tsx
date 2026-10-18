@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { repos } from '../../data'
 import type { Collection, Poem, Profile, Tag } from '../../data'
 import { normalizeTag } from '../../data/normalize'
@@ -24,6 +24,7 @@ type Props = {
   collections: Collection[]
   tagSuggestions: Tag[]
   pseudonyms: string[]
+  signedIn: boolean
 }
 
 function baseForm(poem: Poem | null, profile: Profile): FormState {
@@ -48,7 +49,10 @@ function readAutosave(key: string, poem: Poem | null): Partial<FormState> | null
     if (!raw) return null
     const { savedAt, form } = JSON.parse(raw) as { savedAt: number; form: Partial<FormState> }
     if (poem && savedAt < Date.parse(poem.updatedAt)) return null
-    return form
+    // El nombre público viene siempre del perfil (puede haber cambiado al crear la cuenta).
+    const { displayName: _displayName, ...rest } = form
+    void _displayName
+    return rest
   } catch {
     return null
   }
@@ -62,7 +66,7 @@ function clearAutosave(key: string) {
   }
 }
 
-export function Editor({ poem, profile, collections, tagSuggestions, pseudonyms }: Props) {
+export function Editor({ poem, profile, collections, tagSuggestions, pseudonyms, signedIn }: Props) {
   const navigate = useNavigate()
   const location = useLocation()
   const storageKey = `cisne:escritura:${poem?.id ?? 'nuevo'}`
@@ -87,6 +91,7 @@ export function Editor({ poem, profile, collections, tagSuggestions, pseudonyms 
   const [busy, setBusy] = useState(false)
   const [preview, setPreview] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
+  const [needAccount, setNeedAccount] = useState(false)
 
   const isPublished = poem?.status === 'published'
   const set = (patch: Partial<FormState>) => setForm((f) => ({ ...f, ...patch }))
@@ -113,19 +118,25 @@ export function Editor({ poem, profile, collections, tagSuggestions, pseudonyms 
     const tags = pending && !form.tags.includes(pending) ? [...form.tags, pending] : form.tags
     const values = { ...form, tags }
 
-    const parsed = (kind === 'draft' ? draftSchema : publishSchema).safeParse(values)
+    const parsed = (kind === 'draft' || !signedIn ? draftSchema : publishSchema).safeParse(values)
     if (!parsed.success) {
       setErrors(toFieldErrors(parsed.error))
       setProblem('Revisa los campos señalados; tu texto sigue aquí.')
       return
     }
     setErrors({})
+    // Se puede escribir sin cuenta, pero guardar y publicar necesitan una:
+    // así cada poema tiene alguien que pueda editarlo o borrarlo, aunque firme como Anónimo.
+    if (!signedIn) {
+      setNeedAccount(true)
+      return
+    }
     setBusy(true)
     try {
       const v = parsed.data
       let collectionId = v.collection || undefined
       if (v.collection === 'new') {
-        collectionId = (await repos.collections.create({ title: v.newCollectionTitle })).id
+        collectionId = (await repos.collections.create({ title: v.newCollectionTitle, visibility: 'private' })).id
         // Si el guardado falla, un reintento no debe crear la colección dos veces.
         set({ collection: collectionId, newCollectionTitle: '' })
       }
@@ -148,6 +159,10 @@ export function Editor({ poem, profile, collections, tagSuggestions, pseudonyms 
         tags: v.tags,
         collectionId,
       })
+      // Si cambió de colección en el editor, sale de la anterior.
+      if (poem?.collectionId && poem.collectionId !== collectionId) {
+        await repos.collections.removePoem(poem.collectionId, saved.id)
+      }
 
       clearAutosave(storageKey)
       if (kind === 'draft') {
@@ -198,6 +213,15 @@ export function Editor({ poem, profile, collections, tagSuggestions, pseudonyms 
   return (
     <form onSubmit={(e) => e.preventDefault()} noValidate className="mx-auto max-w-pagina">
       <h1 className="sr-only">{poem ? 'Editar poema' : 'Escribir un poema'}</h1>
+      {!signedIn && !needAccount && (
+        <p className="meta mb-10 text-center">
+          Puedes escribir sin cuenta: lo guardamos en este navegador. Para publicarlo necesitarás{' '}
+          <Link to={`/registro?volver=${encodeURIComponent(location.pathname)}`} className="underline underline-offset-4 hover:text-tinta">
+            crear una cuenta
+          </Link>
+          .
+        </p>
+      )}
 
       {preview ? (
         <>
@@ -311,7 +335,7 @@ export function Editor({ poem, profile, collections, tagSuggestions, pseudonyms 
               <legend className="meta">Visibilidad</legend>
               {(
                 [
-                  ['public', 'Pública', 'aparece en el inicio y en las búsquedas'],
+                  ['public', 'Pública', 'aparece en Explorar y en tu página de autor'],
                   ['private', 'Privada', 'solo tú puedes leerla'],
                 ] as const
               ).map(([value, label, hint]) => (
@@ -337,6 +361,7 @@ export function Editor({ poem, profile, collections, tagSuggestions, pseudonyms 
               pseudonym={form.pseudonym}
               pseudonyms={pseudonyms}
               errors={errors}
+              signedIn={signedIn}
               onChange={(patch) => set(patch)}
             />
           </div>
@@ -382,6 +407,24 @@ export function Editor({ poem, profile, collections, tagSuggestions, pseudonyms 
           {busy ? 'Guardando…' : isPublished ? 'Guardar cambios' : 'Publicar poema'}
         </button>
       </div>
+
+      {needAccount && !signedIn && (
+        <div role="alert" className="mx-auto mt-8 max-w-md border-y border-linea py-6 text-center">
+          <p className="font-serif text-2xl italic">Para publicar, entra en tu cuenta.</p>
+          <p className="mt-2 text-ui">
+            Tu poema no se pierde: sigue guardado en este navegador y lo encontrarás aquí al volver. La cuenta
+            hace falta incluso para publicar como Anónimo, para que solo tú puedas editarlo o borrarlo.
+          </p>
+          <div className="mt-5 flex flex-wrap justify-center gap-3">
+            <Link to={`/registro?volver=${encodeURIComponent(location.pathname)}`} className="btn btn-primario">
+              Crear cuenta
+            </Link>
+            <Link to={`/entrar?volver=${encodeURIComponent(location.pathname)}`} className="btn">
+              Entrar
+            </Link>
+          </div>
+        </div>
+      )}
 
       <div className="mt-4 min-h-12 text-center">
         {problem && (

@@ -8,11 +8,13 @@ type Props = {
   pseudonym: string
   pseudonyms: string[]
   errors: FieldErrors
+  /** Sin cuenta aún no hay nombre público que editar. */
+  signedIn: boolean
   onChange: (patch: { identity?: PublicationIdentity; displayName?: string; pseudonym?: string }) => void
 }
 
 /** Cómo se firma el poema: nombre público, pseudónimo (se puede crear aquí) o anónimo. */
-export function IdentityField({ identity, displayName, pseudonym, pseudonyms, errors, onChange }: Props) {
+export function IdentityField({ identity, displayName, pseudonym, pseudonyms, errors, signedIn, onChange }: Props) {
   const id = useId()
   const radio = (value: PublicationIdentity, label: string) => (
     <label className="flex min-h-11 items-center gap-3">
@@ -33,7 +35,10 @@ export function IdentityField({ identity, displayName, pseudonym, pseudonyms, er
       <legend className="meta">Firmar con</legend>
 
       {radio('profile_name', 'Mi nombre público')}
-      {identity === 'profile_name' && (
+      {identity === 'profile_name' && !signedIn && (
+        <p className="meta mb-3 ml-7">Firmará con el nombre público que elijas al crear tu cuenta.</p>
+      )}
+      {identity === 'profile_name' && signedIn && (
         <div className="mb-3 ml-7">
           <label htmlFor={`${id}-nombre`} className="meta block">
             Nombre público

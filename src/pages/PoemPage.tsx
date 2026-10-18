@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { repos } from '../data'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { EmptyState } from '../components/EmptyState'
+import { AddToCollection } from '../components/AddToCollection'
 import { FavoriteButton } from '../components/FavoriteButton'
 import { LoadState } from '../components/LoadState'
 import { PoemReader } from '../components/PoemReader'
@@ -10,6 +11,8 @@ import { RelatedPoems } from '../components/RelatedPoems'
 import { ShareButton } from '../components/ShareButton'
 import { useQuery } from '../hooks/useQuery'
 import { useSavedIds } from '../hooks/useSavedIds'
+import { useSession } from '../hooks/useSession'
+import { firstLine } from '../lib/poem-text'
 
 export function PoemPage() {
   const { id = '' } = useParams()
@@ -17,6 +20,7 @@ export function PoemPage() {
   const flash = (useLocation().state as { flash?: string } | null)?.flash
   const { data: poem, error, loading } = useQuery(() => repos.poems.get(id), [id])
   const saved = useSavedIds()
+  const signedIn = !!useSession().session
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [busy, setBusy] = useState(false)
   const [deleteError, setDeleteError] = useState('')
@@ -67,10 +71,11 @@ export function PoemPage() {
         authorHref={poem.authorAccountName ? `/autor/${poem.authorAccountName}` : null}
         date={poem.publishedAt}
         tags={poem.tags.map((t) => ({ name: t.normalizedName }))}
-        collectionTitle={poem.collection?.title}
+        collection={poem.collection}
       >
         <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6">
-          <FavoriteButton poemId={poem.id} saved={saved.has(poem.id)} />
+          <FavoriteButton poemId={poem.id} saved={saved.has(poem.id)} signedIn={signedIn} />
+          <AddToCollection poemId={poem.id} poemTitle={poem.title ?? firstLine(poem.content)} signedIn={signedIn} />
           <ShareButton title={poem.title} />
           {poem.isOwner && (
             <>

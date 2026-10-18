@@ -1,6 +1,6 @@
 // Almacén local: un único objeto JSON en localStorage. Hace de "base de datos"
 // del navegador hasta que llegue Supabase (fase 5).
-import type { Collection, CollectionPoem, Favorite, Poem, Profile, Tag } from '../types'
+import type { Account, Collection, CollectionPoem, Favorite, Poem, Profile, Tag } from '../types'
 
 export const LOCAL_USER_ID = 'local-user'
 const KEY = 'cisne:local:v1'
@@ -8,7 +8,15 @@ const KEY = 'cisne:local:v1'
 /** Poema guardado: las etiquetas van por id, como en la tabla PoemTags. */
 export type StoredPoem = Omit<Poem, 'tags' | 'collectionId'> & { tagIds: string[] }
 
+/**
+ * Cuenta local de este navegador. La contraseña se guarda solo como hash con
+ * sal: es una simulación honesta hasta que Supabase Auth la sustituya.
+ */
+export type LocalAccount = Account & { salt: string; passwordHash: string }
+
 export type Store = {
+  account: LocalAccount | null
+  signedIn: boolean
   profile: Profile
   poems: StoredPoem[]
   tags: Tag[]
@@ -17,9 +25,11 @@ export type Store = {
   favorites: Favorite[]
 }
 
-function fresh(): Store {
+export function fresh(): Store {
   const now = new Date().toISOString()
   return {
+    account: null,
+    signedIn: false,
     profile: { id: LOCAL_USER_ID, accountName: 'yo', displayName: '', createdAt: now, updatedAt: now },
     poems: [],
     tags: [],

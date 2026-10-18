@@ -3,7 +3,9 @@ import { Link } from 'react-router-dom'
 const links = [
   { to: '/mis/poemas', label: 'Mis poemas' },
   { to: '/mis/borradores', label: 'Mis borradores' },
+  { to: '/mis/colecciones', label: 'Mis colecciones' },
   { to: '/mis/biblioteca', label: 'Mi biblioteca' },
+  { to: '/ajustes/perfil', label: 'Ajustes' },
 ] as const
 
 export function Footer() {

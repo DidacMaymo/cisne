@@ -31,6 +31,11 @@ Navegador ──► Cloudflare Pages (HTML/JS/CSS estáticos de este repo)
 
 - **Sin imágenes subidas por usuarios**: ni foto de perfil ni portada de colección. Las colecciones usan siempre portada tipográfica generada. No se usa Supabase Storage. Quitar `avatar_url` y `cover_url` del modelo.
 - Ante la duda entre dos soluciones, la más simple.
+- **Inicio es una portada, sin poemas**: qué es CISNE (leer, descubrir, escribir) y dos llamadas, «Explorar poemas» y «Escribir un poema». Los poemas se descubren en **Explorar**: al azar por defecto (semilla nueva en cada visita, «Barajar de nuevo»), o recientes; con buscador y etiquetas.
+- **Página de autor solo con palabras**: nombre (o pseudónimo), unas líneas de descripción y enlaces a sus redes (`Profile.links`, máx. 4). Debajo, sus colecciones públicas y sus poemas. Nunca fotos.
+- **Hace falta cuenta para guardar y publicar** (con cualquier firma, también «Anónimo»: así cada poema tiene alguien que pueda editarlo o borrarlo). Se puede escribir sin cuenta; el texto se autoguarda en el navegador y sigue ahí al volver de entrar o registrarse. Favoritos y colecciones también necesitan cuenta.
+- **Colecciones = poemarios y antologías**: pueden reunir poemas propios y de otros autores. Un poema anónimo o con pseudónimo **no aparece** en las colecciones públicas de su propio autor (delataría quién lo escribió).
+- Hasta la fase 5 las cuentas son **locales** (un usuario por navegador, contraseña guardada solo como hash con sal) y la interfaz lo dice. «Recuperar contraseña» explica que llegará con el servidor.
 
 ## Skill de diseño
 
@@ -50,7 +55,7 @@ Si el skill `frontend-design` está instalado, cárgalo antes de cualquier traba
 
 ## Rutas
 
-`/` inicio (Recientes / Descubrir) · `/explorar` · `/etiqueta/:tag` · `/poema/:id` · `/escribir` y `/escribir/:id` · `/autor/:accountName` · `/coleccion/:id` · `/mis/poemas` · `/mis/borradores` · `/mis/colecciones` · `/mis/biblioteca` · `/ajustes/perfil` · `/ajustes/privacidad` · `/ajustes/cuenta` · `/entrar` · `/registro` · `/recuperar` · 404 elegante.
+`/` inicio (portada) · `/explorar` · `/etiqueta/:tag` · `/poema/:id` · `/escribir` y `/escribir/:id` · `/autor/:accountName` · `/coleccion/:id` · `/mis/poemas` · `/mis/borradores` · `/mis/colecciones` (alias `/colecciones`) · `/mis/biblioteca` · `/ajustes/perfil` · `/ajustes/privacidad` · `/ajustes/cuenta` · `/entrar` · `/registro` · `/recuperar` · 404 elegante.
 
 ## Fases
 
@@ -73,10 +78,10 @@ Esta es la lista de tareas del proyecto. Trabaja una fase cada vez. Al terminar 
 - Guardar borrador · Vista previa · **Publicar poema**. Autosave del texto en `localStorage` para no perder nada. Confirmación discreta. Editar y eliminar con diálogo de confirmación.
 
 ### [ ] Fase 4 — Colecciones, explorar, biblioteca, perfil
-- Colecciones: crear, editar, ordenar poemas, portada tipográfica generada, visibilidad.
-- Explorar: buscador (título, texto, autor, etiqueta) y filtros discretos.
-- Biblioteca de guardados. Perfil público tipo página de autor (sin avatar: inicial o nombre en tipografía). Ajustes de perfil, privacidad y cuenta (pantallas completas; en esta fase operan sobre el repositorio local).
-- "Descubrir": mezcla con semilla diaria entre poemas públicos, máximo 1–2 por autor. Nunca ordenar por favoritos ni mostrar contadores.
+- [x] Colecciones: crear, editar, ordenar poemas, portada tipográfica generada, visibilidad, añadir desde cualquier poema («A una colección»).
+- [x] Explorar: al azar o recientes, buscador (título, texto, autor, etiqueta, sin distinguir tildes) y etiquetas. Nunca ordenar por favoritos ni mostrar contadores.
+- [x] Biblioteca de guardados. Página de autor solo texto. Ajustes de perfil y de cuenta (cerrar sesión, eliminar cuenta). Sesión local y cuenta obligatoria para publicar.
+- [ ] Ajustes de privacidad (`/ajustes/privacidad` aún es «llegará pronto»).
 
 ### [ ] Fase 5 — Backend Supabase (otro día)
 - Migraciones SQL en `supabase/migrations/`: tablas del brief §17 + `reports`. `poems.status` (`draft|published`), `visibility` (`public|private`), `publication_identity` (`profile_name|pseudonym|anonymous`). Índices, FKs, `tags.normalized_name` único, full-text `spanish` + `unaccent`.

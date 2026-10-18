@@ -1,14 +1,15 @@
 import { Link } from 'react-router-dom'
 import { formatDate } from '../lib/format'
-import { makeExcerpt } from '../lib/poem-text'
+import { firstLine, makeExcerpt } from '../lib/poem-text'
 import type { PoemView } from '../data'
+import { AddToCollection } from './AddToCollection'
 import { FavoriteButton } from './FavoriteButton'
 import { TagChip } from './TagChip'
 
-type Props = { poem: PoemView; saved: boolean }
+type Props = { poem: PoemView; saved: boolean; signedIn: boolean }
 
 /** Un poema en un listado: abierto, sin tarjeta, con fragmento que respeta los versos. */
-export function PoemListItem({ poem, saved }: Props) {
+export function PoemListItem({ poem, saved, signedIn }: Props) {
   const to = `/poema/${poem.id}`
   const { text, truncated } = makeExcerpt(poem.content)
 
@@ -50,7 +51,8 @@ export function PoemListItem({ poem, saved }: Props) {
         >
           {truncated ? 'Leer completo' : 'Leer'}
         </Link>
-        <FavoriteButton poemId={poem.id} saved={saved} />
+        <FavoriteButton poemId={poem.id} saved={saved} signedIn={signedIn} />
+        <AddToCollection poemId={poem.id} poemTitle={poem.title ?? firstLine(poem.content)} signedIn={signedIn} />
       </div>
     </article>
   )

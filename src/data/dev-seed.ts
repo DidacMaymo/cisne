@@ -1,7 +1,7 @@
 // DATOS DE EJEMPLO SOLO PARA DESARROLLO. Se cargan únicamente con
 // `import.meta.env.DEV` y nunca se guardan en el almacenamiento del usuario.
 // Los textos son inventados para probar la interfaz: no son obras de nadie.
-import type { Profile, Tag } from './types'
+import type { Collection, CollectionPoem, Profile, Tag } from './types'
 import type { StoredPoem } from './local/store'
 
 const SEED_AUTHOR = 'seed-author'
@@ -11,6 +11,7 @@ const profile: Profile = {
   accountName: 'ejemplo',
   displayName: 'Ejemplo de desarrollo',
   bio: 'Poemas de ejemplo para desarrollo. No son obras reales.',
+  links: ['https://example.com/ejemplo'],
   createdAt: '2026-01-01T10:00:00.000Z',
   updatedAt: '2026-01-01T10:00:00.000Z',
 }
@@ -173,4 +174,20 @@ const poems: StoredPoem[] = drafts.map((d) => ({
   publishedAt: d.date,
 }))
 
-export const devSeed = { profiles: [profile], tags, poems }
+const collection: Collection = {
+  id: 'seed-collection-1',
+  ownerId: SEED_AUTHOR,
+  title: 'Cuaderno de ejemplo',
+  description: 'Una colección de ejemplo para desarrollo.',
+  visibility: 'public',
+  createdAt: '2026-10-10T10:00:00.000Z',
+  updatedAt: '2026-10-10T10:00:00.000Z',
+}
+
+const collectionPoems: CollectionPoem[] = [1, 3, 4].map((n, position) => ({
+  collectionId: collection.id,
+  poemId: `seed-poem-${n}`,
+  position,
+}))
+
+export const devSeed = { profiles: [profile], tags, poems, collections: [collection], collectionPoems }

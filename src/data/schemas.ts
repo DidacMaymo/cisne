@@ -59,3 +59,51 @@ export function toFieldErrors(error: z.ZodError): FieldErrors {
   }
   return out
 }
+
+export const collectionSchema = z.object({
+  title: z.string().trim().min(1, 'Ponle un título a la colección.').max(80, 'El título admite hasta 80 caracteres.'),
+  description: z.string().trim().max(400, 'La descripción admite hasta 400 caracteres.'),
+  visibility: z.enum(['public', 'private']),
+})
+
+const httpUrl = z
+  .string()
+  .trim()
+  .refine((v) => {
+    try {
+      const u = new URL(v)
+      return u.protocol === 'https:' || u.protocol === 'http:'
+    } catch {
+      return false
+    }
+  }, 'Escribe un enlace completo, que empiece por https://')
+
+export const profileSchema = z.object({
+  displayName: z.string().trim().min(2, 'Tu nombre público necesita al menos 2 caracteres.').max(60, 'Hasta 60 caracteres.'),
+  primaryPseudonym: z.string().trim().max(40, 'Hasta 40 caracteres.'),
+  bio: z.string().trim().max(400, 'La descripción admite hasta 400 caracteres.'),
+  links: z.array(httpUrl).max(4, 'Como máximo 4 enlaces.'),
+})
+
+const email = z.string().trim().email('Escribe un email válido.')
+
+export const signUpSchema = z.object({
+  displayName: z.string().trim().min(2, 'Al menos 2 caracteres.').max(60, 'Hasta 60 caracteres.'),
+  email,
+  password: z.string().min(8, 'La contraseña necesita al menos 8 caracteres.'),
+})
+
+export const signInSchema = z.object({
+  email,
+  password: z.string().min(1, 'Escribe tu contraseña.'),
+})
+
+/** Errores de Zod como { campo: mensaje }, con índices de lista como `links.0`. */
+export function toErrors(error: z.ZodError): Record<string, string> {
+  const out: Record<string, string> = {}
+  for (const issue of error.issues) {
+    const key = issue.path.join('.')
+    if (!(key in out)) out[key] = issue.message
+  }
+  return out
+}

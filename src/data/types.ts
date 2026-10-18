@@ -11,19 +11,28 @@ export type Profile = {
   displayName: string
   primaryPseudonym?: string
   bio?: string
-  avatarUrl?: string
+  /** Enlaces a redes o web personal. Solo texto: aquí no hay fotografías. */
+  links?: string[]
   birthDate?: string
   gender?: string
   pronouns?: string
   location?: string
-  websiteUrl?: string
   literaryInterests?: string[]
   createdAt: string
   updatedAt: string
 }
 
 /** Lo único de un perfil que puede ver cualquiera. */
-export type PublicProfile = Pick<Profile, 'accountName' | 'displayName' | 'bio'>
+export type PublicProfile = Pick<Profile, 'accountName' | 'displayName' | 'bio' | 'links'>
+
+/** Datos privados de la cuenta. El email nunca se muestra en público. */
+export type Account = {
+  email: string
+  accountName: string
+  createdAt: string
+}
+
+export type Session = { accountName: string; displayName: string }
 
 export type Tag = {
   id: string
@@ -74,10 +83,18 @@ export type Collection = {
   ownerId: string
   title: string
   description?: string
-  coverUrl?: string
   visibility: Visibility
   createdAt: string
   updatedAt: string
+}
+
+/** Colección tal y como se muestra: con su portada tipográfica y sus poemas. */
+export type CollectionView = Collection & {
+  ownerName: string
+  /** `null` si el dueño aún no tiene página de autor. */
+  ownerAccountName: string | null
+  isOwner: boolean
+  poemCount: number
 }
 
 export type CollectionPoem = {

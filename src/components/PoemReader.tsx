@@ -14,7 +14,7 @@ type Props = {
   date?: string | null
   tags: { name: string }[]
   linkTags?: boolean
-  collectionTitle?: string | null
+  collection?: { id: string; title: string } | null
   children?: ReactNode
 }
 
@@ -27,7 +27,7 @@ export function PoemReader({
   date,
   tags,
   linkTags = true,
-  collectionTitle,
+  collection,
   children,
 }: Props) {
   return (
@@ -51,11 +51,18 @@ export function PoemReader({
       <SwanMark className="mx-auto mt-16 h-10 w-auto text-gris" />
 
       <footer className="mt-10 text-center">
-        {(date || collectionTitle) && (
+        {(date || collection) && (
           <p className="meta">
             {date && <span>{formatDate(date)}</span>}
-            {date && collectionTitle && <span aria-hidden="true"> · </span>}
-            {collectionTitle && <span>Del poemario «{collectionTitle}»</span>}
+            {date && collection && <span aria-hidden="true"> · </span>}
+            {collection && (
+              <span>
+                Del poemario{' '}
+                <Link to={`/coleccion/${collection.id}`} className="underline underline-offset-4 hover:text-tinta">
+                  «{collection.title}»
+                </Link>
+              </span>
+            )}
           </p>
         )}
         {tags.length > 0 && (

@@ -9,14 +9,15 @@ import { useQuery } from '../hooks/useQuery'
 export function Write() {
   const { id } = useParams()
   const { data, error, loading } = useQuery(async () => {
-    const [profile, collections, tagSuggestions, pseudonyms, poem] = await Promise.all([
+    const [session, profile, collections, tagSuggestions, pseudonyms, poem] = await Promise.all([
+      repos.auth.current(),
       repos.profiles.getMine(),
       repos.collections.listMine(),
       repos.tags.suggest(),
       repos.profiles.listPseudonyms(),
       id ? repos.poems.getOwn(id) : Promise.resolve(null),
     ])
-    return { profile, collections, tagSuggestions, pseudonyms, poem }
+    return { signedIn: !!session, profile, collections, tagSuggestions, pseudonyms, poem }
   }, [id])
 
   if (loading || error) return <LoadState loading={loading} error={error} />
@@ -33,5 +34,5 @@ export function Write() {
     )
   }
 
-  return <Editor key={id ?? 'nuevo'} {...data!} />
+  return <Editor key={`${id ?? 'nuevo'}:${data!.signedIn}`} {...data!} />
 }

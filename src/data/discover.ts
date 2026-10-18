@@ -11,22 +11,21 @@ function rng(seed: number) {
 }
 
 /**
- * Mezcla los elementos con una semilla y limita cuántos puede aportar cada
- * clave (autor). Nunca mira favoritos ni popularidad.
+ * Baraja con una semilla (Fisher–Yates) y separa, en lo posible, dos poemas
+ * seguidos de la misma voz. Nunca mira favoritos ni popularidad.
  */
-export function pickDiverse<T>(items: T[], keyOf: (item: T) => string, seed: number, perKey = 2): T[] {
+export function shuffleDiverse<T>(items: T[], keyOf: (item: T) => string, seed: number): T[] {
   const rand = rng(seed)
-  const shuffled = [...items]
-  for (let i = shuffled.length - 1; i > 0; i--) {
+  const pool = [...items]
+  for (let i = pool.length - 1; i > 0; i--) {
     const j = Math.floor(rand() * (i + 1))
-    ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    ;[pool[i], pool[j]] = [pool[j], pool[i]]
   }
-  const counts = new Map<string, number>()
-  return shuffled.filter((item) => {
-    const k = keyOf(item)
-    const n = counts.get(k) ?? 0
-    if (n >= perKey) return false
-    counts.set(k, n + 1)
-    return true
-  })
+  const out: T[] = []
+  while (pool.length > 0) {
+    const last = out.length > 0 ? keyOf(out[out.length - 1]) : null
+    const i = pool.findIndex((x) => keyOf(x) !== last)
+    out.push(pool.splice(i === -1 ? 0 : i, 1)[0])
+  }
+  return out
 }

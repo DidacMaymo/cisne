@@ -26,7 +26,7 @@ export function ConfirmDialog({ open, title, children, confirmLabel, busy, onCon
       ref={ref}
       aria-labelledby="confirm-title"
       onClose={() => open && onCancel()}
-      className="m-auto w-[calc(100%-3rem)] max-w-md border border-tinta bg-blanco p-8 text-tinta backdrop:bg-tinta/30"
+      className="m-auto w-[calc(100%-3rem)] max-w-md border border-tinta bg-blanco p-8 text-left text-tinta backdrop:bg-tinta/30"
     >
       <h2 id="confirm-title" className="font-serif text-3xl">
         {title}

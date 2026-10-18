@@ -1,4 +1,5 @@
 import { Link, NavLink } from 'react-router-dom'
+import { useSession } from '../../hooks/useSession'
 import { Logo } from './Logo'
 import { mainLinks } from './nav'
 
@@ -8,6 +9,17 @@ const linkClass = ({ isActive }: { isActive: boolean }) =>
   }`
 
 export function Header() {
+  const { session, loading } = useSession()
+  // Sin sesión: «Entrar». Con sesión: el nombre, que lleva a tus ajustes.
+  const account = loading ? null : session ? (
+    <Link to="/ajustes/perfil" className="inline-flex min-h-11 max-w-[12rem] items-center truncate text-ui text-gris hover:text-tinta">
+      {session.displayName || 'Tu cuenta'}
+    </Link>
+  ) : (
+    <Link to="/entrar" className="inline-flex min-h-11 items-center text-ui text-gris hover:text-tinta">
+      Entrar
+    </Link>
+  )
   return (
     <header className="border-b border-linea">
       <div className="mx-auto flex w-full max-w-ancho items-center justify-between px-6 py-2 md:px-10 md:py-4">
@@ -23,16 +35,9 @@ export function Header() {
           <Link to="/escribir" className="btn">
             Escribir un poema
           </Link>
-          <Link to="/entrar" className="inline-flex min-h-11 items-center text-ui text-gris hover:text-tinta">
-            Entrar
-          </Link>
+          {account}
         </div>
-        <Link
-          to="/entrar"
-          className="inline-flex min-h-11 items-center text-ui text-gris hover:text-tinta md:hidden"
-        >
-          Entrar
-        </Link>
+        <div className="md:hidden">{account}</div>
       </div>
     </header>
   )
