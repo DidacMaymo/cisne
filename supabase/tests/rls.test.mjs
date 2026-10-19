@@ -73,21 +73,25 @@ check('perfiles creados al registrarse', profiles.length === 2, profiles.map((p)
 check('nombre de cuenta único', profiles[0].account_name === 'ana-lia' && profiles[1].account_name === 'ana-lia-2')
 
 // Ana publica: uno con su nombre, uno anónimo, uno privado, un borrador y uno con pseudónimo.
-const save = (args) =>
-  q('select public.save_poem($1,$2,$3,$4,$5,$6,$7,$8,$9) as id', args).then((r) => r[0].id)
+// Los dos últimos argumentos (fuente y Cisne negro) son opcionales aquí.
+const save = (args) => {
+  const full = [...args, args[9] ?? 'clasica', args[10] ?? false].slice(0, 11)
+  return q('select public.save_poem($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) as id', full).then((r) => r[0].id)
+}
 const ids = await as(ANA, async () => ({
   named: await save([null, 'Casa de agua', 'Mi casa era un río\n\nque no sabía irse', 'published', 'public', 'profile_name', null, ['#Nostalgia ', 'infancia'], null]),
   anon: await save([null, 'Secreto', 'Nadie sabrá que lo escribí', 'published', 'public', 'anonymous', null, ['nostalgia'], null]),
   priv: await save([null, 'Privado', 'Solo para mí', 'published', 'private', 'profile_name', null, ['diario-intimo'], null]),
   draft: await save([null, null, 'Borrador sin título', 'draft', 'public', 'profile_name', null, [], null]),
   pseudo: await save([null, 'Máscara', 'Con otro nombre', 'published', 'public', 'pseudonym', 'La Garza', [], null]),
+  dark: await save([null, 'Noche', 'Un poema que duele', 'published', 'public', 'profile_name', null, [], null, 'maquina', true]),
 }))
 check('save_poem crea los poemas', Object.values(ids).every(Boolean))
 
 // Lectura pública (anon).
 await as(null, async () => {
   const pub = await q('select * from public.public_poems order by title')
-  check('público: solo publicados y públicos', pub.length === 3, pub.map((p) => p.title).join(', '))
+  check('público: solo publicados y públicos', pub.length === 4, pub.map((p) => p.title).join(', '))
   const anon = pub.find((p) => p.title === 'Secreto')
   check('anónimo: sin autor ni enlace', anon.author_name === 'Anónimo' && anon.author_account_name === null)
   check('la vista no expone author_id', !('author_id' in anon))
@@ -105,17 +109,27 @@ await as(null, async () => {
   const s2 = await q(`select title from public.search_public_poems('', 'nostalgia')`)
   check('filtro por etiqueta', s2.length === 2)
   const s3 = await q(`select title from public.search_public_poems('ana lia', null)`)
-  check('búsqueda por autor no destapa anónimos', s3.length === 1 && s3[0].title === 'Casa de agua')
+  check('búsqueda por autor no destapa anónimos', s3.length > 0 && !s3.some((x) => ['Secreto', 'Máscara'].includes(x.title)))
   const s4 = await q(`select title from public.search_public_poems('solo para mi', null)`)
   check('la búsqueda no encuentra privados', s4.length === 0)
-  check('anon no puede guardar poemas', !!(await fails(`select public.save_poem(null,null,'x','published','public','anonymous',null,'{}',null)`)))
+  const [dark] = await q(`select font, sensitive from public.public_poems where title = 'Noche'`)
+  check('fuente y Cisne negro en la vista', dark.font === 'maquina' && dark.sensitive === true)
+  const all = await q(`select title from public.search_public_poems('', null, 500, true)`)
+  const safe = await q(`select title from public.search_public_poems('', null, 500, false)`)
+  check('filtro Cisne negro', all.some((x) => x.title === 'Noche') && !safe.some((x) => x.title === 'Noche'))
+  const st = (await q('select public.poem_support_state($1) as s', [ids.named]))[0].s
+  check('anon ve el estado sin número (privado por defecto)', st.count === null && st.supported === false)
+  check('anon no puede apoyar', !!(await fails('select public.toggle_poem_support($1)', [ids.named])))
+  const priv = (await q('select public.poem_support_state($1) as s', [ids.priv]))[0].s
+  check('un privado ajeno no se puede apoyar', priv.canSupport === false)
+  check('anon no puede guardar poemas', !!(await fails(`select public.save_poem(null,null,'x','published','public','anonymous',null,'{}',null,'clasica',false)`)))
 })
 
 // Bea: no ve lo privado de Ana, no puede tocarlo.
 await as(BEA, async () => {
   check('Bea no ve poemas de Ana en la tabla', (await q('select * from public.poems')).length === 0)
   check('Bea no puede editar el poema de Ana', !!(await fails(
-    `select public.save_poem($1,'hack','x','published','public','profile_name',null,'{}',null)`, [ids.named])))
+    `select public.save_poem($1,'hack','x','published','public','profile_name',null,'{}',null,'clasica',false)`, [ids.named])))
   const del = await db.query('delete from public.poems where id = $1', [ids.named])
   check('Bea no puede borrar el poema de Ana', del.affectedRows === 0)
   check('Bea no ve el perfil de Ana', (await q('select * from public.profiles where id = $1', [ANA])).length === 0)
@@ -132,6 +146,19 @@ await as(BEA, async () => {
   const order = await q('select poem_id from public.collection_poems where collection_id = $1 order by position', [col])
   check('reordenar colección', order[0].poem_id === ids.named)
   check('Bea no puede cambiar su nombre de cuenta', !!(await fails(`update public.profiles set account_name = 'otra' where id = $1`, [BEA])))
+  // Apoyos
+  check('Bea apoya un poema de Ana', (await q('select public.toggle_poem_support($1) as on', [ids.named]))[0].on === true)
+  check('Bea apoya a Ana', (await q(`select public.toggle_author_support('ana-lia') as on`))[0].on === true)
+  check('Bea no puede apoyarse a sí misma', !!(await fails(`select public.toggle_author_support('ana-lia-2')`)))
+  check('Bea no puede apoyar un privado', !!(await fails('select public.toggle_poem_support($1)', [ids.priv])))
+  const bst = (await q('select public.poem_support_state($1) as s', [ids.named]))[0].s
+  check('Bea ve que apoya, sin ver el número (privado)', bst.supported === true && bst.count === null)
+  check('Bea no puede insertar apoyos a mano', !!(await fails('insert into public.poem_supports (poem_id) values ($1)', [ids.anon])))
+  check('Bea no ve quién más apoya', (await q('select * from public.poem_supports where user_id <> $1', [BEA])).length === 0)
+  // Descripción: hasta 150 palabras.
+  const words = (n) => Array.from({ length: n }, () => 'verso').join(' ')
+  check('bio de 150 palabras: sí', !(await fails('update public.profiles set bio = $1 where id = $2', [words(150), BEA])))
+  check('bio de 151 palabras: no', !!(await fails('update public.profiles set bio = $1 where id = $2', [words(151), BEA])))
   check('Bea sí puede editar su bio', !(await fails(`update public.profiles set bio = 'hola' where id = $1`, [BEA])))
 })
 
@@ -159,6 +186,21 @@ await as(ANA, async () => {
 })
 
 // Bea borra su cuenta: desaparece todo lo suyo.
+// Ana ve sus números aunque sean privados; al hacerlos públicos, los ven todos.
+await as(ANA, async () => {
+  const s = (await q('select public.poem_support_state($1) as s', [ids.named]))[0].s
+  check('la autora ve su número aunque sea privado', s.count === 1 && s.canSupport === false)
+  await q(`update public.profiles set support_visibility = 'public' where id = $1`, [ANA])
+})
+await as(null, async () => {
+  const p = (await q('select public.poem_support_state($1) as s', [ids.named]))[0].s
+  const a = (await q(`select public.author_support_state('ana-lia') as s`))[0].s
+  check('público: número del poema visible', p.count === 1)
+  check('público: número del autor visible', a.count === 1)
+  const an = (await q('select public.poem_support_state($1) as s', [ids.anon]))[0].s
+  check('un anónimo nunca muestra su número', an.count === null)
+})
+
 await as(BEA, () => q('select public.delete_my_account()'))
 const left = await q(`select (select count(*) from public.profiles where id = $1)::int as p,
   (select count(*) from public.collections where owner_id = $1)::int as c,

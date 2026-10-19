@@ -9,6 +9,7 @@ import { LoadState } from '../components/LoadState'
 import { PoemReader } from '../components/PoemReader'
 import { RelatedPoems } from '../components/RelatedPoems'
 import { ShareButton } from '../components/ShareButton'
+import { SupportButton } from '../components/SupportButton'
 import { useQuery } from '../hooks/useQuery'
 import { useSavedIds } from '../hooks/useSavedIds'
 import { useSession } from '../hooks/useSession'
@@ -72,11 +73,14 @@ export function PoemPage() {
         date={poem.publishedAt}
         tags={poem.tags.map((t) => ({ name: t.normalizedName }))}
         collection={poem.collection}
+        font={poem.font}
+        sensitive={poem.sensitive}
       >
         <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6">
           <FavoriteButton poemId={poem.id} saved={saved.has(poem.id)} signedIn={signedIn} />
           <AddToCollection poemId={poem.id} poemTitle={poem.title ?? firstLine(poem.content)} signedIn={signedIn} />
-          <ShareButton title={poem.title} />
+          <SupportButton kind="poem" poemId={poem.id} name={poem.title ?? firstLine(poem.content)} />
+          {!notPublic && <ShareButton title={poem.title ?? firstLine(poem.content)} author={poem.authorName} />}
           {poem.isOwner && (
             <>
               <Link to={`/escribir/${poem.id}`} className="meta inline-flex min-h-11 items-center hover:text-tinta">

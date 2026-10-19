@@ -4,7 +4,7 @@ import { repos } from '../data'
 import type { Profile } from '../data'
 import { LoadState } from '../components/LoadState'
 import { SettingsNav } from '../components/SettingsNav'
-import { profileSchema, toErrors } from '../data/schemas'
+import { countWords, MAX_BIO_WORDS, profileSchema, toErrors } from '../data/schemas'
 import { useQuery } from '../hooks/useQuery'
 
 const MAX_LINKS = 4
@@ -104,13 +104,12 @@ function ProfileForm({ profile }: { profile: Profile }) {
           value={bio}
           onChange={(e) => setBio(e.target.value)}
           rows={3}
-          maxLength={400}
-          aria-invalid={!!errors.bio}
+          aria-invalid={!!errors.bio || countWords(bio) > MAX_BIO_WORDS}
           aria-describedby={`${id}-bh`}
           className="campo field-sizing-content resize-none font-serif text-xl italic"
         />
         <p id={`${id}-bh`} className={`meta mt-2 ${errors.bio ? 'text-tinta' : ''}`}>
-          {errors.bio ?? `${bio.length}/400`}
+          {errors.bio ?? `${countWords(bio)} de ${MAX_BIO_WORDS} palabras`}
         </p>
       </div>
 

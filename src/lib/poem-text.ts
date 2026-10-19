@@ -1,3 +1,5 @@
+import { stripMarkup } from './poem-markup'
+
 /**
  * Fragmento para listados: conserva saltos de línea y estrofas, y corta
  * siempre entre líneas. Devuelve si hubo recorte.
@@ -16,6 +18,7 @@ export function makeExcerpt(content: string, maxLines = 6, maxChars = 260): { te
   return { text: out.join('\n') + (truncated ? '…' : ''), truncated }
 }
 
+/** Primer verso sin marcas de formato: título de respaldo de un poema sin título. */
 export function firstLine(content: string): string {
-  return content.split('\n').find((l) => l.trim() !== '')?.trim() ?? ''
+  return stripMarkup(content.split('\n').find((l) => l.trim() !== '')?.trim() ?? '')
 }

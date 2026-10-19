@@ -10,6 +10,16 @@ import { useQuery } from '../hooks/useQuery'
 
 const PAGE = 10
 const newSeed = () => Math.floor(Math.random() * 2 ** 31)
+const HIDE_DARK_KEY = 'cisne:ocultar-cisne-negro'
+
+/** Preferencia de este navegador: ocultar o no los «Cisne negro». */
+function readHideDark(): boolean {
+  try {
+    return localStorage.getItem(HIDE_DARK_KEY) === '1'
+  } catch {
+    return false
+  }
+}
 
 /** Explorar: poemas al azar (o recientes), buscador y etiquetas. */
 export function Explore() {
@@ -22,10 +32,11 @@ export function Explore() {
   const [seed, setSeed] = useState(newSeed)
   const [shown, setShown] = useState(PAGE)
   const [text, setText] = useState(q)
+  const [hideDark, setHideDark] = useState(readHideDark)
 
   const { data, error, loading } = useQuery(
-    () => repos.poems.search({ q, tag: tag || undefined, order, seed }),
-    [q, tag, order, seed],
+    () => repos.poems.search({ q, tag: tag || undefined, order, seed, includeSensitive: !hideDark }),
+    [q, tag, order, seed, hideDark],
   )
   const { data: tags } = useQuery(() => repos.tags.suggest(), [])
 
@@ -136,6 +147,27 @@ export function Explore() {
             </button>
           )}
         </div>
+
+        <label className="mt-2 flex min-h-11 items-center gap-3">
+          <input
+            type="checkbox"
+            checked={hideDark}
+            onChange={(e) => {
+              const on = e.target.checked
+              setHideDark(on)
+              setShown(PAGE)
+              try {
+                localStorage.setItem(HIDE_DARK_KEY, on ? '1' : '0')
+              } catch {
+                // sin almacenamiento: vale para esta visita
+              }
+            }}
+            className="size-4 accent-tinta"
+          />
+          <span className="text-ui">
+            Ocultar Cisne negro <span className="meta">— poemas con temas sensibles (+18)</span>
+          </span>
+        </label>
       </div>
 
       <div className="mt-10">

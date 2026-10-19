@@ -24,6 +24,9 @@ export type Store = {
   collections: Collection[]
   collectionPoems: CollectionPoem[]
   favorites: Favorite[]
+  poemSupports: { userId: string; poemId: string; createdAt: string }[]
+  /** `authorId` es el id del perfil apoyado. */
+  authorSupports: { userId: string; authorId: string; createdAt: string }[]
 }
 
 export function fresh(): Store {
@@ -31,12 +34,30 @@ export function fresh(): Store {
   return {
     account: null,
     signedIn: false,
-    profile: { id: LOCAL_USER_ID, accountName: 'yo', displayName: '', createdAt: now, updatedAt: now },
+    profile: {
+      id: LOCAL_USER_ID,
+      accountName: 'yo',
+      displayName: '',
+      supportVisibility: 'private',
+      createdAt: now,
+      updatedAt: now,
+    },
     poems: [],
     tags: [],
     collections: [],
     collectionPoems: [],
     favorites: [],
+    poemSupports: [],
+    authorSupports: [],
+  }
+}
+
+/** Datos guardados con versiones anteriores: rellena los campos nuevos. */
+function upgrade(s: Store): Store {
+  return {
+    ...s,
+    profile: { ...s.profile, supportVisibility: s.profile.supportVisibility ?? 'private' },
+    poems: s.poems.map((p) => ({ ...p, font: p.font ?? 'clasica', sensitive: p.sensitive ?? false })),
   }
 }
 
@@ -47,7 +68,7 @@ export function readStore(): Store {
   try {
     const raw = localStorage.getItem(KEY)
     if (raw) {
-      cache = { ...fresh(), ...(JSON.parse(raw) as Partial<Store>) }
+      cache = upgrade({ ...fresh(), ...(JSON.parse(raw) as Partial<Store>) })
       return cache
     }
   } catch {

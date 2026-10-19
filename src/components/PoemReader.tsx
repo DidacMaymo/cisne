@@ -1,8 +1,10 @@
 import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
+import type { PoemFont } from '../data'
 import { formatDate } from '../lib/format'
 import { FeatherDivider } from './brand/FeatherDivider'
 import { SwanMark } from './brand/SwanMark'
+import { PoemText } from './PoemText'
 import { TagChip } from './TagChip'
 
 type Props = {
@@ -15,6 +17,9 @@ type Props = {
   tags: { name: string }[]
   linkTags?: boolean
   collection?: { id: string; title: string } | null
+  font?: PoemFont
+  /** «Cisne negro»: la página se lee en negativo. */
+  sensitive?: boolean
   children?: ReactNode
 }
 
@@ -28,10 +33,20 @@ export function PoemReader({
   tags,
   linkTags = true,
   collection,
+  font,
+  sensitive = false,
   children,
 }: Props) {
   return (
-    <article className="mx-auto max-w-pagina">
+    <article
+      className={`mx-auto max-w-pagina ${sensitive ? 'cisne-negro -mx-6 px-6 py-14 sm:mx-auto md:px-14' : ''}`}
+    >
+      {sensitive && (
+        <p className="meta mb-12 flex items-center justify-center gap-2 text-center">
+          <SwanMark className="h-5 w-auto text-blanco" />
+          <span>Cisne negro · este poema toca temas sensibles</span>
+        </p>
+      )}
       <header className="text-center">
         {title && <h1 className="text-balance font-serif text-5xl leading-tight md:text-6xl">{title}</h1>}
         <p className={`font-serif text-2xl italic ${title ? 'mt-5' : ''}`}>
@@ -46,7 +61,7 @@ export function PoemReader({
         <FeatherDivider className="mx-auto mt-8 h-4 w-48 text-gris" />
       </header>
 
-      <div className="poema mx-auto mt-12">{content}</div>
+      <PoemText content={content} font={font} className="mx-auto mt-12" />
 
       <SwanMark className="mx-auto mt-16 h-10 w-auto text-gris" />
 

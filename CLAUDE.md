@@ -35,6 +35,11 @@ Navegador ──► Cloudflare Pages (HTML/JS/CSS estáticos de este repo)
 - **Página de autor solo con palabras**: nombre (o pseudónimo), unas líneas de descripción y enlaces a sus redes (`Profile.links`, máx. 4). Debajo, sus colecciones públicas y sus poemas. Nunca fotos.
 - **Hace falta cuenta para guardar y publicar** (con cualquier firma, también «Anónimo»: así cada poema tiene alguien que pueda editarlo o borrarlo). Se puede escribir sin cuenta; el texto se autoguarda en el navegador y sigue ahí al volver de entrar o registrarse. Favoritos y colecciones también necesitan cuenta.
 - **Colecciones = poemarios y antologías**: pueden reunir poemas propios y de otros autores. Un poema anónimo o con pseudónimo **no aparece** en las colecciones públicas de su propio autor (delataría quién lo escribió).
+- **Formato del poema**: cursiva, negrita, subrayado y tachado como marcas dentro del texto (`*`, `**`, `__`, `~~`; nunca cruzan un salto de línea), con botones y atajos en el editor. Se pintan con `src/lib/poem-markup.ts`; el texto guardado sigue siendo texto.
+- **Tipografía por poema** (5, `src/lib/poem-fonts.ts`): Clásica (Cormorant Garamond), Libro (EB Garamond), Pantalla (Literata), Máquina (Courier Prime) y Clara (Atkinson Hyperlegible). Solo afectan al texto del poema; la interfaz no cambia.
+- **Cisne negro**: casilla del editor para poemas con temas sensibles (+18). Se muestran en negativo (fondo tinta, texto blanco), tapados en los listados hasta pulsar «Mostrar el poema», y Explorar permite ocultarlos (preferencia guardada en el navegador).
+- **Apoyar** (autor y poema): excepción decidida por el usuario a «sin contadores». El número es **privado por defecto** (Ajustes → Privacidad), nunca ordena ni destaca nada, y los poemas anónimos o con pseudónimo no muestran su número a nadie más que a su autor. No se puede apoyar lo propio.
+- **Descripción del perfil**: hasta 150 palabras.
 - Hasta la fase 5 las cuentas son **locales** (un usuario por navegador, contraseña guardada solo como hash con sal) y la interfaz lo dice. «Recuperar contraseña» explica que llegará con el servidor.
 
 ## Skill de diseño
@@ -81,7 +86,7 @@ Esta es la lista de tareas del proyecto. Trabaja una fase cada vez. Al terminar 
 - [x] Colecciones: crear, editar, ordenar poemas, portada tipográfica generada, visibilidad, añadir desde cualquier poema («A una colección»).
 - [x] Explorar: al azar o recientes, buscador (título, texto, autor, etiqueta, sin distinguir tildes) y etiquetas. Nunca ordenar por favoritos ni mostrar contadores.
 - [x] Biblioteca de guardados. Página de autor solo texto. Ajustes de perfil y de cuenta (cerrar sesión, eliminar cuenta). Sesión local y cuenta obligatoria para publicar.
-- [ ] Ajustes de privacidad (`/ajustes/privacidad` aún es «llegará pronto»).
+- [x] Ajustes de privacidad: quién ve cuánta gente te apoya.
 
 ### [ ] Fase 5 — Backend Supabase (otro día)
 - Migraciones SQL en `supabase/migrations/`: tablas del brief §17 + `reports`. `poems.status` (`draft|published`), `visibility` (`public|private`), `publication_identity` (`profile_name|pseudonym|anonymous`). Índices, FKs, `tags.normalized_name` único, full-text `spanish` + `unaccent`.
@@ -90,14 +95,14 @@ Esta es la lista de tareas del proyecto. Trabaja una fase cada vez. Al terminar 
 - Implementación `supabase` de los repositorios; Auth real (registro, entrar, salir, recuperar contraseña, rutas protegidas, eliminar cuenta). Eliminar la implementación local o dejarla solo para desarrollo.
 - Solo la clave pública va al frontend (`VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`; en proyectos antiguos se llama `anon key`). Nunca la `secret`/`service_role`.
 - Antes de empezar esta fase, pide al usuario la URL del proyecto y la clave pública; no inventes valores.
-- Estado: hechos la migración (`supabase/migrations/20261018120000_init.sql`, probada con `npm run test:db`), la implementación `src/data/supabase/` (se activa sola si existen las variables `VITE_SUPABASE_*`; sin ellas, modo local) y la auth en la UI (confirmar email, recuperar, `/nueva-contrasena`). **Falta**: que el usuario cree el proyecto y pase URL + clave, y probarlo de punta a punta contra Supabase real. Guía: [docs/SUPABASE.md](docs/SUPABASE.md).
+- Estado: hechas las migraciones (`supabase/migrations/`, aplicar en orden; probadas con `npm run test:db`), la implementación `src/data/supabase/` (se activa sola si existen las variables `VITE_SUPABASE_*`; sin ellas, modo local) y la auth en la UI (confirmar email, recuperar, `/nueva-contrasena`). **Falta**: que el usuario cree el proyecto y pase URL + clave, y probarlo de punta a punta contra Supabase real. Guía: [docs/SUPABASE.md](docs/SUPABASE.md).
 
 ### [ ] Fase 6 — Revisión
 - Criterios de aceptación del brief §22 completos, probando con dos usuarios que lo privado y lo anónimo no se filtran. Accesibilidad con teclado, rendimiento, móvil.
 
 ## Fuera de alcance
 
-Chat, mensajes, seguidores, rankings, contadores visibles, insignias, notificaciones, vídeo, imágenes como contenido, popups, paneles de admin visibles. En la duda, no se añade.
+Chat, mensajes, seguidores, rankings, contadores visibles (salvo el de «Apoyar», opcional y privado por defecto), insignias, notificaciones, vídeo, imágenes como contenido, popups, paneles de admin visibles. En la duda, no se añade.
 
 ## Notas
 

@@ -9,8 +9,10 @@ import type {
   PoemView,
   Profile,
   PublicationIdentity,
+  PoemFont,
   PublicProfile,
   Session,
+  SupportState,
   Tag,
   Visibility,
 } from './types'
@@ -24,6 +26,8 @@ export type PoemInput = {
   visibility: Visibility
   publicationIdentity: PublicationIdentity
   displayedPseudonym?: string
+  font: PoemFont
+  sensitive: boolean
   /** Nombres de etiqueta; el repositorio los normaliza y deduplica. */
   tags: string[]
   /** Colección propia a la que añadirlo (si aún no está). */
@@ -37,6 +41,8 @@ export type PoemSearch = {
   /** `random` baraja con `seed`; `recent` ordena por fecha. */
   order: 'random' | 'recent'
   seed?: number
+  /** `false` oculta los poemas «Cisne negro». */
+  includeSensitive?: boolean
 }
 
 export interface AuthRepository {
@@ -70,7 +76,9 @@ export interface PoemRepository {
   remove(id: string): Promise<void>
 }
 
-export type ProfilePatch = Partial<Pick<Profile, 'displayName' | 'primaryPseudonym' | 'bio' | 'links'>>
+export type ProfilePatch = Partial<
+  Pick<Profile, 'displayName' | 'primaryPseudonym' | 'bio' | 'links' | 'supportVisibility'>
+>
 
 export interface ProfileRepository {
   getMine(): Promise<Profile>
@@ -112,6 +120,14 @@ export interface FavoriteRepository {
   toggle(poemId: string): Promise<boolean>
 }
 
+export interface SupportRepository {
+  poem(poemId: string): Promise<SupportState>
+  /** Devuelve `true` si queda apoyado. */
+  togglePoem(poemId: string): Promise<boolean>
+  author(accountName: string): Promise<SupportState>
+  toggleAuthor(accountName: string): Promise<boolean>
+}
+
 export type Repositories = {
   auth: AuthRepository
   poems: PoemRepository
@@ -119,4 +135,5 @@ export type Repositories = {
   tags: TagRepository
   collections: CollectionRepository
   favorites: FavoriteRepository
+  supports: SupportRepository
 }

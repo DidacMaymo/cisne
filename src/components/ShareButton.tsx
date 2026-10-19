@@ -1,16 +1,22 @@
 import { useState } from 'react'
 
-type Props = { title?: string }
+type Props = {
+  /** Ruta a compartir (p. ej. `/poema/123`); por defecto, la página actual. */
+  path?: string
+  title?: string
+  author?: string
+}
 
-/** Comparte el enlace con el menú del sistema o, si no existe, lo copia. */
-export function ShareButton({ title }: Props) {
+/** Comparte el enlace con el menú del sistema (móvil) o, si no existe, lo copia. */
+export function ShareButton({ path, title, author }: Props) {
   const [message, setMessage] = useState('')
 
   async function share() {
-    const url = window.location.href
+    const url = path ? new URL(path, window.location.origin).toString() : window.location.href
+    const heading = title ? `«${title}»${author ? `, de ${author}` : ''}` : 'Un poema en CISNE'
     try {
       if (navigator.share) {
-        await navigator.share({ title: title || 'Un poema en CISNE', url })
+        await navigator.share({ title: heading, text: `${heading} · en CISNE`, url })
         return
       }
       await navigator.clipboard.writeText(url)
@@ -24,7 +30,12 @@ export function ShareButton({ title }: Props) {
 
   return (
     <span className="inline-flex items-center gap-3">
-      <button type="button" onClick={share} className="meta inline-flex min-h-11 items-center hover:text-tinta">
+      <button
+        type="button"
+        onClick={share}
+        aria-label={title ? `Compartir ${title}` : 'Compartir'}
+        className="meta inline-flex min-h-11 items-center hover:text-tinta"
+      >
         Compartir
       </button>
       <span role="status" className="meta text-tinta">

@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { flushSync } from 'react-dom'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { repos } from '../../data'
 import type { Collection, Poem, Profile, Tag } from '../../data'
 import { normalizeTag } from '../../data/normalize'
+import { fontClass } from '../../lib/poem-fonts'
+import { toggleMark, type MarkStyle } from '../../lib/poem-markup'
 import {
   draftSchema,
   publishSchema,
@@ -13,6 +16,8 @@ import {
 import { FeatherDivider } from '../brand/FeatherDivider'
 import { ConfirmDialog } from '../ConfirmDialog'
 import { PoemReader } from '../PoemReader'
+import { FontField } from './FontField'
+import { FormatToolbar } from './FormatToolbar'
 import { IdentityField } from './IdentityField'
 import { TagsField } from './TagsField'
 
@@ -39,6 +44,8 @@ function baseForm(poem: Poem | null, profile: Profile): FormState {
     identity: poem?.publicationIdentity ?? 'profile_name',
     pseudonym: poem?.displayedPseudonym ?? profile.primaryPseudonym ?? '',
     displayName: profile.displayName,
+    font: poem?.font ?? 'clasica',
+    sensitive: poem?.sensitive ?? false,
   }
 }
 
@@ -95,6 +102,19 @@ export function Editor({ poem, profile, collections, tagSuggestions, pseudonyms,
 
   const isPublished = poem?.status === 'published'
   const set = (patch: Partial<FormState>) => setForm((f) => ({ ...f, ...patch }))
+  const textRef = useRef<HTMLTextAreaElement>(null)
+
+  /** Negrita, cursiva, subrayado o tachado sobre lo seleccionado. */
+  function applyMark(style: MarkStyle) {
+    const el = textRef.current
+    if (!el) return
+    const next = toggleMark(el.value, el.selectionStart, el.selectionEnd, style)
+    // Se aplica ya (no en el siguiente render) para que la selección siga
+    // sobre el texto y se puedan encadenar estilos.
+    flushSync(() => set({ content: next.value }))
+    el.focus()
+    el.setSelectionRange(next.start, next.end)
+  }
 
   // Autosave con un pequeño retraso, solo si hay cambios respecto al original.
   useEffect(() => {
@@ -156,6 +176,8 @@ export function Editor({ poem, profile, collections, tagSuggestions, pseudonyms,
         visibility: v.visibility,
         publicationIdentity: v.identity,
         displayedPseudonym: v.identity === 'pseudonym' ? v.pseudonym : undefined,
+        font: v.font,
+        sensitive: v.sensitive,
         tags: v.tags,
         collectionId,
       })
@@ -232,6 +254,8 @@ export function Editor({ poem, profile, collections, tagSuggestions, pseudonyms,
             authorName={previewName}
             tags={form.tags.map((name) => ({ name }))}
             linkTags={false}
+            font={form.font}
+            sensitive={form.sensitive}
           />
         </>
       ) : (
@@ -261,16 +285,32 @@ export function Editor({ poem, profile, collections, tagSuggestions, pseudonyms,
             <label htmlFor="texto" className="sr-only">
               Texto del poema
             </label>
+            <FormatToolbar onMark={applyMark} />
             <textarea
+              ref={textRef}
               id="texto"
               value={form.content}
               onChange={(e) => set({ content: e.target.value })}
+              onKeyDown={(e) => {
+                if (!(e.ctrlKey || e.metaKey)) return
+                const key = e.key.toLowerCase()
+                const style: MarkStyle | null =
+                  key === 'b' ? 'bold' : key === 'i' ? 'italic' : key === 'u' ? 'underline' : key === 'x' && e.shiftKey ? 'strike' : null
+                if (style) {
+                  e.preventDefault()
+                  applyMark(style)
+                }
+              }}
               placeholder="Escribe aquí tu poema…"
               rows={12}
               aria-invalid={!!errors.content}
-              aria-describedby={errors.content ? 'texto-error' : undefined}
-              className="campo field-sizing-content min-h-[50dvh] resize-none whitespace-pre-wrap font-serif text-poema"
+              aria-describedby={errors.content ? 'texto-error texto-ayuda' : 'texto-ayuda'}
+              className={`campo field-sizing-content min-h-[50dvh] resize-none whitespace-pre-wrap ${fontClass(form.font)}`}
             />
+            <p id="texto-ayuda" className="meta mt-2">
+              Selecciona unas palabras y elige un estilo. En el texto verás las marcas (*cursiva*, **negrita**,
+              __subrayado__, ~~tachado~~); en la vista previa, el resultado.
+            </p>
             {errors.content && (
               <p id="texto-error" className="meta mt-2 text-tinta">
                 {errors.content}
@@ -281,6 +321,28 @@ export function Editor({ poem, profile, collections, tagSuggestions, pseudonyms,
           <FeatherDivider className="mx-auto mt-14 h-4 w-48 text-gris" />
 
           <div className="mx-auto mt-10 grid max-w-xl gap-10">
+            <FontField value={form.font} onChange={(font) => set({ font })} />
+
+            <div>
+              <p className="meta">Cisne negro</p>
+              <label className="mt-1 flex min-h-11 items-start gap-3">
+                <input
+                  type="checkbox"
+                  checked={form.sensitive}
+                  onChange={(e) => set({ sensitive: e.target.checked })}
+                  aria-describedby="cisne-negro-ayuda"
+                  className="mt-1 size-4 shrink-0 accent-tinta"
+                />
+                <span>
+                  Este poema toca temas sensibles (+18)
+                  <span id="cisne-negro-ayuda" className="meta block">
+                    Se mostrará en negativo, tapado en los listados hasta que alguien decida leerlo, y se podrá
+                    ocultar en Explorar.
+                  </span>
+                </span>
+              </label>
+            </div>
+
             <TagsField
               tags={form.tags}
               input={form.tagInput}

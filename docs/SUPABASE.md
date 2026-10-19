@@ -19,8 +19,10 @@ Sin las variables de entorno, la web sigue funcionando en **modo local**
 ## 1. Crear las tablas (una vez)
 
 1. En el panel del proyecto: *SQL Editor → New query*.
-2. Pega el contenido entero de [`supabase/migrations/20261018120000_init.sql`](../supabase/migrations/20261018120000_init.sql) y pulsa *Run*.
-3. Debe terminar con «Success. No rows returned». En *Table Editor* verás `profiles`, `poems`, `tags`, `poem_tags`, `collections`, `collection_poems`, `favorites` y `reports`, todas con el candado de RLS.
+2. Aplica los archivos de `supabase/migrations/` **en orden**, cada uno en una consulta nueva (pega el contenido entero y pulsa *Run*):
+   1. [`20261018120000_init.sql`](../supabase/migrations/20261018120000_init.sql)
+   2. [`20261019120000_fuentes_cisne_negro_apoyos.sql`](../supabase/migrations/20261019120000_fuentes_cisne_negro_apoyos.sql)
+3. Cada uno debe terminar con «Success. No rows returned». En *Table Editor* verás `profiles`, `poems`, `tags`, `poem_tags`, `collections`, `collection_poems`, `favorites`, `reports`, `poem_supports` y `author_supports`, todas con el candado de RLS.
 
 > Alternativa con la CLI de Supabase: `npx supabase login`, `npx supabase link --project-ref TU-REF` y `npx supabase db push`.
 
@@ -64,7 +66,7 @@ Usa una ventana normal para la usuaria A y una de incógnito para la B.
 - [ ] *Recuperar contraseña* envía el correo y `/nueva-contrasena` permite cambiarla.
 - [ ] B elimina su cuenta en *Ajustes → Cuenta*: desaparecen sus colecciones y su biblioteca.
 
-Las reglas de seguridad también tienen una prueba automática que no necesita Supabase: `npm run test:db` (aplica la migración en un Postgres embebido y comprueba 37 casos con dos usuarios).
+Las reglas de seguridad también tienen una prueba automática que no necesita Supabase: `npm run test:db` (aplica las migraciones en un Postgres embebido y comprueba más de 50 casos con dos usuarios).
 
 ## 5. Publicar en Cloudflare Pages
 

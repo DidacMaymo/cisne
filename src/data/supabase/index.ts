@@ -5,9 +5,10 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { z } from 'zod'
 import { shuffleDiverse } from '../discover'
 import { emitDataChange } from '../events'
+import { isPoemFont } from '../../lib/poem-fonts'
 import { normalizePoemText, normalizeTag } from '../normalize'
 import type { Repositories } from '../repositories'
-import type { Collection, CollectionView, Poem, PoemView, Profile, Tag } from '../types'
+import type { Collection, CollectionView, Poem, PoemFont, PoemView, Profile, SupportState, Tag } from '../types'
 
 // ───────────────────────────── Filas que llegan de la base de datos
 
@@ -25,10 +26,18 @@ const publicPoemSchema = z.object({
   author_account_name: z.string().nullable(),
   tags: z.array(tagSchema),
   collection: z.object({ id: z.string(), title: z.string() }).nullable(),
+  font: z.string().transform((f): PoemFont => (isPoemFont(f) ? f : 'clasica')),
+  sensitive: z.boolean(),
+})
+
+const supportStateSchema = z.object({
+  supported: z.boolean(),
+  count: z.number().nullable(),
+  canSupport: z.boolean(),
 })
 
 const PUBLIC_COLS =
-  'id, title, content, created_at, updated_at, published_at, author_name, author_account_name, tags, collection'
+  'id, title, content, created_at, updated_at, published_at, author_name, author_account_name, tags, collection, font, sensitive'
 
 type TagRow = { id: string; name: string; normalized_name: string }
 
@@ -41,6 +50,8 @@ type OwnPoemRow = {
   visibility: Poem['visibility']
   publication_identity: Poem['publicationIdentity']
   displayed_pseudonym: string | null
+  font: PoemFont
+  sensitive: boolean
   created_at: string
   updated_at: string
   published_at: string | null
@@ -49,7 +60,7 @@ type OwnPoemRow = {
 }
 
 const OWN_COLS = `id, author_id, title, content, status, visibility, publication_identity, displayed_pseudonym,
-  created_at, updated_at, published_at, poem_tags(tags(id, name, normalized_name)),
+  font, sensitive, created_at, updated_at, published_at, poem_tags(tags(id, name, normalized_name)),
   collection_poems(collection_id, collections(id, title))`
 
 type ProfileRow = {
@@ -59,6 +70,7 @@ type ProfileRow = {
   primary_pseudonym: string | null
   bio: string | null
   links: string[] | null
+  support_visibility: Profile['supportVisibility']
   created_at: string
   updated_at: string
 }
@@ -91,6 +103,7 @@ function toProfile(r: ProfileRow): Profile {
     primaryPseudonym: r.primary_pseudonym ?? undefined,
     bio: r.bio ?? undefined,
     links: r.links ?? [],
+    supportVisibility: r.support_visibility,
     createdAt: r.created_at,
     updatedAt: r.updated_at,
   }
@@ -106,6 +119,8 @@ function publicView(row: unknown): PoemView {
     authorAccountName: r.author_account_name,
     tags: r.tags,
     collection: r.collection,
+    font: r.font,
+    sensitive: r.sensitive,
     status: 'published',
     visibility: 'public',
     isOwner: false,
@@ -140,6 +155,8 @@ function ownView(r: OwnPoemRow, me: Profile): PoemView {
     authorAccountName: named && me.displayName ? me.accountName : null,
     tags: ownTags(r),
     collection: col,
+    font: isPoemFont(r.font) ? r.font : 'clasica',
+    sensitive: r.sensitive,
     status: r.status,
     visibility: r.visibility,
     isOwner: true,
@@ -159,6 +176,8 @@ function ownPoem(r: OwnPoemRow): Poem {
     visibility: r.visibility,
     publicationIdentity: r.publication_identity,
     displayedPseudonym: r.displayed_pseudonym ?? undefined,
+    font: isPoemFont(r.font) ? r.font : 'clasica',
+    sensitive: r.sensitive,
     tags: ownTags(r),
     collectionId: r.collection_poems[0]?.collection_id,
     createdAt: r.created_at,
@@ -232,7 +251,7 @@ const isUuid = (id: string) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}
 
 const blankProfile = (): Profile => {
   const now = new Date().toISOString()
-  return { id: '', accountName: '', displayName: '', createdAt: now, updatedAt: now }
+  return { id: '', accountName: '', displayName: '', supportVisibility: 'private', createdAt: now, updatedAt: now }
 }
 
 // ───────────────────────────── Repositorios
@@ -386,10 +405,11 @@ export function supabaseRepositories(sb: SupabaseClient): Repositories {
     poems: {
       listPublic: listPublicRows,
 
-      async search({ q, tag, order, seed = 0 }) {
+      async search({ q, tag, order, seed = 0, includeSensitive = true }) {
         const { data, error } = await sb.rpc('search_public_poems', {
           q: q ?? '',
           tag: tag ? normalizeTag(tag) : null,
+          include_sensitive: includeSensitive,
         })
         fail(error)
         const views = ((data ?? []) as unknown[]).map(publicView)
@@ -446,6 +466,8 @@ export function supabaseRepositories(sb: SupabaseClient): Repositories {
           p_pseudonym: input.displayedPseudonym ?? null,
           p_tags: input.tags,
           p_collection_id: input.collectionId ?? null,
+          p_font: input.font,
+          p_sensitive: input.sensitive,
         })
         fail(error)
         changed()
@@ -475,6 +497,7 @@ export function supabaseRepositories(sb: SupabaseClient): Repositories {
         if ('primaryPseudonym' in patch) row.primary_pseudonym = patch.primaryPseudonym || null
         if ('bio' in patch) row.bio = patch.bio || null
         if ('links' in patch) row.links = patch.links ?? []
+        if ('supportVisibility' in patch) row.support_visibility = patch.supportVisibility ?? 'private'
         const { error } = await sb.from('profiles').update(row).eq('id', m.id)
         fail(error)
         changed()
@@ -676,6 +699,37 @@ export function supabaseRepositories(sb: SupabaseClient): Repositories {
         fail(res.error)
         changed()
         return !has
+      },
+    },
+
+    supports: {
+      async poem(poemId) {
+        if (!isUuid(poemId)) return { supported: false, count: null, canSupport: false }
+        const { data, error } = await sb.rpc('poem_support_state', { p: poemId })
+        fail(error)
+        return supportStateSchema.parse(data) satisfies SupportState
+      },
+
+      async togglePoem(poemId) {
+        await requireMe()
+        const { data, error } = await sb.rpc('toggle_poem_support', { p: poemId })
+        fail(error)
+        changed()
+        return data as boolean
+      },
+
+      async author(accountName) {
+        const { data, error } = await sb.rpc('author_support_state', { account: accountName })
+        fail(error)
+        return supportStateSchema.parse(data) satisfies SupportState
+      },
+
+      async toggleAuthor(accountName) {
+        await requireMe()
+        const { data, error } = await sb.rpc('toggle_author_support', { account: accountName })
+        fail(error)
+        changed()
+        return data as boolean
       },
     },
   }

@@ -4,6 +4,8 @@
 export type Visibility = 'public' | 'private'
 export type PoemStatus = 'draft' | 'published'
 export type PublicationIdentity = 'profile_name' | 'pseudonym' | 'anonymous'
+/** Tipografía elegida para leer el poema (ver src/lib/poem-fonts.ts). */
+export type PoemFont = 'clasica' | 'libro' | 'pantalla' | 'maquina' | 'clara'
 
 export type Profile = {
   id: string
@@ -18,6 +20,8 @@ export type Profile = {
   pronouns?: string
   location?: string
   literaryInterests?: string[]
+  /** Si los demás pueden ver cuánta gente te apoya. Privado por defecto. */
+  supportVisibility: Visibility
   createdAt: string
   updatedAt: string
 }
@@ -50,6 +54,9 @@ export type Poem = {
   visibility: Visibility
   publicationIdentity: PublicationIdentity
   displayedPseudonym?: string
+  font: PoemFont
+  /** «Cisne negro»: toca temas sensibles (+18). */
+  sensitive: boolean
   tags: Tag[]
   collectionId?: string
   createdAt: string
@@ -70,6 +77,8 @@ export type PoemView = {
   authorAccountName: string | null
   tags: Tag[]
   collection: { id: string; title: string } | null
+  font: PoemFont
+  sensitive: boolean
   status: PoemStatus
   visibility: Visibility
   isOwner: boolean
@@ -101,6 +110,15 @@ export type CollectionPoem = {
   collectionId: string
   poemId: string
   position: number
+}
+
+/** Apoyo a un poema o a un autor. El número solo se ve si su autor lo hace público. */
+export type SupportState = {
+  supported: boolean
+  /** `null` cuando el autor lo mantiene privado (y no eres tú). */
+  count: number | null
+  /** No se puede apoyar lo propio, ni a un autor sin página pública. */
+  canSupport: boolean
 }
 
 export type Favorite = {

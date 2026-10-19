@@ -15,6 +15,8 @@ const base = z.object({
   pseudonym: z.string().trim(),
   collection: z.string(),
   newCollectionTitle: z.string().trim(),
+  font: z.enum(['clasica', 'libro', 'pantalla', 'maquina', 'clara']),
+  sensitive: z.boolean(),
 })
 
 type Form = z.infer<typeof base>
@@ -66,6 +68,13 @@ export const collectionSchema = z.object({
   visibility: z.enum(['public', 'private']),
 })
 
+export const MAX_BIO_WORDS = 150
+
+export function countWords(text: string): number {
+  const t = text.trim()
+  return t ? t.split(/\s+/).length : 0
+}
+
 const httpUrl = z
   .string()
   .trim()
@@ -81,7 +90,10 @@ const httpUrl = z
 export const profileSchema = z.object({
   displayName: z.string().trim().min(2, 'Tu nombre público necesita al menos 2 caracteres.').max(60, 'Hasta 60 caracteres.'),
   primaryPseudonym: z.string().trim().max(40, 'Hasta 40 caracteres.'),
-  bio: z.string().trim().max(400, 'La descripción admite hasta 400 caracteres.'),
+  bio: z
+    .string()
+    .trim()
+    .refine((v) => countWords(v) <= MAX_BIO_WORDS, `La descripción admite hasta ${MAX_BIO_WORDS} palabras.`),
   links: z.array(httpUrl).max(4, 'Como máximo 4 enlaces.'),
 })
 

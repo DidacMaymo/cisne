@@ -3,6 +3,23 @@
 @import '@fontsource/cormorant-garamond/400-italic.css';
 @import '@fontsource/cormorant-garamond/500.css';
 @import '@fontsource/cormorant-garamond/600.css';
+@import '@fontsource/cormorant-garamond/700.css';
+@import '@fontsource/cormorant-garamond/700-italic.css';
+/* Fuentes que se pueden elegir para un poema. El navegador solo descarga las que se usan. */
+@import '@fontsource/eb-garamond/400.css';
+@import '@fontsource/eb-garamond/400-italic.css';
+@import '@fontsource/eb-garamond/700.css';
+@import '@fontsource/eb-garamond/700-italic.css';
+@import '@fontsource-variable/literata/wght.css';
+@import '@fontsource-variable/literata/wght-italic.css';
+@import '@fontsource/courier-prime/400.css';
+@import '@fontsource/courier-prime/400-italic.css';
+@import '@fontsource/courier-prime/700.css';
+@import '@fontsource/courier-prime/700-italic.css';
+@import '@fontsource/atkinson-hyperlegible/400.css';
+@import '@fontsource/atkinson-hyperlegible/400-italic.css';
+@import '@fontsource/atkinson-hyperlegible/700.css';
+@import '@fontsource/atkinson-hyperlegible/700-italic.css';
 @import 'tailwindcss';
 
 @theme {
@@ -14,6 +31,12 @@
 
   --font-serif: 'Cormorant Garamond', 'Iowan Old Style', Georgia, serif;
   --font-sans: 'Inter Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Fuentes del poema */
+  --font-libro: 'EB Garamond', Garamond, Georgia, serif;
+  --font-pantalla: 'Literata Variable', Georgia, serif;
+  --font-maquina: 'Courier Prime', 'Courier New', monospace;
+  --font-clara: 'Atkinson Hyperlegible', system-ui, sans-serif;
 
   /* Escala tipográfica */
   --text-meta: 0.8125rem;
@@ -90,6 +113,39 @@
     white-space: pre-wrap;
     overflow-wrap: break-word;
   }
+  /* Tipografía elegida para cada poema (src/lib/poem-fonts.ts). Cada fuente
+     tiene un tamaño propio para que todas se lean con el mismo cuerpo. */
+  .poema-clasica {
+    font-family: var(--font-serif);
+    font-size: 1.3125rem;
+  }
+  .poema-libro {
+    font-family: var(--font-libro);
+    font-size: 1.1875rem;
+  }
+  .poema-pantalla {
+    font-family: var(--font-pantalla);
+    font-size: 1.0625rem;
+    line-height: 1.85;
+  }
+  .poema-maquina {
+    font-family: var(--font-maquina);
+    font-size: 1rem;
+    line-height: 1.85;
+  }
+  .poema-clara {
+    font-family: var(--font-clara);
+    font-size: 1.0625rem;
+    line-height: 1.85;
+  }
+  .poema strong {
+    font-weight: 700;
+  }
+  .poema u,
+  .poema s {
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
   .meta {
     font-size: var(--text-meta);
     line-height: var(--text-meta--line-height);
@@ -144,4 +200,32 @@
     text-decoration: underline;
     text-underline-offset: 4px;
   }
+}
+
+/* «Cisne negro»: la página en negativo, solo con tinta y blanco. Va fuera de
+   las capas de Tailwind para poder invertir también los estados :hover. */
+.cisne-negro {
+  background: var(--color-tinta);
+  color: var(--color-blanco);
+}
+.cisne-negro :focus-visible {
+  outline-color: var(--color-blanco);
+}
+.cisne-negro ::selection {
+  background: var(--color-blanco);
+  color: var(--color-tinta);
+}
+.cisne-negro .btn {
+  border-color: var(--color-blanco);
+}
+.cisne-negro .btn:hover {
+  background: var(--color-blanco);
+  color: var(--color-tinta);
+}
+.cisne-negro .hover\:text-tinta:hover,
+.cisne-negro .text-tinta {
+  color: var(--color-blanco);
+}
+.cisne-negro .border-linea {
+  border-color: color-mix(in srgb, var(--color-blanco) 20%, transparent);
 }

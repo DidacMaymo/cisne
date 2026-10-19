@@ -12,6 +12,7 @@ const profile: Profile = {
   displayName: 'Ejemplo de desarrollo',
   bio: 'Poemas de ejemplo para desarrollo. No son obras reales.',
   links: ['https://example.com/ejemplo'],
+  supportVisibility: 'public',
   createdAt: '2026-01-01T10:00:00.000Z',
   updatedAt: '2026-01-01T10:00:00.000Z',
 }
@@ -36,6 +37,8 @@ type Draft = {
   n: number
   author?: string
   anonymous?: boolean
+  font?: StoredPoem['font']
+  sensitive?: boolean
   title?: string
   content: string
   tags: string[]
@@ -72,6 +75,7 @@ como un perro viejo.`,
   },
   {
     n: 3,
+    sensitive: true,
     title: 'Mapa de la ausencia',
     tags: ['duelo', 'soledad'],
     date: '2026-10-05T18:00:00.000Z',
@@ -92,6 +96,7 @@ cada mañana.`,
   },
   {
     n: 4,
+    font: 'maquina',
     title: 'Lo que dice el mar',
     tags: ['naturaleza', 'libertad'],
     date: '2026-10-02T07:15:00.000Z',
@@ -106,6 +111,7 @@ para volver.`,
   },
   {
     n: 5,
+    font: 'libro',
     title: 'Pequeña oración',
     tags: ['esperanza', 'vida'],
     date: '2026-09-28T12:00:00.000Z',
@@ -168,6 +174,8 @@ const poems: StoredPoem[] = drafts.map((d) => ({
   status: 'published',
   visibility: 'public',
   publicationIdentity: d.anonymous ? 'anonymous' : 'profile_name',
+  font: d.font ?? 'clasica',
+  sensitive: d.sensitive ?? false,
   tagIds: tagIds(...d.tags),
   createdAt: d.date,
   updatedAt: d.date,

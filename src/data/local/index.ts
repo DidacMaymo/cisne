@@ -100,6 +100,8 @@ function toView(w: World, p: StoredPoem): PoemView {
     authorAccountName: author.account,
     tags: tagsOf(w, p),
     collection: col ? { id: col.id, title: col.title } : null,
+    font: p.font,
+    sensitive: p.sensitive,
     status: p.status,
     visibility: p.visibility,
     isOwner,
@@ -236,11 +238,12 @@ export const localRepositories: Repositories = {
         .map((p) => toView(w, p))
     },
 
-    async search({ q, tag, order, seed = 0 }) {
+    async search({ q, tag, order, seed = 0, includeSensitive = true }) {
       const w = await world()
       const words = foldText(q ?? '').split(/\s+/).filter(Boolean)
       const tagName = tag ? normalizeTag(tag) : null
       const found = w.poems.filter(isPublic).filter((p) => {
+        if (!includeSensitive && p.sensitive) return false
         const tags = tagsOf(w, p)
         if (tagName && !tags.some((t) => t.normalizedName === tagName)) return false
         if (words.length === 0) return true
@@ -310,6 +313,8 @@ export const localRepositories: Repositories = {
           visibility: input.visibility,
           publicationIdentity: input.publicationIdentity,
           displayedPseudonym: pseudonym,
+          font: input.font,
+          sensitive: input.sensitive,
           tagIds,
           createdAt: existing?.createdAt ?? now,
           updatedAt: now,
@@ -337,6 +342,7 @@ export const localRepositories: Repositories = {
         }
         s.poems = s.poems.filter((p) => p.id !== id)
         s.favorites = s.favorites.filter((f) => f.poemId !== id)
+        s.poemSupports = s.poemSupports.filter((x) => x.poemId !== id)
         s.collectionPoems = s.collectionPoems.filter((cp) => cp.poemId !== id)
       })
     },
@@ -522,6 +528,74 @@ export const localRepositories: Repositories = {
           : [...s.favorites, { userId, poemId, createdAt: new Date().toISOString() }]
       })
       return saved
+    },
+  },
+
+  supports: {
+    async poem(poemId) {
+      const w = await world()
+      const p = w.poems.find((x) => x.id === poemId)
+      if (!p || !canView(w, p)) return { supported: false, count: null, canSupport: false }
+      const userId = me(w)
+      const mine = p.authorId === userId
+      const author = w.profiles.find((x) => x.id === p.authorId)
+      // Sin firma, el número nunca se publica: podría señalar a quien lo escribió.
+      const visible =
+        mine || (isPublic(p) && p.publicationIdentity === 'profile_name' && author?.supportVisibility === 'public')
+      const all = w.poemSupports.filter((x) => x.poemId === poemId)
+      return {
+        supported: !!userId && all.some((x) => x.userId === userId),
+        count: visible ? all.length : null,
+        canSupport: isPublic(p) && !mine,
+      }
+    },
+
+    async togglePoem(poemId) {
+      const w = await world()
+      const p = w.poems.find((x) => x.id === poemId)
+      let on = false
+      commit((s) => {
+        const userId = requireMe(s)
+        if (!p || !isPublic(p)) throw new Error('Ese poema ya no está disponible.')
+        if (p.authorId === userId) throw new Error('No puedes apoyar tus propios poemas.')
+        const has = s.poemSupports.some((x) => x.userId === userId && x.poemId === poemId)
+        on = !has
+        s.poemSupports = has
+          ? s.poemSupports.filter((x) => !(x.userId === userId && x.poemId === poemId))
+          : [...s.poemSupports, { userId, poemId, createdAt: new Date().toISOString() }]
+      })
+      return on
+    },
+
+    async author(accountName) {
+      const w = await world()
+      const author = w.profiles.find((x) => x.accountName === accountName && x.displayName)
+      if (!author) return { supported: false, count: null, canSupport: false }
+      const userId = me(w)
+      const self = author.id === userId
+      const all = w.authorSupports.filter((x) => x.authorId === author.id)
+      return {
+        supported: !!userId && all.some((x) => x.userId === userId),
+        count: self || author.supportVisibility === 'public' ? all.length : null,
+        canSupport: !self,
+      }
+    },
+
+    async toggleAuthor(accountName) {
+      const w = await world()
+      const author = w.profiles.find((x) => x.accountName === accountName && x.displayName)
+      let on = false
+      commit((s) => {
+        const userId = requireMe(s)
+        if (!author) throw new Error('No encontramos a este autor.')
+        if (author.id === userId) throw new Error('No puedes apoyarte a ti mismo.')
+        const has = s.authorSupports.some((x) => x.userId === userId && x.authorId === author.id)
+        on = !has
+        s.authorSupports = has
+          ? s.authorSupports.filter((x) => !(x.userId === userId && x.authorId === author.id))
+          : [...s.authorSupports, { userId, authorId: author.id, createdAt: new Date().toISOString() }]
+      })
+      return on
     },
   },
 }

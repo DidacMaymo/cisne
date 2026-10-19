@@ -4,6 +4,7 @@ import { CollectionCard } from '../components/CollectionCard'
 import { EmptyState } from '../components/EmptyState'
 import { LoadState } from '../components/LoadState'
 import { PoemList } from '../components/PoemList'
+import { SupportButton } from '../components/SupportButton'
 import { FeatherDivider } from '../components/brand/FeatherDivider'
 import { useQuery } from '../hooks/useQuery'
 import { linkLabel } from '../lib/links'
@@ -63,6 +64,9 @@ export function AuthorPage() {
             ))}
           </ul>
         )}
+        <div className="mt-2 flex justify-center">
+          <SupportButton kind="author" accountName={profile.accountName} name={profile.displayName} />
+        </div>
         <FeatherDivider className="mx-auto mt-8 h-4 w-48 text-gris" />
       </header>
 

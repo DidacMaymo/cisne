@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom'
 
 const links = [
   { to: '/ajustes/perfil', label: 'Perfil' },
+  { to: '/ajustes/privacidad', label: 'Privacidad' },
   { to: '/ajustes/cuenta', label: 'Cuenta' },
 ] as const
 

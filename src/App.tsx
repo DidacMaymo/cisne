@@ -13,10 +13,10 @@ import { MyPoems } from './pages/MyPoems'
 import { NewPassword } from './pages/NewPassword'
 import { NotFound } from './pages/NotFound'
 import { PoemPage } from './pages/PoemPage'
+import { PrivacySettings } from './pages/PrivacySettings'
 import { ProfileSettings } from './pages/ProfileSettings'
 import { Recover } from './pages/Recover'
 import { SignIn } from './pages/SignIn'
-import { Soon } from './pages/Soon'
 import { TagPage } from './pages/TagPage'
 import { Write } from './pages/Write'
 
@@ -41,7 +41,7 @@ export function App() {
         <Route path="/mis/biblioteca" element={priv('Mi biblioteca', <Library />)} />
         <Route path="/ajustes/perfil" element={priv('Perfil', <ProfileSettings />)} />
         <Route path="/ajustes/cuenta" element={priv('Cuenta', <AccountSettings />)} />
-        <Route path="/ajustes/privacidad" element={<Soon title="Privacidad" />} />
+        <Route path="/ajustes/privacidad" element={priv('Privacidad', <PrivacySettings />)} />
         <Route path="/entrar" element={<SignIn key="entrar" mode="entrar" />} />
         <Route path="/registro" element={<SignIn key="registro" mode="registro" />} />
         <Route path="/recuperar" element={<Recover />} />
