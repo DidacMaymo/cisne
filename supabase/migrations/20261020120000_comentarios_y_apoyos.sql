@@ -15,7 +15,8 @@ create table public.verse_comments (
   user_id uuid not null references public.profiles (id) on delete cascade,
   line integer not null check (line >= 0),
   quote text not null default '' check (char_length(quote) <= 200),
-  body text not null check (char_length(btrim(body)) between 1 and 500),
+  -- Notas al margen: hasta 50 palabras.
+  body text not null check (public.word_count(body) between 1 and 50 and char_length(body) <= 600),
   created_at timestamptz not null default now()
 );
 create index verse_comments_poem_idx on public.verse_comments (poem_id, line);
@@ -60,8 +61,8 @@ begin
   if p_line is null or p_line < 0 or p_line >= verses then
     raise exception 'Ese verso ya no existe. Recarga la página.';
   end if;
-  if char_length(btrim(coalesce(p_body, ''))) not between 1 and 500 then
-    raise exception 'El comentario admite entre 1 y 500 caracteres.';
+  if public.word_count(p_body) not between 1 and 50 or char_length(p_body) > 600 then
+    raise exception 'El comentario admite hasta 50 palabras.';
   end if;
   insert into public.verse_comments (poem_id, user_id, line, quote, body)
   values (p, uid, p_line, left(btrim(coalesce(p_quote, '')), 200), btrim(p_body))

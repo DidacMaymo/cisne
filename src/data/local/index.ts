@@ -1,4 +1,5 @@
 import { firstLine } from '../../lib/poem-text'
+import { countWords } from '../schemas'
 import { shuffleDiverse } from '../discover'
 import { foldText, normalizePoemText, normalizeTag, slugify } from '../normalize'
 import type { Repositories } from '../repositories'
@@ -676,7 +677,9 @@ export const localRepositories: Repositories = {
           throw new Error('Ese verso ya no existe. Recarga la página.')
         }
         const text = body.trim()
-        if (!text || text.length > 500) throw new Error('El comentario admite entre 1 y 500 caracteres.')
+        if (!text || text.length > 600 || countWords(text) > 50) {
+          throw new Error('El comentario admite hasta 50 palabras.')
+        }
         s.verseComments.push({
           id: crypto.randomUUID(),
           poemId,

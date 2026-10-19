@@ -69,14 +69,16 @@ export const collectionSchema = z.object({
   visibility: z.enum(['public', 'private']),
 })
 
-export const MAX_COMMENT_CHARS = 500
+/** Los comentarios son notas al margen: breves. */
+export const MAX_COMMENT_WORDS = 50
 
 export const commentSchema = z.object({
   body: z
     .string()
     .trim()
     .min(1, 'Escribe tu comentario.')
-    .max(MAX_COMMENT_CHARS, `El comentario admite hasta ${MAX_COMMENT_CHARS} caracteres.`),
+    .max(600, 'El comentario es demasiado largo.')
+    .refine((v) => countWords(v) <= MAX_COMMENT_WORDS, `El comentario admite hasta ${MAX_COMMENT_WORDS} palabras.`),
 })
 
 export const MAX_BIO_WORDS = 150

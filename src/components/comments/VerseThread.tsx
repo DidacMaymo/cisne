@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { Link, useLocation } from 'react-router-dom'
 import { repos } from '../../data'
 import type { VerseComment } from '../../data'
-import { commentSchema, MAX_COMMENT_CHARS } from '../../data/schemas'
+import { commentSchema, countWords, MAX_COMMENT_WORDS } from '../../data/schemas'
 import { formatDate } from '../../lib/format'
 import { signInHref } from '../../lib/links'
 
@@ -161,13 +161,14 @@ export function VerseThread({ poemId, verses, initial, commentsFor, signedIn, on
               value={body}
               onChange={(e) => setBody(e.target.value)}
               rows={3}
-              maxLength={MAX_COMMENT_CHARS}
+              maxLength={600}
+              aria-invalid={countWords(body) > MAX_COMMENT_WORDS}
               autoFocus
               aria-describedby={`${id}-ch`}
               className="campo field-sizing-content resize-none"
             />
             <p id={`${id}-ch`} className="meta mt-2">
-              Se firmará con tu nombre público. {body.length}/{MAX_COMMENT_CHARS}
+              Se firmará con tu nombre público. {countWords(body)} de {MAX_COMMENT_WORDS} palabras
             </p>
             <div className="mt-4 flex justify-end">
               <button type="submit" className="btn btn-primario" disabled={busy}>

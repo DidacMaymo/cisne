@@ -213,9 +213,12 @@ await as(BEA, async () => {
   check('no se comenta un verso que no existe', !!(await fails(`select public.add_verse_comment($1, 5, '', 'x')`, [comments.open])))
   check('no se comenta un poema con comentarios cerrados', !!(await fails(`select public.add_verse_comment($1, 0, '', 'x')`, [ids.named])))
   check('no se comenta un poema privado', !!(await fails(`select public.add_verse_comment($1, 0, '', 'x')`, [comments.closedPriv])))
+  const words = (n) => Array.from({ length: n }, () => 'verso').join(' ')
+  check('comentario de 50 palabras: sí', !(await fails(`select public.add_verse_comment($1, 0, '', $2)`, [comments.open, words(50)])))
+  check('comentario de 51 palabras: no', !!(await fails(`select public.add_verse_comment($1, 0, '', $2)`, [comments.open, words(51)])))
   check('comentario vacío rechazado', !!(await fails(`select public.add_verse_comment($1, 0, '', '   ')`, [comments.open])))
   check('Bea no lee la tabla de comentarios', (await q('select * from public.verse_comments')).length === 0)
-  const [c] = await q('select * from public.public_verse_comments where poem_id = $1', [comments.open])
+  const [c] = await q('select * from public.public_verse_comments where id = $1', [beaComment])
   check('la vista muestra autor y que Bea puede borrar el suyo', c.author_name === 'Ana Lía' && c.can_delete === true && c.line === 1)
   check('la vista no expone user_id', !('user_id' in c))
   // Dejar de apoyar desde los ajustes.
@@ -227,7 +230,7 @@ await as(BEA, async () => {
   check('Bea deja de apoyar poema y autora', after.authors.length === 0 && after.poems.length === 0)
 })
 await as(null, async () => {
-  const [c] = await q('select can_delete from public.public_verse_comments where poem_id = $1', [comments.open])
+  const [c] = await q('select can_delete from public.public_verse_comments where id = $1', [beaComment])
   check('anon ve el comentario sin poder borrarlo', c.can_delete === false)
   check('anon no puede comentar', !!(await fails(`select public.add_verse_comment($1, 0, '', 'x')`, [comments.open])))
 })
