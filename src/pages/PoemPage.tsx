@@ -109,6 +109,14 @@ export function PoemPage() {
             </>
           )}
         </div>
+        {poem.isOwner && !notPublic && !poem.commentsEnabled && (
+          <p className="meta mt-2">
+            Los versos de este poema no admiten comentarios ·{' '}
+            <Link to={`/escribir/${poem.id}`} className="underline underline-offset-4 hover:text-tinta">
+              Abrirlos
+            </Link>
+          </p>
+        )}
         {deleteError && (
           <p role="alert" className="mt-2 text-ui">
             {deleteError}

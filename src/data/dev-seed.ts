@@ -78,6 +78,7 @@ como un perro viejo.`,
   {
     n: 3,
     sensitive: true,
+    comments: true,
     title: 'Mapa de la ausencia',
     tags: ['duelo', 'soledad'],
     date: '2026-10-05T18:00:00.000Z',
