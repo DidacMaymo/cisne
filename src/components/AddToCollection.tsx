@@ -1,4 +1,5 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
+import { createPortal } from 'react-dom'
 import { Link, useLocation } from 'react-router-dom'
 import { repos } from '../data'
 import { useQuery } from '../hooks/useQuery'
@@ -70,7 +71,8 @@ function CollectionsDialog({ poemId, poemTitle, onClose }: { poemId: string; poe
     })
   }
 
-  return (
+  // En <body>, fuera del poema: así no hereda los colores invertidos de un «Cisne negro».
+  return createPortal(
     <dialog
       ref={ref}
       aria-labelledby={`${id}-t`}
@@ -135,6 +137,7 @@ function CollectionsDialog({ poemId, poemTitle, onClose }: { poemId: string; poe
           Hecho
         </button>
       </div>
-    </dialog>
+    </dialog>,
+    document.body,
   )
 }

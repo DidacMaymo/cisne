@@ -1,3 +1,4 @@
+import { firstLine } from '../../lib/poem-text'
 import { shuffleDiverse } from '../discover'
 import { foldText, normalizePoemText, normalizeTag, slugify } from '../normalize'
 import type { Repositories } from '../repositories'
@@ -102,6 +103,7 @@ function toView(w: World, p: StoredPoem): PoemView {
     collection: col ? { id: col.id, title: col.title } : null,
     font: p.font,
     sensitive: p.sensitive,
+    commentsEnabled: p.commentsEnabled,
     status: p.status,
     visibility: p.visibility,
     isOwner,
@@ -315,6 +317,7 @@ export const localRepositories: Repositories = {
           displayedPseudonym: pseudonym,
           font: input.font,
           sensitive: input.sensitive,
+          commentsEnabled: input.commentsEnabled,
           tagIds,
           createdAt: existing?.createdAt ?? now,
           updatedAt: now,
@@ -343,6 +346,7 @@ export const localRepositories: Repositories = {
         s.poems = s.poems.filter((p) => p.id !== id)
         s.favorites = s.favorites.filter((f) => f.poemId !== id)
         s.poemSupports = s.poemSupports.filter((x) => x.poemId !== id)
+        s.verseComments = s.verseComments.filter((x) => x.poemId !== id)
         s.collectionPoems = s.collectionPoems.filter((cp) => cp.poemId !== id)
       })
     },
@@ -596,6 +600,106 @@ export const localRepositories: Repositories = {
           : [...s.authorSupports, { userId, authorId: author.id, createdAt: new Date().toISOString() }]
       })
       return on
+    },
+
+    async listMine() {
+      const w = await world()
+      const userId = me(w)
+      if (!userId) return { authors: [], poems: [] }
+      const authors = w.authorSupports
+        .filter((x) => x.userId === userId)
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+        .map((x) => w.profiles.find((p) => p.id === x.authorId))
+        .filter((p): p is Profile => !!p?.displayName)
+        .map((p) => ({ accountName: p.accountName, displayName: p.displayName }))
+      const poems = w.poemSupports
+        .filter((x) => x.userId === userId)
+        .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
+        .map((x) => w.poems.find((p) => p.id === x.poemId))
+        .filter((p): p is StoredPoem => !!p)
+        .map((p) =>
+          isPublic(p)
+            ? { id: p.id, title: p.title ?? firstLine(p.content), authorName: authorOf(w, p).name, available: true }
+            : { id: p.id, title: 'Un poema que ya no es público', authorName: '', available: false },
+        )
+      return { authors, poems }
+    },
+
+    async unsupportPoem(poemId) {
+      commit((s) => {
+        const userId = requireMe(s)
+        s.poemSupports = s.poemSupports.filter((x) => !(x.userId === userId && x.poemId === poemId))
+      })
+    },
+
+    async unsupportAuthor(accountName) {
+      const w = await world()
+      const author = w.profiles.find((x) => x.accountName === accountName)
+      commit((s) => {
+        const userId = requireMe(s)
+        s.authorSupports = s.authorSupports.filter((x) => !(x.userId === userId && x.authorId === author?.id))
+      })
+    },
+  },
+
+  comments: {
+    async list(poemId) {
+      const w = await world()
+      const p = w.poems.find((x) => x.id === poemId)
+      if (!p || !isPublic(p) || !p.commentsEnabled) return []
+      const userId = me(w)
+      return w.verseComments
+        .filter((c) => c.poemId === poemId)
+        .sort((a, b) => a.createdAt.localeCompare(b.createdAt))
+        .map((c) => {
+          const author = w.profiles.find((x) => x.id === c.userId)
+          return {
+            id: c.id,
+            line: c.line,
+            quote: c.quote,
+            body: c.body,
+            authorName: author?.displayName || 'Sin nombre',
+            authorAccountName: author?.displayName ? author.accountName : null,
+            createdAt: c.createdAt,
+            canDelete: !!userId && (c.userId === userId || p.authorId === userId),
+          }
+        })
+    },
+
+    async add(poemId, { line, quote, body }) {
+      const w = await world()
+      const p = w.poems.find((x) => x.id === poemId)
+      commit((s) => {
+        const userId = requireMe(s)
+        if (!p || !isPublic(p) || !p.commentsEnabled) throw new Error('Este poema no admite comentarios.')
+        if (!Number.isInteger(line) || line < 0 || line >= p.content.split('\n').length) {
+          throw new Error('Ese verso ya no existe. Recarga la página.')
+        }
+        const text = body.trim()
+        if (!text || text.length > 500) throw new Error('El comentario admite entre 1 y 500 caracteres.')
+        s.verseComments.push({
+          id: crypto.randomUUID(),
+          poemId,
+          userId,
+          line,
+          quote: quote.trim().slice(0, 200),
+          body: text,
+          createdAt: new Date().toISOString(),
+        })
+      })
+    },
+
+    async remove(commentId) {
+      const w = await world()
+      commit((s) => {
+        const userId = requireMe(s)
+        const c = s.verseComments.find((x) => x.id === commentId)
+        const poem = c && w.poems.find((p) => p.id === c.poemId)
+        if (!c || (c.userId !== userId && poem?.authorId !== userId)) {
+          throw new Error('No puedes borrar este comentario.')
+        }
+        s.verseComments = s.verseComments.filter((x) => x.id !== commentId)
+      })
     },
   },
 }

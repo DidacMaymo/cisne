@@ -9,11 +9,13 @@ import type {
   PoemView,
   Profile,
   PublicationIdentity,
+  MySupports,
   PoemFont,
   PublicProfile,
   Session,
   SupportState,
   Tag,
+  VerseComment,
   Visibility,
 } from './types'
 
@@ -28,6 +30,7 @@ export type PoemInput = {
   displayedPseudonym?: string
   font: PoemFont
   sensitive: boolean
+  commentsEnabled: boolean
   /** Nombres de etiqueta; el repositorio los normaliza y deduplica. */
   tags: string[]
   /** Colección propia a la que añadirlo (si aún no está). */
@@ -126,6 +129,17 @@ export interface SupportRepository {
   togglePoem(poemId: string): Promise<boolean>
   author(accountName: string): Promise<SupportState>
   toggleAuthor(accountName: string): Promise<boolean>
+  /** Autores y poemas que apoyo. */
+  listMine(): Promise<MySupports>
+  unsupportPoem(poemId: string): Promise<void>
+  unsupportAuthor(accountName: string): Promise<void>
+}
+
+export interface CommentRepository {
+  /** Comentarios de un poema público con los comentarios abiertos. */
+  list(poemId: string): Promise<VerseComment[]>
+  add(poemId: string, input: { line: number; quote: string; body: string }): Promise<void>
+  remove(commentId: string): Promise<void>
 }
 
 export type Repositories = {
@@ -136,4 +150,5 @@ export type Repositories = {
   collections: CollectionRepository
   favorites: FavoriteRepository
   supports: SupportRepository
+  comments: CommentRepository
 }

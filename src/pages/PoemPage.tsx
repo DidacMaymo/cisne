@@ -4,6 +4,7 @@ import { repos } from '../data'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { EmptyState } from '../components/EmptyState'
 import { AddToCollection } from '../components/AddToCollection'
+import { AnnotatedPoem } from '../components/comments/AnnotatedPoem'
 import { FavoriteButton } from '../components/FavoriteButton'
 import { LoadState } from '../components/LoadState'
 import { PoemReader } from '../components/PoemReader'
@@ -22,6 +23,7 @@ export function PoemPage() {
   const { data: poem, error, loading } = useQuery(() => repos.poems.get(id), [id])
   const saved = useSavedIds()
   const signedIn = !!useSession().session
+  const { data: comments } = useQuery(() => repos.comments.list(id), [id])
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [busy, setBusy] = useState(false)
   const [deleteError, setDeleteError] = useState('')
@@ -75,6 +77,17 @@ export function PoemPage() {
         collection={poem.collection}
         font={poem.font}
         sensitive={poem.sensitive}
+        textSlot={
+          poem.commentsEnabled && !notPublic ? (
+            <AnnotatedPoem
+              poemId={poem.id}
+              content={poem.content}
+              font={poem.font}
+              comments={comments ?? []}
+              signedIn={signedIn}
+            />
+          ) : undefined
+        }
       >
         <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6">
           <FavoriteButton poemId={poem.id} saved={saved.has(poem.id)} signedIn={signedIn} />

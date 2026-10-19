@@ -27,6 +27,15 @@ export type Store = {
   poemSupports: { userId: string; poemId: string; createdAt: string }[]
   /** `authorId` es el id del perfil apoyado. */
   authorSupports: { userId: string; authorId: string; createdAt: string }[]
+  verseComments: {
+    id: string
+    poemId: string
+    userId: string
+    line: number
+    quote: string
+    body: string
+    createdAt: string
+  }[]
 }
 
 export function fresh(): Store {
@@ -49,6 +58,7 @@ export function fresh(): Store {
     favorites: [],
     poemSupports: [],
     authorSupports: [],
+    verseComments: [],
   }
 }
 
@@ -57,7 +67,12 @@ function upgrade(s: Store): Store {
   return {
     ...s,
     profile: { ...s.profile, supportVisibility: s.profile.supportVisibility ?? 'private' },
-    poems: s.poems.map((p) => ({ ...p, font: p.font ?? 'clasica', sensitive: p.sensitive ?? false })),
+    poems: s.poems.map((p) => ({
+      ...p,
+      font: p.font ?? 'clasica',
+      sensitive: p.sensitive ?? false,
+      commentsEnabled: p.commentsEnabled ?? false,
+    })),
   }
 }
 

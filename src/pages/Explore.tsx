@@ -5,7 +5,7 @@ import { normalizeTag } from '../data/normalize'
 import { EmptyState } from '../components/EmptyState'
 import { LoadState } from '../components/LoadState'
 import { PoemList } from '../components/PoemList'
-import { FeatherDivider } from '../components/brand/FeatherDivider'
+import { SwanDivider } from '../components/brand/SwanDivider'
 import { useQuery } from '../hooks/useQuery'
 
 const PAGE = 10
@@ -207,7 +207,7 @@ export function Explore() {
                 </button>
               </div>
             ) : (
-              <FeatherDivider className="mx-auto mt-10 h-4 w-48 text-gris" />
+              <SwanDivider className="mx-auto mt-10 h-6 w-48 text-gris" />
             )}
           </>
         )}

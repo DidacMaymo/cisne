@@ -19,11 +19,12 @@ Mientras no hagas esto, la web funciona en **modo local** (todo se guarda en tu 
 ## 2. Crear las tablas
 
 - [ ] En el menú de la izquierda: **SQL Editor → New query**.
-- [ ] Hay **dos** archivos en `supabase/migrations/` y van **en este orden**, cada uno en una consulta nueva:
+- [ ] Hay **tres** archivos en `supabase/migrations/` y van **en este orden**, cada uno en una consulta nueva:
   1. `20261018120000_init.sql` (tablas y seguridad)
   2. `20261019120000_fuentes_cisne_negro_apoyos.sql` (tipografías, Cisne negro, apoyos y descripción de 150 palabras)
+  3. `20261020120000_comentarios_y_apoyos.sql` (comentarios en los versos y «dejar de apoyar»)
 - [ ] Para cada uno: ábrelo en tu editor, copia **todo** su contenido, pégalo y pulsa **Run**. Debe decir «Success. No rows returned».
-- [ ] Comprueba en **Table Editor** que aparecen: `profiles`, `poems`, `tags`, `poem_tags`, `collections`, `collection_poems`, `favorites`, `reports`, `poem_supports`, `author_supports`.
+- [ ] Comprueba en **Table Editor** que aparecen: `profiles`, `poems`, `tags`, `poem_tags`, `collections`, `collection_poems`, `favorites`, `reports`, `poem_supports`, `author_supports`, `verse_comments`.
 - [ ] Si el **Security Advisor** avisa de vistas con «security definer» (`public_poems`, etc.), es normal: está hecho a propósito.
 
 ## 3. Configurar la autenticación
@@ -70,6 +71,8 @@ Usa una ventana normal (usuaria **A**) y una de incógnito (usuaria **B**).
 - [ ] A crea una colección **pública** con su poema firmado y su anónimo → B solo ve el firmado.
 - [ ] A cambia su bio y añade un enlace en *Ajustes → Perfil* → B lo ve en su página de autor.
 - [ ] *Recuperar contraseña*: llega el correo y `/nueva-contrasena` deja cambiarla (el correo de serie de Supabase solo llega a emails de tu equipo del proyecto).
+- [ ] A abre los **comentarios** de un poema. B subraya un fragmento, escribe un comentario y aparece un puntito con un «1» junto a ese verso. A puede borrarlo; un tercero no.
+- [ ] B va a *Ajustes → Apoyos* y **deja de apoyar** a A y a su poema.
 - [ ] A marca un poema como **Cisne negro**: B lo ve en negativo y tapado, y al marcar «Ocultar Cisne negro» en Explorar desaparece.
 - [ ] B **apoya** un poema de A y a A. B no ve el número; A sí. A pone *Ajustes → Privacidad → Todo el mundo* y entonces B también lo ve.
 - [ ] A escribe un poema con **negrita y cursiva** y la tipografía **Máquina**: B lo lee igual.

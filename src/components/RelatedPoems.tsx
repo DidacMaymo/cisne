@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { repos } from '../data'
 import { useQuery } from '../hooks/useQuery'
 import { firstLine } from '../lib/poem-text'
-import { FeatherDivider } from './brand/FeatherDivider'
+import { SwanDivider } from './brand/SwanDivider'
 
 /** Poemas que comparten etiquetas: una lista breve y discreta, sin barra lateral. */
 export function RelatedPoems({ poemId }: { poemId: string }) {
@@ -11,7 +11,7 @@ export function RelatedPoems({ poemId }: { poemId: string }) {
 
   return (
     <section aria-labelledby="relacionados" className="mx-auto mt-20 max-w-pagina text-center">
-      <FeatherDivider className="mx-auto h-4 w-48 text-gris" />
+      <SwanDivider className="mx-auto h-6 w-48 text-gris" />
       <h2 id="relacionados" className="meta mt-6">
         También te puede interesar
       </h2>

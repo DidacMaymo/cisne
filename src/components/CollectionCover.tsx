@@ -1,4 +1,4 @@
-import { FeatherDivider } from './brand/FeatherDivider'
+import { SwanDivider } from './brand/SwanDivider'
 
 type Props = { title: string; ownerName?: string; size?: 'sm' | 'lg'; className?: string }
 
@@ -20,7 +20,7 @@ export function CollectionCover({ title, ownerName, size = 'sm', className = '' 
         {title}
       </span>
       <span className="flex flex-col items-center gap-2">
-        <FeatherDivider className={`text-gris ${lg ? 'h-3 w-28' : 'h-2 w-16'}`} />
+        <SwanDivider className={`text-gris ${lg ? 'h-5 w-32' : 'h-3 w-20'}`} />
         {ownerName && <span className={`text-gris ${lg ? 'text-meta' : 'text-[0.625rem]'}`}>{ownerName}</span>}
       </span>
     </div>

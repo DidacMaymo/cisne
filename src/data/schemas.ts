@@ -17,6 +17,7 @@ const base = z.object({
   newCollectionTitle: z.string().trim(),
   font: z.enum(['clasica', 'libro', 'pantalla', 'maquina', 'clara']),
   sensitive: z.boolean(),
+  commentsEnabled: z.boolean(),
 })
 
 type Form = z.infer<typeof base>
@@ -66,6 +67,16 @@ export const collectionSchema = z.object({
   title: z.string().trim().min(1, 'Ponle un título a la colección.').max(80, 'El título admite hasta 80 caracteres.'),
   description: z.string().trim().max(400, 'La descripción admite hasta 400 caracteres.'),
   visibility: z.enum(['public', 'private']),
+})
+
+export const MAX_COMMENT_CHARS = 500
+
+export const commentSchema = z.object({
+  body: z
+    .string()
+    .trim()
+    .min(1, 'Escribe tu comentario.')
+    .max(MAX_COMMENT_CHARS, `El comentario admite hasta ${MAX_COMMENT_CHARS} caracteres.`),
 })
 
 export const MAX_BIO_WORDS = 150

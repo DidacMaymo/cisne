@@ -17,6 +17,7 @@ import { PrivacySettings } from './pages/PrivacySettings'
 import { ProfileSettings } from './pages/ProfileSettings'
 import { Recover } from './pages/Recover'
 import { SignIn } from './pages/SignIn'
+import { SupportSettings } from './pages/SupportSettings'
 import { TagPage } from './pages/TagPage'
 import { Write } from './pages/Write'
 
@@ -42,6 +43,7 @@ export function App() {
         <Route path="/ajustes/perfil" element={priv('Perfil', <ProfileSettings />)} />
         <Route path="/ajustes/cuenta" element={priv('Cuenta', <AccountSettings />)} />
         <Route path="/ajustes/privacidad" element={priv('Privacidad', <PrivacySettings />)} />
+        <Route path="/ajustes/apoyos" element={priv('Apoyos', <SupportSettings />)} />
         <Route path="/entrar" element={<SignIn key="entrar" mode="entrar" />} />
         <Route path="/registro" element={<SignIn key="registro" mode="registro" />} />
         <Route path="/recuperar" element={<Recover />} />

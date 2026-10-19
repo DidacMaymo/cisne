@@ -4,7 +4,7 @@ import { normalizeTag } from '../data/normalize'
 import { EmptyState } from '../components/EmptyState'
 import { LoadState } from '../components/LoadState'
 import { PoemList } from '../components/PoemList'
-import { FeatherDivider } from '../components/brand/FeatherDivider'
+import { SwanDivider } from '../components/brand/SwanDivider'
 import { useQuery } from '../hooks/useQuery'
 
 export function TagPage() {
@@ -17,7 +17,7 @@ export function TagPage() {
       <header className="py-4 text-center">
         <p className="meta">Etiqueta</p>
         <h1 className="mt-2 font-serif text-5xl italic">#{name}</h1>
-        <FeatherDivider className="mx-auto mt-8 h-4 w-48 text-gris" />
+        <SwanDivider className="mx-auto mt-8 h-6 w-48 text-gris" />
       </header>
       <LoadState loading={loading} error={error} />
       {data && data.length === 0 && (

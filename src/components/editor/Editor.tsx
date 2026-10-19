@@ -13,7 +13,7 @@ import {
   type FieldErrors,
   type PoemFormValues,
 } from '../../data/schemas'
-import { FeatherDivider } from '../brand/FeatherDivider'
+import { SwanDivider } from '../brand/SwanDivider'
 import { ConfirmDialog } from '../ConfirmDialog'
 import { PoemReader } from '../PoemReader'
 import { FontField } from './FontField'
@@ -46,6 +46,7 @@ function baseForm(poem: Poem | null, profile: Profile): FormState {
     displayName: profile.displayName,
     font: poem?.font ?? 'clasica',
     sensitive: poem?.sensitive ?? false,
+    commentsEnabled: poem?.commentsEnabled ?? false,
   }
 }
 
@@ -178,6 +179,7 @@ export function Editor({ poem, profile, collections, tagSuggestions, pseudonyms,
         displayedPseudonym: v.identity === 'pseudonym' ? v.pseudonym : undefined,
         font: v.font,
         sensitive: v.sensitive,
+        commentsEnabled: v.commentsEnabled,
         tags: v.tags,
         collectionId,
       })
@@ -318,7 +320,7 @@ export function Editor({ poem, profile, collections, tagSuggestions, pseudonyms,
             )}
           </div>
 
-          <FeatherDivider className="mx-auto mt-14 h-4 w-48 text-gris" />
+          <SwanDivider className="mx-auto mt-14 h-6 w-48 text-gris" />
 
           <div className="mx-auto mt-10 grid max-w-xl gap-10">
             <FontField value={form.font} onChange={(font) => set({ font })} />
@@ -338,6 +340,26 @@ export function Editor({ poem, profile, collections, tagSuggestions, pseudonyms,
                   <span id="cisne-negro-ayuda" className="meta block">
                     Se mostrará en negativo, tapado en los listados hasta que alguien decida leerlo, y se podrá
                     ocultar en Explorar.
+                  </span>
+                </span>
+              </label>
+            </div>
+
+            <div>
+              <p className="meta">Comentarios</p>
+              <label className="mt-1 flex min-h-11 items-start gap-3">
+                <input
+                  type="checkbox"
+                  checked={form.commentsEnabled}
+                  onChange={(e) => set({ commentsEnabled: e.target.checked })}
+                  aria-describedby="comentarios-ayuda"
+                  className="mt-1 size-4 shrink-0 accent-tinta"
+                />
+                <span>
+                  Abrir los versos a comentarios
+                  <span id="comentarios-ayuda" className="meta block">
+                    Quien lea podrá subrayar un fragmento y dejar una nota junto a ese verso. Puedes borrar cualquier
+                    comentario, y cerrarlos cuando quieras.
                   </span>
                 </span>
               </label>
@@ -430,7 +452,7 @@ export function Editor({ poem, profile, collections, tagSuggestions, pseudonyms,
         </>
       )}
 
-      <FeatherDivider className="mx-auto mt-14 h-4 w-48 text-gris" />
+      <SwanDivider className="mx-auto mt-14 h-6 w-48 text-gris" />
 
       <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
         {preview && (

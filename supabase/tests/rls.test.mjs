@@ -75,8 +75,8 @@ check('nombre de cuenta único', profiles[0].account_name === 'ana-lia' && profi
 // Ana publica: uno con su nombre, uno anónimo, uno privado, un borrador y uno con pseudónimo.
 // Los dos últimos argumentos (fuente y Cisne negro) son opcionales aquí.
 const save = (args) => {
-  const full = [...args, args[9] ?? 'clasica', args[10] ?? false].slice(0, 11)
-  return q('select public.save_poem($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) as id', full).then((r) => r[0].id)
+  const full = [...args.slice(0, 9), args[9] ?? 'clasica', args[10] ?? false, args[11] ?? false]
+  return q('select public.save_poem($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) as id', full).then((r) => r[0].id)
 }
 const ids = await as(ANA, async () => ({
   named: await save([null, 'Casa de agua', 'Mi casa era un río\n\nque no sabía irse', 'published', 'public', 'profile_name', null, ['#Nostalgia ', 'infancia'], null]),
@@ -122,14 +122,14 @@ await as(null, async () => {
   check('anon no puede apoyar', !!(await fails('select public.toggle_poem_support($1)', [ids.named])))
   const priv = (await q('select public.poem_support_state($1) as s', [ids.priv]))[0].s
   check('un privado ajeno no se puede apoyar', priv.canSupport === false)
-  check('anon no puede guardar poemas', !!(await fails(`select public.save_poem(null,null,'x','published','public','anonymous',null,'{}',null,'clasica',false)`)))
+  check('anon no puede guardar poemas', !!(await fails(`select public.save_poem(null,null,'x','published','public','anonymous',null,'{}',null,'clasica',false,false)`)))
 })
 
 // Bea: no ve lo privado de Ana, no puede tocarlo.
 await as(BEA, async () => {
   check('Bea no ve poemas de Ana en la tabla', (await q('select * from public.poems')).length === 0)
   check('Bea no puede editar el poema de Ana', !!(await fails(
-    `select public.save_poem($1,'hack','x','published','public','profile_name',null,'{}',null,'clasica',false)`, [ids.named])))
+    `select public.save_poem($1,'hack','x','published','public','profile_name',null,'{}',null,'clasica',false,false)`, [ids.named])))
   const del = await db.query('delete from public.poems where id = $1', [ids.named])
   check('Bea no puede borrar el poema de Ana', del.affectedRows === 0)
   check('Bea no ve el perfil de Ana', (await q('select * from public.profiles where id = $1', [ANA])).length === 0)
@@ -199,6 +199,57 @@ await as(null, async () => {
   check('público: número del autor visible', a.count === 1)
   const an = (await q('select public.poem_support_state($1) as s', [ids.anon]))[0].s
   check('un anónimo nunca muestra su número', an.count === null)
+})
+
+// Comentarios en los versos.
+const comments = await as(ANA, async () => ({
+  open: await save([null, 'Abierto', 'primer verso\nsegundo verso', 'published', 'public', 'profile_name', null, [], null, 'clasica', false, true]),
+  closedPriv: await save([null, 'Cerrado', 'nada', 'published', 'private', 'profile_name', null, [], null, 'clasica', false, true]),
+}))
+let beaComment
+await as(BEA, async () => {
+  beaComment = (await q(`select public.add_verse_comment($1, 1, 'segundo', 'Qué bonito') as id`, [comments.open]))[0].id
+  check('Bea comenta un verso', !!beaComment)
+  check('no se comenta un verso que no existe', !!(await fails(`select public.add_verse_comment($1, 5, '', 'x')`, [comments.open])))
+  check('no se comenta un poema con comentarios cerrados', !!(await fails(`select public.add_verse_comment($1, 0, '', 'x')`, [ids.named])))
+  check('no se comenta un poema privado', !!(await fails(`select public.add_verse_comment($1, 0, '', 'x')`, [comments.closedPriv])))
+  check('comentario vacío rechazado', !!(await fails(`select public.add_verse_comment($1, 0, '', '   ')`, [comments.open])))
+  check('Bea no lee la tabla de comentarios', (await q('select * from public.verse_comments')).length === 0)
+  const [c] = await q('select * from public.public_verse_comments where poem_id = $1', [comments.open])
+  check('la vista muestra autor y que Bea puede borrar el suyo', c.author_name === 'Ana Lía' && c.can_delete === true && c.line === 1)
+  check('la vista no expone user_id', !('user_id' in c))
+  // Dejar de apoyar desde los ajustes.
+  const mine = (await q('select public.my_supports() as s'))[0].s
+  check('Bea lista lo que apoya', mine.authors.length === 1 && mine.poems.length === 1 && mine.poems[0].available === true)
+  await q('select public.unsupport_poem($1)', [ids.named])
+  await q(`select public.unsupport_author('ana-lia')`)
+  const after = (await q('select public.my_supports() as s'))[0].s
+  check('Bea deja de apoyar poema y autora', after.authors.length === 0 && after.poems.length === 0)
+})
+await as(null, async () => {
+  const [c] = await q('select can_delete from public.public_verse_comments where poem_id = $1', [comments.open])
+  check('anon ve el comentario sin poder borrarlo', c.can_delete === false)
+  check('anon no puede comentar', !!(await fails(`select public.add_verse_comment($1, 0, '', 'x')`, [comments.open])))
+})
+await as(ANA, async () => {
+  const [c] = await q('select can_delete from public.public_verse_comments where id = $1', [beaComment])
+  check('la autora del poema puede borrar cualquier comentario', c.can_delete === true)
+  await q('select public.delete_verse_comment($1)', [beaComment])
+  check('comentario borrado', (await q('select * from public.public_verse_comments where id = $1', [beaComment])).length === 0)
+})
+// Bea no puede borrar un comentario de Ana en un poema de Ana.
+const anaComment = await as(ANA, async () =>
+  (await q(`select public.add_verse_comment($1, 0, '', 'Nota de la autora') as id`, [comments.open]))[0].id,
+)
+await as(BEA, async () => {
+  check('no se borran comentarios ajenos de poemas ajenos', !!(await fails('select public.delete_verse_comment($1)', [anaComment])))
+})
+// Cerrar los comentarios los oculta (no los borra).
+await as(ANA, () =>
+  save([comments.open, 'Abierto', 'primer verso\nsegundo verso', 'published', 'public', 'profile_name', null, [], null, 'clasica', false, false]),
+)
+await as(null, async () => {
+  check('cerrar comentarios los oculta', (await q('select * from public.public_verse_comments where id = $1', [anaComment])).length === 0)
 })
 
 await as(BEA, () => q('select public.delete_my_account()'))

@@ -57,6 +57,8 @@ export type Poem = {
   font: PoemFont
   /** «Cisne negro»: toca temas sensibles (+18). */
   sensitive: boolean
+  /** Si quien lee puede comentar sus versos. */
+  commentsEnabled: boolean
   tags: Tag[]
   collectionId?: string
   createdAt: string
@@ -79,6 +81,7 @@ export type PoemView = {
   collection: { id: string; title: string } | null
   font: PoemFont
   sensitive: boolean
+  commentsEnabled: boolean
   status: PoemStatus
   visibility: Visibility
   isOwner: boolean
@@ -119,6 +122,28 @@ export type SupportState = {
   count: number | null
   /** No se puede apoyar lo propio, ni a un autor sin página pública. */
   canSupport: boolean
+}
+
+/** Comentario anclado a un verso de un poema. */
+export type VerseComment = {
+  id: string
+  /** Índice del verso (línea del texto, desde 0). */
+  line: number
+  /** Fragmento que se subrayó al comentar. */
+  quote: string
+  body: string
+  authorName: string
+  authorAccountName: string | null
+  createdAt: string
+  /** Quien lo escribió o el autor del poema pueden borrarlo. */
+  canDelete: boolean
+}
+
+/** Lo que apoya el usuario actual, para poder retirarlo desde sus ajustes. */
+export type MySupports = {
+  authors: { accountName: string; displayName: string }[]
+  /** `available` es falso si el poema dejó de ser público: su texto ya no se muestra. */
+  poems: { id: string; title: string; authorName: string; available: boolean }[]
 }
 
 export type Favorite = {

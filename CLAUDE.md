@@ -40,6 +40,9 @@ Navegador ──► Cloudflare Pages (HTML/JS/CSS estáticos de este repo)
 - **Cisne negro**: casilla del editor para poemas con temas sensibles (+18). Se muestran en negativo (fondo tinta, texto blanco), tapados en los listados hasta pulsar «Mostrar el poema», y Explorar permite ocultarlos (preferencia guardada en el navegador).
 - **Apoyar** (autor y poema): excepción decidida por el usuario a «sin contadores». El número es **privado por defecto** (Ajustes → Privacidad), nunca ordena ni destaca nada, y los poemas anónimos o con pseudónimo no muestran su número a nadie más que a su autor. No se puede apoyar lo propio.
 - **Descripción del perfil**: hasta 150 palabras.
+- **Dejar de apoyar**: *Ajustes → Apoyos* lista los autores y poemas que apoyas, con «Dejar de apoyar». Solo lo ve su dueño y no avisa a nadie.
+- **Comentarios en los versos**: el autor los abre por poema (apagados por defecto; solo en poemas públicos). Al subrayar un fragmento aparece «Escribir comentario»; cada verso comentado lleva un puntito con su número en el margen derecho, fuera de las palabras. Se firman con el nombre público de quien comenta; los borra quien los escribió o el autor del poema. Cerrar los comentarios los oculta. Para teclado, «Comentar un verso» permite elegir el verso de una lista.
+- **Separador**: `SwanDivider`, un trazo finísimo que termina en el cisne del emblema (sustituye al de la pluma).
 - Hasta la fase 5 las cuentas son **locales** (un usuario por navegador, contraseña guardada solo como hash con sal) y la interfaz lo dice. «Recuperar contraseña» explica que llegará con el servidor.
 
 ## Skill de diseño
@@ -54,13 +57,13 @@ Si el skill `frontend-design` está instalado, cárgalo antes de cualquier traba
 - Tipografía: serif literaria para títulos, autores y poemas (elige entre Cormorant Garamond, EB Garamond o Newsreader); sans limpia para UI (Inter o Geist). **Pareja elegida: Cormorant Garamond (serif) + Inter (sans)**, self-hosted con `@fontsource`.
 - Poema: columna estrecha (~32–38 ch), interlineado generoso, `white-space: pre-wrap` siempre. Saltos de línea y estrofas son sagrados en listado, lectura, vista previa y búsqueda.
 - **Logotipo**: [brand/cisne-emblema.png](brand/cisne-emblema.png) — cisne de trazo fino cuyo cuerpo y cuello forman un corazón. Vectorízalo fielmente a SVG (`src/components/brand/SwanMark.tsx`, `currentColor`, solo trazos) y úsalo en logo, favicon, estados vacíos y marca final de poema. No lo sustituyas por otro cisne.
-- El cisne aparece con moderación. Separador de pluma: trazo SVG finísimo reutilizable.
+- El cisne aparece con moderación. Separador: trazo SVG finísimo que acaba en el cisne del emblema (`SwanDivider`).
 - Transiciones discretas (≤200 ms) y respeto a `prefers-reduced-motion`.
 - Mobile-first, sin scroll horizontal, objetivos táctiles ≥44 px, foco visible, contraste AA.
 
 ## Rutas
 
-`/` inicio (portada) · `/explorar` · `/etiqueta/:tag` · `/poema/:id` · `/escribir` y `/escribir/:id` · `/autor/:accountName` · `/coleccion/:id` · `/mis/poemas` · `/mis/borradores` · `/mis/colecciones` (alias `/colecciones`) · `/mis/biblioteca` · `/ajustes/perfil` · `/ajustes/privacidad` · `/ajustes/cuenta` · `/entrar` · `/registro` · `/recuperar` · 404 elegante.
+`/` inicio (portada) · `/explorar` · `/etiqueta/:tag` · `/poema/:id` · `/escribir` y `/escribir/:id` · `/autor/:accountName` · `/coleccion/:id` · `/mis/poemas` · `/mis/borradores` · `/mis/colecciones` (alias `/colecciones`) · `/mis/biblioteca` · `/ajustes/perfil` · `/ajustes/privacidad` · `/ajustes/apoyos` · `/ajustes/cuenta` · `/entrar` · `/registro` · `/recuperar` · 404 elegante.
 
 ## Fases
 

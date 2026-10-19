@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import type { PoemFont } from '../data'
 import { formatDate } from '../lib/format'
-import { FeatherDivider } from './brand/FeatherDivider'
+import { SwanDivider } from './brand/SwanDivider'
 import { SwanMark } from './brand/SwanMark'
 import { PoemText } from './PoemText'
 import { TagChip } from './TagChip'
@@ -20,6 +20,8 @@ type Props = {
   font?: PoemFont
   /** «Cisne negro»: la página se lee en negativo. */
   sensitive?: boolean
+  /** Sustituye al texto del poema (p. ej. el poema con comentarios). */
+  textSlot?: ReactNode
   children?: ReactNode
 }
 
@@ -35,6 +37,7 @@ export function PoemReader({
   collection,
   font,
   sensitive = false,
+  textSlot,
   children,
 }: Props) {
   return (
@@ -58,10 +61,10 @@ export function PoemReader({
             authorName
           )}
         </p>
-        <FeatherDivider className="mx-auto mt-8 h-4 w-48 text-gris" />
+        <SwanDivider className="mx-auto mt-8 h-6 w-48 text-gris" />
       </header>
 
-      <PoemText content={content} font={font} className="mx-auto mt-12" />
+      {textSlot ?? <PoemText content={content} font={font} className="mx-auto mt-12" />}
 
       <SwanMark className="mx-auto mt-16 h-10 w-auto text-gris" />
 

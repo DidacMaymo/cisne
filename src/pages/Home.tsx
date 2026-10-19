@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { FeatherDivider } from '../components/brand/FeatherDivider'
+import { SwanDivider } from '../components/brand/SwanDivider'
 import { SwanMark } from '../components/brand/SwanMark'
 
 const doors = [
@@ -50,7 +50,7 @@ export function Home() {
         </div>
       </section>
 
-      <FeatherDivider className="mx-auto mt-10 h-4 w-48 text-gris md:mt-16" />
+      <SwanDivider className="mx-auto mt-10 h-6 w-48 text-gris md:mt-16" />
 
       <section aria-label="Qué puedes hacer en CISNE" className="mx-auto mt-14 max-w-ancho md:mt-20">
         <ol className="grid gap-14 md:grid-cols-3 md:gap-12">

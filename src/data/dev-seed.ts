@@ -39,6 +39,7 @@ type Draft = {
   anonymous?: boolean
   font?: StoredPoem['font']
   sensitive?: boolean
+  comments?: boolean
   title?: string
   content: string
   tags: string[]
@@ -48,6 +49,7 @@ type Draft = {
 const drafts: Draft[] = [
   {
     n: 1,
+    comments: true,
     title: 'Casa de agua',
     tags: ['nostalgia', 'infancia'],
     date: '2026-10-10T09:00:00.000Z',
@@ -176,6 +178,7 @@ const poems: StoredPoem[] = drafts.map((d) => ({
   publicationIdentity: d.anonymous ? 'anonymous' : 'profile_name',
   font: d.font ?? 'clasica',
   sensitive: d.sensitive ?? false,
+  commentsEnabled: d.comments ?? false,
   tagIds: tagIds(...d.tags),
   createdAt: d.date,
   updatedAt: d.date,

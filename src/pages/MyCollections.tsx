@@ -5,7 +5,7 @@ import { CollectionCard } from '../components/CollectionCard'
 import { CollectionForm } from '../components/CollectionForm'
 import { EmptyState } from '../components/EmptyState'
 import { LoadState } from '../components/LoadState'
-import { FeatherDivider } from '../components/brand/FeatherDivider'
+import { SwanDivider } from '../components/brand/SwanDivider'
 import { useQuery } from '../hooks/useQuery'
 
 /** Mis colecciones: poemarios propios y antologías de poemas que me acompañan. */
@@ -34,7 +34,7 @@ export function MyCollections() {
         <p className="mx-auto mt-3 max-w-[44ch] font-serif text-xl italic text-gris">
           Reúne tus poemas en poemarios, o guarda juntos los de otros que te acompañan.
         </p>
-        <FeatherDivider className="mx-auto mt-8 h-4 w-48 text-gris" />
+        <SwanDivider className="mx-auto mt-8 h-6 w-48 text-gris" />
       </header>
 
       <LoadState loading={loading} error={error} />

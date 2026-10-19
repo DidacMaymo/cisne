@@ -3,7 +3,7 @@ import { repos } from '../data'
 import type { PoemStatus } from '../data'
 import { EmptyState } from '../components/EmptyState'
 import { LoadState } from '../components/LoadState'
-import { FeatherDivider } from '../components/brand/FeatherDivider'
+import { SwanDivider } from '../components/brand/SwanDivider'
 import { useQuery } from '../hooks/useQuery'
 import { formatDate } from '../lib/format'
 import { firstLine } from '../lib/poem-text'
@@ -31,7 +31,7 @@ export function MyPoems({ status }: { status: PoemStatus }) {
     <div className="mx-auto max-w-pagina">
       <header className="py-4 text-center">
         <h1 className="font-serif text-5xl">{c.title}</h1>
-        <FeatherDivider className="mx-auto mt-8 h-4 w-48 text-gris" />
+        <SwanDivider className="mx-auto mt-8 h-6 w-48 text-gris" />
         {flash && (
           <p role="status" className="meta mt-6">
             {flash}

@@ -3,12 +3,13 @@ import { NavLink } from 'react-router-dom'
 const links = [
   { to: '/ajustes/perfil', label: 'Perfil' },
   { to: '/ajustes/privacidad', label: 'Privacidad' },
+  { to: '/ajustes/apoyos', label: 'Apoyos' },
   { to: '/ajustes/cuenta', label: 'Cuenta' },
 ] as const
 
 export function SettingsNav() {
   return (
-    <nav aria-label="Ajustes" className="mb-10 flex justify-center gap-8 border-b border-linea">
+    <nav aria-label="Ajustes" className="mb-10 flex flex-wrap justify-center gap-x-6 border-b border-linea">
       {links.map((l) => (
         <NavLink
           key={l.to}

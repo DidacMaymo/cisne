@@ -28,6 +28,23 @@ const publicPoemSchema = z.object({
   collection: z.object({ id: z.string(), title: z.string() }).nullable(),
   font: z.string().transform((f): PoemFont => (isPoemFont(f) ? f : 'clasica')),
   sensitive: z.boolean(),
+  comments_enabled: z.boolean(),
+})
+
+const mySupportsSchema = z.object({
+  authors: z.array(z.object({ accountName: z.string(), displayName: z.string() })),
+  poems: z.array(z.object({ id: z.string(), title: z.string(), authorName: z.string(), available: z.boolean() })),
+})
+
+const commentRowSchema = z.object({
+  id: z.string(),
+  line: z.number(),
+  quote: z.string(),
+  body: z.string(),
+  created_at: z.string(),
+  author_name: z.string(),
+  author_account_name: z.string().nullable(),
+  can_delete: z.boolean(),
 })
 
 const supportStateSchema = z.object({
@@ -37,7 +54,7 @@ const supportStateSchema = z.object({
 })
 
 const PUBLIC_COLS =
-  'id, title, content, created_at, updated_at, published_at, author_name, author_account_name, tags, collection, font, sensitive'
+  'id, title, content, created_at, updated_at, published_at, author_name, author_account_name, tags, collection, font, sensitive, comments_enabled'
 
 type TagRow = { id: string; name: string; normalized_name: string }
 
@@ -52,6 +69,7 @@ type OwnPoemRow = {
   displayed_pseudonym: string | null
   font: PoemFont
   sensitive: boolean
+  comments_enabled: boolean
   created_at: string
   updated_at: string
   published_at: string | null
@@ -60,7 +78,7 @@ type OwnPoemRow = {
 }
 
 const OWN_COLS = `id, author_id, title, content, status, visibility, publication_identity, displayed_pseudonym,
-  font, sensitive, created_at, updated_at, published_at, poem_tags(tags(id, name, normalized_name)),
+  font, sensitive, comments_enabled, created_at, updated_at, published_at, poem_tags(tags(id, name, normalized_name)),
   collection_poems(collection_id, collections(id, title))`
 
 type ProfileRow = {
@@ -121,6 +139,7 @@ function publicView(row: unknown): PoemView {
     collection: r.collection,
     font: r.font,
     sensitive: r.sensitive,
+    commentsEnabled: r.comments_enabled,
     status: 'published',
     visibility: 'public',
     isOwner: false,
@@ -157,6 +176,7 @@ function ownView(r: OwnPoemRow, me: Profile): PoemView {
     collection: col,
     font: isPoemFont(r.font) ? r.font : 'clasica',
     sensitive: r.sensitive,
+    commentsEnabled: r.comments_enabled,
     status: r.status,
     visibility: r.visibility,
     isOwner: true,
@@ -178,6 +198,7 @@ function ownPoem(r: OwnPoemRow): Poem {
     displayedPseudonym: r.displayed_pseudonym ?? undefined,
     font: isPoemFont(r.font) ? r.font : 'clasica',
     sensitive: r.sensitive,
+    commentsEnabled: r.comments_enabled,
     tags: ownTags(r),
     collectionId: r.collection_poems[0]?.collection_id,
     createdAt: r.created_at,
@@ -468,6 +489,7 @@ export function supabaseRepositories(sb: SupabaseClient): Repositories {
           p_collection_id: input.collectionId ?? null,
           p_font: input.font,
           p_sensitive: input.sensitive,
+          p_comments_enabled: input.commentsEnabled,
         })
         fail(error)
         changed()
@@ -730,6 +752,66 @@ export function supabaseRepositories(sb: SupabaseClient): Repositories {
         fail(error)
         changed()
         return data as boolean
+      },
+
+      async listMine() {
+        if (!(await me())) return { authors: [], poems: [] }
+        const { data, error } = await sb.rpc('my_supports')
+        fail(error)
+        return mySupportsSchema.parse(data)
+      },
+
+      async unsupportPoem(poemId) {
+        await requireMe()
+        const { error } = await sb.rpc('unsupport_poem', { p: poemId })
+        fail(error)
+        changed()
+      },
+
+      async unsupportAuthor(accountName) {
+        await requireMe()
+        const { error } = await sb.rpc('unsupport_author', { account: accountName })
+        fail(error)
+        changed()
+      },
+    },
+
+    comments: {
+      async list(poemId) {
+        if (!isUuid(poemId)) return []
+        const { data, error } = await sb
+          .from('public_verse_comments')
+          .select('id, line, quote, body, created_at, author_name, author_account_name, can_delete')
+          .eq('poem_id', poemId)
+          .order('created_at')
+        fail(error)
+        return (data ?? []).map((row) => {
+          const r = commentRowSchema.parse(row)
+          return {
+            id: r.id,
+            line: r.line,
+            quote: r.quote,
+            body: r.body,
+            authorName: r.author_name,
+            authorAccountName: r.author_account_name,
+            createdAt: r.created_at,
+            canDelete: r.can_delete,
+          }
+        })
+      },
+
+      async add(poemId, { line, quote, body }) {
+        await requireMe()
+        const { error } = await sb.rpc('add_verse_comment', { p: poemId, p_line: line, p_quote: quote, p_body: body })
+        fail(error)
+        changed()
+      },
+
+      async remove(commentId) {
+        await requireMe()
+        const { error } = await sb.rpc('delete_verse_comment', { c: commentId })
+        fail(error)
+        changed()
       },
     },
   }
