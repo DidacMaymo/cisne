@@ -1,0 +1,32 @@
+# CI: el mismo health check que usan los agentes, en una máquina limpia.
+# Es el verificador independiente de cada PR: si está en rojo, no se mergea.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  init:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      # La versión de Node de la máquina del usuario: si algo exige más, que falle aquí.
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20.10'
+          cache: npm
+
+      - name: Health check (./init.sh)
+        run: bash init.sh
+
+      - name: Log si falla
+        if: failure()
+        run: tail -100 .tmp/check.log || true
