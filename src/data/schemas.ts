@@ -1,4 +1,7 @@
 import { z } from 'zod'
+import { countWords, MAX_BIO_WORDS, MAX_COMMENT_WORDS } from './words'
+
+export { countWords, MAX_BIO_WORDS, MAX_COMMENT_WORDS }
 
 // Validación del formulario del editor. Los borradores solo exigen texto; al
 // publicar también se valida la identidad con la que se firma.
@@ -69,9 +72,6 @@ export const collectionSchema = z.object({
   visibility: z.enum(['public', 'private']),
 })
 
-/** Los comentarios son notas al margen: breves. */
-export const MAX_COMMENT_WORDS = 50
-
 export const commentSchema = z.object({
   body: z
     .string()
@@ -80,13 +80,6 @@ export const commentSchema = z.object({
     .max(600, 'El comentario es demasiado largo.')
     .refine((v) => countWords(v) <= MAX_COMMENT_WORDS, `El comentario admite hasta ${MAX_COMMENT_WORDS} palabras.`),
 })
-
-export const MAX_BIO_WORDS = 150
-
-export function countWords(text: string): number {
-  const t = text.trim()
-  return t ? t.split(/\s+/).length : 0
-}
 
 const httpUrl = z
   .string()

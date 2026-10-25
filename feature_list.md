@@ -134,14 +134,14 @@
 - **Hecho cuando:** en `https://cisneverso.dmaymo.es/entrar` ya no sale «Versión de prueba…», se puede registrar una cuenta y publicar.
 
 ### F11 — Rendimiento: rutas con carga diferida
-- **Estado:** pending
+- **Estado:** done
 - **Depende de:** F07
 - **Qué:** el JS inicial pesa ~460 KB (~140 KB gzip). Cargar con `React.lazy` las pantallas que no son de lectura (editor, ajustes, colecciones, auth) para que leer un poema sea lo más rápido.
 - **Probar en la UI:** abrir `/poema/:id` en frío: carga sin parpadeos; navegar a `/escribir` muestra un estado de carga coherente con CISNE y luego el editor.
 - **Aceptación:**
-  - [ ] El chunk de entrada baja al menos un 30 % (citar tamaños antes/después de `npm run build`).
-  - [ ] Estado de carga con `LoadState` (sin saltos de maquetación).
-  - [ ] Todas las rutas siguen funcionando al recargar.
+  - [x] El chunk de entrada baja al menos un 30 % (citar tamaños antes/después de `npm run build`).
+  - [x] Estado de carga con `LoadState` (sin saltos de maquetación).
+  - [x] Todas las rutas siguen funcionando al recargar.
 
 ### F12 — Revisión de accesibilidad y móvil
 - **Estado:** pending

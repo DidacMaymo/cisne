@@ -1,23 +1,26 @@
+import { lazy } from 'react'
 import type { ReactNode } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { Layout } from './components/layout/Layout'
 import { RequireSession } from './components/RequireSession'
-import { AccountSettings } from './pages/AccountSettings'
 import { AuthorPage } from './pages/AuthorPage'
 import { CollectionPage } from './pages/CollectionPage'
 import { Explore } from './pages/Explore'
 import { Home } from './pages/Home'
 import { MyPageRedirect } from './pages/MyPageRedirect'
-import { NewPassword } from './pages/NewPassword'
 import { NotFound } from './pages/NotFound'
 import { PoemPage } from './pages/PoemPage'
-import { PrivacySettings } from './pages/PrivacySettings'
-import { ProfileSettings } from './pages/ProfileSettings'
-import { Recover } from './pages/Recover'
-import { SignIn } from './pages/SignIn'
-import { SupportSettings } from './pages/SupportSettings'
 import { TagPage } from './pages/TagPage'
-import { Write } from './pages/Write'
+
+// Lectura: en el chunk inicial. Editor, ajustes y cuenta: se descargan al entrar.
+const AccountSettings = lazy(() => import('./pages/AccountSettings').then((m) => ({ default: m.AccountSettings })))
+const NewPassword = lazy(() => import('./pages/NewPassword').then((m) => ({ default: m.NewPassword })))
+const PrivacySettings = lazy(() => import('./pages/PrivacySettings').then((m) => ({ default: m.PrivacySettings })))
+const ProfileSettings = lazy(() => import('./pages/ProfileSettings').then((m) => ({ default: m.ProfileSettings })))
+const Recover = lazy(() => import('./pages/Recover').then((m) => ({ default: m.Recover })))
+const SignIn = lazy(() => import('./pages/SignIn').then((m) => ({ default: m.SignIn })))
+const SupportSettings = lazy(() => import('./pages/SupportSettings').then((m) => ({ default: m.SupportSettings })))
+const Write = lazy(() => import('./pages/Write').then((m) => ({ default: m.Write })))
 
 const priv = (title: string, page: ReactNode) => <RequireSession title={title}>{page}</RequireSession>
 
