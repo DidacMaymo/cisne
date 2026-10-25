@@ -63,6 +63,42 @@
   - [x] Tests de `src/data/discover.ts` (misma semilla → mismo orden; no dos seguidos de la misma voz).
   - [x] Tests del repositorio local: un poema privado o borrador no sale en `listPublic`/`search`; uno anónimo no expone autor.
 
+### F15 — «Mi página»: poemas, borradores y colecciones en una sola página
+- **Estado:** pending
+- **Depende de:** F08
+- **Prioridad:** la siguiente (pedida por el usuario el 2026-10-25).
+- **Qué:** hoy «Mis poemas», «Mis borradores» y «Mis colecciones» son tres páginas sueltas y casi escondidas en el pie; el propio usuario no encontró «Mis poemas». Se unen en **una sola página de autor** que, vista por su dueño, muestra todo lo suyo en tres pestañas. Y se ordena la navegación: en móvil, barra inferior; en escritorio, todo arriba y sin menús duplicados abajo.
+- **Decisiones:**
+  - La página es la misma `/autor/:accountName`. Si la mira **otra persona** (o sin sesión), se ve exactamente como ahora: solo lo publicado y público, firmado con su nombre. Si la mira **su dueño**, debajo de la cabecera (nombre, bio, enlaces) aparecen tres pestañas: **Publicados · Borradores · Colecciones**.
+    - *Publicados*: todos sus poemas publicados, también los privados, anónimos y con pseudónimo, cada uno con una marca discreta («Privado», «Anónimo», «Como …») que solo ve él.
+    - *Borradores*: sus borradores, para seguir escribiendo.
+    - *Colecciones*: todas, públicas y privadas, con «Nueva colección» (lo que hoy hace `/mis/colecciones`).
+    - La pestaña va en la URL (`?ver=publicados|borradores|colecciones`; por defecto `publicados`) para que se pueda enlazar y volver atrás.
+    - Un enlace discreto «Ver como lo ven los demás» (muestra la vista pública) y otro a «Ajustes».
+  - Ruta corta `/mi-pagina`: con sesión redirige a `/autor/<mi accountName>`; sin sesión, a entrar.
+  - Las rutas viejas siguen funcionando y redirigen a su pestaña: `/mis/poemas` → `?ver=publicados`, `/mis/borradores` → `?ver=borradores`, `/mis/colecciones` y `/colecciones` → `?ver=colecciones`.
+  - **«Biblioteca»** (poemas de otros que guardo) se queda como página aparte: no es mía, es de lectura.
+  - **Navegación**:
+    - Escritorio (≥ md): cabecera con logo · Inicio · Explorar · Biblioteca · **Mi página** · botón «Escribir un poema» · cuenta (sin sesión «Entrar»). Sin barra inferior y **sin la lista de enlaces del pie**: el pie queda solo con la frase de CISNE.
+    - Móvil: cabecera mínima (logo, y «Entrar» si no hay sesión). Barra inferior fija: Inicio · Explorar · Escribir · Biblioteca · **Mi página**. El pie, igual que en escritorio, sin enlaces duplicados.
+    - Desaparece «Colecciones» como entrada del menú.
+  - **Privacidad**: lo privado del dueño se carga solo con `listMine`/`collections.listMine` (protegido por RLS). La vista pública no cambia sus consultas. Nada de lo privado o anónimo puede aparecer al mirar la página de otra persona.
+- **Probar en la UI:**
+  1. Con sesión, en escritorio: la cabecera muestra Inicio · Explorar · Biblioteca · Mi página; el pie no repite enlaces; no hay barra inferior.
+  2. «Mi página» → mi página de autor con las pestañas Publicados · Borradores · Colecciones. Un poema anónimo y uno privado salen en Publicados con su marca.
+  3. Cambiar de pestaña cambia la URL; atrás vuelve a la pestaña anterior. `/mis/borradores` abre la pestaña Borradores.
+  4. «Ver como lo ven los demás» (o abrir mi página en incógnito): sin pestañas, sin el anónimo ni el privado.
+  5. A 375 px: barra inferior con 5 entradas, sin scroll horizontal, objetivos ≥ 44 px; las pestañas caben o se desplazan sin cortarse.
+  6. Sin sesión: «Mi página» lleva a entrar y, tras entrar, vuelve a mi página.
+- **Aceptación:**
+  - [ ] Pestañas solo para el dueño, con estado en `?ver=` y accesibles (`role="tablist"`/`tab`/`tabpanel` o enlaces con `aria-current`), navegables con teclado.
+  - [ ] Publicados del dueño incluye privados, anónimos y con pseudónimo, marcados; la vista pública es idéntica a la actual (mismas consultas).
+  - [ ] Borradores y Colecciones reutilizan lo que hoy hacen `MyPoems` y `MyCollections` (sin duplicar lógica); esas páginas sueltas desaparecen o quedan solo como componentes.
+  - [ ] `/mi-pagina` y las rutas viejas redirigen a la pestaña correcta.
+  - [ ] Cabecera, barra inferior y pie según lo descrito; ninguna entrada de menú duplicada en escritorio.
+  - [ ] Test unitario o del repo local que demuestre que el anónimo y el privado del dueño no salen en `listPublic({ authorAccountName })`.
+  - [ ] Pasos de «Probar en la UI» documentados en `progress/F15-impl.md`, incluido 375 px.
+
 ### F09 — Denunciar un poema
 - **Estado:** pending
 - **Depende de:** F07
