@@ -53,8 +53,8 @@ desarrollo" y solo cargados con `import.meta.env.DEV`. En producción nunca.
 `/ajustes/privacidad` · `/ajustes/apoyos` · `/entrar` · `/registro` ·
 `/recuperar` · `/nueva-contrasena` · 404.
 
-Las privadas van envueltas en `RequireSession`. `public/_redirects`
-(`/* /index.html 200`) hace que funcionen al recargar en Pages.
+Las privadas van envueltas en `RequireSession`. `wrangler.jsonc`
+(`not_found_handling: single-page-application`) hace que funcionen al recargar en Cloudflare.
 
 ## Backend (Supabase)
 
