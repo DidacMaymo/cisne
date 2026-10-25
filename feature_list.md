@@ -52,16 +52,16 @@
   - [x] `scripts/app.sh start|stop` levanta y para Vite en :5173.
 
 ### F08 — Tests unitarios del frontend
-- **Estado:** pending
+- **Estado:** done
 - **Depende de:** F07
 - **Qué:** añadir Vitest (versión compatible con Node 20.10) y cubrir la lógica pura que más se rompe sin que se note.
 - **Probar en la UI:** nada visible; `npm test` en verde.
 - **Aceptación:**
-  - [ ] Script `npm test` (Vitest, sin modo watch) y `init.sh` lo ejecuta.
-  - [ ] Tests de `src/data/normalize.ts` (etiquetas: mayúsculas, espacios, `#`, tildes).
-  - [ ] Tests de `src/lib/poem-markup.ts` y `src/lib/poem-text.ts` (saltos de línea y estrofas se conservan; negrita/cursiva).
-  - [ ] Tests de `src/data/discover.ts` (misma semilla → mismo orden; máx. 1-2 por autor).
-  - [ ] Tests del repositorio local: un poema privado o borrador no sale en `listPublic`/`search`; uno anónimo no expone autor.
+  - [x] Script `npm test` (Vitest, sin modo watch) y `init.sh` lo ejecuta.
+  - [x] Tests de `src/data/normalize.ts` (etiquetas: mayúsculas, espacios, `#`, tildes).
+  - [x] Tests de `src/lib/poem-markup.ts` y `src/lib/poem-text.ts` (saltos de línea y estrofas se conservan; negrita/cursiva).
+  - [x] Tests de `src/data/discover.ts` (misma semilla → mismo orden; no dos seguidos de la misma voz).
+  - [x] Tests del repositorio local: un poema privado o borrador no sale en `listPublic`/`search`; uno anónimo no expone autor.
 
 ### F09 — Denunciar un poema
 - **Estado:** pending
