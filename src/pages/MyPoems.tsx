@@ -1,50 +1,37 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { repos } from '../data'
-import type { PoemStatus } from '../data'
+import type { PoemStatus, PoemView } from '../data'
 import { EmptyState } from '../components/EmptyState'
 import { LoadState } from '../components/LoadState'
-import { SwanDivider } from '../components/brand/SwanDivider'
 import { useQuery } from '../hooks/useQuery'
 import { formatDate } from '../lib/format'
 import { firstLine } from '../lib/poem-text'
 
-const copy = {
-  published: {
-    title: 'Mis poemas',
-    empty: 'Aún no has publicado ningún poema.',
-    cta: 'Escribir un poema',
-  },
-  draft: {
-    title: 'Mis borradores',
-    empty: 'No tienes borradores guardados.',
-    cta: 'Escribir un poema',
-  },
+const empty = {
+  published: 'Aún no has publicado ningún poema.',
+  draft: 'No tienes borradores guardados.',
 } as const
 
-/** Espacio privado del autor: lo publicado y los borradores, para seguir editando. */
+/** Marcas que solo ve su dueño: privado, anónimo o con pseudónimo. */
+function marks(p: PoemView): string[] {
+  const out: string[] = []
+  if (p.visibility === 'private') out.push('Privado')
+  if (p.authorAccountName === null) out.push(p.authorName === 'Anónimo' ? 'Anónimo' : `Como ${p.authorName}`)
+  return out
+}
+
+/** Lista privada del autor (publicados o borradores), para seguir editando. Va dentro de «Mi página». */
 export function MyPoems({ status }: { status: PoemStatus }) {
-  const flash = (useLocation().state as { flash?: string } | null)?.flash
   const { data, error, loading } = useQuery(() => repos.poems.listMine(status), [status])
-  const c = copy[status]
 
   return (
-    <div className="mx-auto max-w-pagina">
-      <header className="py-4 text-center">
-        <h1 className="font-serif text-5xl">{c.title}</h1>
-        <SwanDivider className="mx-auto mt-8 h-6 w-48 text-gris" />
-        {flash && (
-          <p role="status" className="meta mt-6">
-            {flash}
-          </p>
-        )}
-      </header>
-
+    <div>
       <LoadState loading={loading} error={error} />
 
       {data && data.length === 0 && (
-        <EmptyState title={c.empty}>
+        <EmptyState title={empty[status]}>
           <Link to="/escribir" className="btn">
-            {c.cta}
+            Escribir un poema
           </Link>
         </EmptyState>
       )}
@@ -58,8 +45,7 @@ export function MyPoems({ status }: { status: PoemStatus }) {
                   {p.title ?? <span className="italic">{firstLine(p.content)}</span>}
                 </p>
                 <p className="meta">
-                  {formatDate(status === 'draft' ? p.updatedAt : p.publishedAt)}
-                  {status === 'published' && p.visibility === 'private' && ' · Privado'}
+                  {[formatDate(status === 'draft' ? p.updatedAt : p.publishedAt), ...(status === 'published' ? marks(p) : [])].join(' · ')}
                 </p>
               </div>
               <div className="flex shrink-0 items-center gap-5">

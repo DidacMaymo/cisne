@@ -5,10 +5,9 @@ import { CollectionCard } from '../components/CollectionCard'
 import { CollectionForm } from '../components/CollectionForm'
 import { EmptyState } from '../components/EmptyState'
 import { LoadState } from '../components/LoadState'
-import { SwanDivider } from '../components/brand/SwanDivider'
 import { useQuery } from '../hooks/useQuery'
 
-/** Mis colecciones: poemarios propios y antologías de poemas que me acompañan. */
+/** Mis colecciones (públicas y privadas), dentro de «Mi página». */
 export function MyCollections() {
   const navigate = useNavigate()
   const { data, error, loading } = useQuery(() => repos.collections.listMine(), [])
@@ -28,14 +27,10 @@ export function MyCollections() {
   )
 
   return (
-    <div className="mx-auto max-w-pagina">
-      <header className="py-4 text-center">
-        <h1 className="font-serif text-5xl">Mis colecciones</h1>
-        <p className="mx-auto mt-3 max-w-[44ch] font-serif text-xl italic text-gris">
-          Reúne tus poemas en poemarios, o guarda juntos los de otros que te acompañan.
-        </p>
-        <SwanDivider className="mx-auto mt-8 h-6 w-48 text-gris" />
-      </header>
+    <div>
+      <p className="mx-auto max-w-[44ch] text-center font-serif text-xl italic text-gris">
+        Reúne tus poemas en poemarios, o guarda juntos los de otros que te acompañan.
+      </p>
 
       <LoadState loading={loading} error={error} />
 
@@ -52,7 +47,7 @@ export function MyCollections() {
       {data && data.length > 0 && (
         <>
           {!creating && (
-            <p className="text-center">
+            <p className="mt-6 text-center">
               <button type="button" className="btn" onClick={() => setCreating(true)}>
                 Nueva colección
               </button>

@@ -4,8 +4,8 @@ const items = [
   { to: '/', label: 'Inicio' },
   { to: '/explorar', label: 'Explorar' },
   { to: '/escribir', label: 'Escribir' },
-  { to: '/mis/colecciones', label: 'Colecciones' },
   { to: '/mis/biblioteca', label: 'Biblioteca' },
+  { to: '/mi-pagina', label: 'Mi página' },
 ] as const
 
 export function MobileNav() {
