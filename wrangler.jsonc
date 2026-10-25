@@ -1,0 +1,11 @@
+// Despliegue en Cloudflare Workers (static assets): sirve dist/ desde su CDN.
+// Sin código de servidor: es la web compilada por `npm run build`.
+{
+  "name": "cisne",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "./dist",
+    // Rutas de la SPA (/poema/123…) → index.html, y React Router decide.
+    "not_found_handling": "single-page-application"
+  }
+}

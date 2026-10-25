@@ -14,7 +14,7 @@ Cada pieza se despliega por su lado y "mira" solo su parte del repo:
 
 | Pieza | Dónde | Cómo llega el código | Coste |
 |---|---|---|---|
-| Frontend | Cloudflare Pages | En cada `push` a `main`, Pages hace `npm run build` y publica `dist/`. Cada PR tiene su URL de vista previa | 0 € |
+| Frontend | Cloudflare (Worker con static assets, `wrangler.jsonc`) | En cada `push` a `main`, Cloudflare hace `npm run build` y publica `dist/`. Cada PR tiene su URL de vista previa | 0 € |
 | Backend | Supabase (nube) | Las migraciones se aplican al proyecto: a mano (SQL Editor) o con `npx supabase db push` (F13 lo automatiza desde GitHub) | 0 € |
 
 El frontend sabe dónde está el backend por dos variables de entorno
@@ -52,10 +52,17 @@ día que se quede, el plan Pro son ~25 $/mes.
 ## Pasos (tareas del usuario, ver `feature_list.md`)
 
 1. **U1** — Crear el proyecto Supabase y conectarlo en local: `todobackend.md` §1-5.
-2. **U2** — Cloudflare Pages: *Workers & Pages → Create → Pages → Connect to Git* →
-   repo `DidacMaymo/cisne`, build `npm run build`, output `dist`, variables
-   `NODE_VERSION=20`, `VITE_SUPABASE_URL`, `VITE_SUPABASE_PUBLISHABLE_KEY`.
-   En Supabase → *Authentication → URL Configuration*: Site URL y Redirect
-   URLs con el dominio de Pages.
+2. **U2** — Cloudflare (*Workers & Pages → Create application → Import a
+   repository*; Cloudflare ya no separa Pages, se despliega como Worker con
+   *static assets* usando `wrangler.jsonc`):
+   - Repo `DidacMaymo/cisne`. Build command: `npm run build`. Deploy command:
+     `npx wrangler deploy` (el que propone).
+   - **Antes del primer despliegue**: *Settings → Build → Variables and
+     secrets* → `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY`. Tienen
+     que ser variables **de build** (se incrustan al compilar); como variables
+     de runtime del Worker no sirven. Si ya desplegó sin ellas, añádelas y
+     relanza el build.
+   - En Supabase → *Authentication → URL Configuration*: Site URL y Redirect
+     URLs (`https://cisne.<tu-subdominio>.workers.dev/**`).
 3. **U3** — Antes de abrir al público: SMTP propio (Resend/Brevo, gratis) y
    *Confirm email* activado.
