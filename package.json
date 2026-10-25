@@ -8,6 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
+    "test": "vitest run",
     "test:db": "node supabase/tests/rls.test.mjs"
   },
   "dependencies": {
@@ -38,6 +39,7 @@
     "tailwindcss": "^4.3.3",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.71.1",
-    "vite": "^6.4.4"
+    "vite": "^6.4.4",
+    "vitest": "3.2.4"
   }
 }
