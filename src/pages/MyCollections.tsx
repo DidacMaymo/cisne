@@ -29,7 +29,7 @@ export function MyCollections() {
   return (
     <div>
       <p className="mx-auto max-w-[44ch] text-center font-serif text-xl italic text-gris">
-        Reúne tus poemas en poemarios, o guarda juntos los de otros que te acompañan.
+        Reúne tus poemas en poemarios, o guarda juntos los de otros.
       </p>
 
       <LoadState loading={loading} error={error} />

@@ -12,6 +12,8 @@
 - 2026-10-25 — F08 Tests unitarios (Vitest 3.2.4, 30 tests: normalize, poem-markup, discover, repo local). APPROVED.
 - 2026-10-25 — F15 «Mi página» (pestañas Publicados/Borradores/Colecciones para el dueño en `/autor/:accountName`, redirecciones de rutas viejas, barra inferior móvil, pie sin enlaces; `init.sh` solo cuenta features F* en `in_progress`). APPROVED.
 
+- 2026-10-25 — F16 Ajustes de textos (portada «que te emocionan», pie sin el lema, biblioteca vacía, colecciones). APPROVED.
+
 ## Deuda
 - `CLAUDE.md` anterior (fases 1-6) sustituido por el arnés; su contenido de diseño vive en `docs/conventions.md` y el técnico en `docs/architecture.md`.
 - `todobackend.md` sigue siendo la guía de las tareas U1-U3; cuando estén hechas, moverla a `docs/` o borrarla.
