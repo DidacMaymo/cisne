@@ -7,5 +7,7 @@
     "directory": "./dist",
     // Rutas de la SPA (/poema/123…) → index.html, y React Router decide.
     "not_found_handling": "single-page-application"
-  }
+  },
+  // Vista previa por rama/PR (`wrangler preview`). Puede ir vacío.
+  "previews": {}
 }
