@@ -16,6 +16,8 @@
 
 - 2026-10-25 — F17 Cabecera fija, Biblioteca como pestaña de Mi página, Instagram y TikTok en el pie (URLs genéricas hasta U4); `.claude/launch.json` fuera del repo. APPROVED (3 vueltas: pestañas de Mi página a 375 px en una línea).
 
+- 2026-10-25 — F19 Textos de la portada más simples (título «Un lugar para la poesía.», Leer/Descubrir/Escribir, «Aquí solo hay palabras» sin «Sin contadores»). APPROVED (2ª vuelta: espacio en la lista).
+
 ## Deuda
 - `CLAUDE.md` anterior (fases 1-6) sustituido por el arnés; su contenido de diseño vive en `docs/conventions.md` y el técnico en `docs/architecture.md`.
 - `todobackend.md` sigue siendo la guía de las tareas U1-U3; cuando estén hechas, moverla a `docs/` o borrarla.

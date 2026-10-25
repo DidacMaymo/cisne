@@ -212,3 +212,17 @@
 - **Estado:** pending
 - **Depende de:** U1
 - **Qué:** página «Privacidad» enlazada desde el pie: qué datos guarda CISNE (cuenta, poemas, preferencias en el navegador), que no usa cookies de seguimiento ni analítica (por eso no hay banner), responsable y email de contacto, y cómo borrar la cuenta. Hace falta que el usuario dé nombre del responsable y email. Hacer antes de U3.
+
+### F19 — Textos de la portada más simples
+- **Estado:** done
+- **Depende de:** F17
+- **Qué:** título, descripciones de Leer/Descubrir/Escribir y bloque «Aquí solo hay palabras» más breves y directos (textos decididos con el usuario).
+- **Probar en la UI:** inicio a 375 px y en escritorio → el título dice «Un lugar para la poesía.», las tres columnas tienen los textos nuevos, y la lista dice «Sin fotografías · Sin seguidores · Sin rankings» con la frase «Aquí los poemas se descubren al azar, no por popularidad.»
+- **Aceptación:**
+  - [x] `src/pages/Home.tsx`, título: «Un lugar para la poesía.»
+  - [x] Leer: «Lee poesía en un formato limpio y cuidado, pensado para disfrutar cada poema sin distracciones.»
+  - [x] Descubrir: «Explora poemas por temas, encuentra nuevos autores y guarda los que te gusten en tu biblioteca o en colecciones.»
+  - [x] Escribir: «Escribe y publica tus poemas, elige cómo firmarlos y organiza tu obra en poemarios.»
+  - [x] Lista: «Sin fotografías», «Sin seguidores», «Sin rankings» (se quita «Sin contadores», sin sustituto).
+  - [x] Descripción bajo la lista: «Aquí los poemas se descubren al azar, no por popularidad.» (sustituye a la frase larga actual).
+  - [x] El resto de la portada (subtítulo, botones, separador, bloque final) sin cambios; `./init.sh` en verde.
