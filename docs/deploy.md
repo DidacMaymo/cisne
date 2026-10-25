@@ -1,5 +1,10 @@
 # Despliegue
 
+## Dónde está
+
+- Web: **https://cisneverso.dmaymo.es** (Worker `cisne` en la cuenta de Cloudflare del usuario). Cada merge a `main` despliega producción; cada rama/PR tiene su vista previa en `*.workers.dev`.
+- Backend: proyecto `cisne` de Supabase.
+
 ## Un repo, dos despliegues
 
 No hacen falta dos repos ni dos carpetas: el repo ya es un *monorepo* pequeño.
