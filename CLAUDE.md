@@ -27,9 +27,13 @@ verificas; el código lo escriben los subagentes.
   `git switch main && git pull --ff-only`, y la rama sale de ese `main`
   actualizado. Si hay cambios sin commitear o el pull falla, **para y pregunta**.
 - ✅ Tú (y solo tú, nunca un subagente) trabajas **cada feature en su rama**,
-  haces commit + push de la rama y **abres el PR**. Nunca push a `main`, nunca
-  `gh pr merge`: el merge lo hace el usuario tras revisar el PR con la CI en
-  verde. Nunca `--force`, `--amend` ni `rebase`.
+  haces commit + push de la rama, **abres el PR y lo mergeas** (decisión del
+  usuario, 2026-10-25). Solo mergeas si el review es `APPROVED` (o, en ramas
+  `docs/`/`chore/` sin código, si lo has revisado tú) **y** la CI está en verde,
+  y siempre con `gh pr merge <N> --merge --delete-branch`. Nunca `--admin`
+  (saltaría la CI), nunca push a `main`, nunca `--force`, `--amend` ni `rebase`.
+  Ojo: **cada merge a `main` publica en producción** (`docs/deploy.md`); dilo
+  en la entrega.
 - ✅ Las tareas `U*` de `feature_list.md` son del usuario (cuentas, claves,
   paneles). No las hagas tú: recuérdaselas cuando bloqueen la siguiente feature.
 
@@ -38,8 +42,9 @@ verificas; el código lo escriben los subagentes.
 ```
 usuario ──► líder
              0. ¿PR abierto? `gh pr list --author @me --state open`. Si hay
-                uno de la feature anterior sin mergear, PARA: pide al usuario
-                que lo revise y mergee.
+                uno de la feature anterior sin mergear: si cumple las
+                condiciones de merge (APPROVED + CI verde), mergéalo; si no,
+                PARA y cuéntaselo al usuario.
              1. git switch main && git pull --ff-only
                 ./init.sh --quick (si está en rojo: para y reporta)
              2. elige la siguiente feature pending cuyas dependencias estén
@@ -68,8 +73,10 @@ usuario ──► líder
                 Si el push falla, NO lo fuerces: para y avisa al usuario.
              9. CI: `gh pr checks --watch`. Rojo → `gh run view --log-failed`,
                 vuelve a 4 con la causa (arreglo en commit nuevo, misma rama).
-            10. entrega al usuario: resumen + enlace al PR + estado de la CI.
-                El merge lo hace el usuario.
+            10. CI verde → `gh pr merge <N> --merge --delete-branch`,
+                `git switch main && git pull --ff-only`.
+            11. entrega al usuario: resumen + enlace al PR + CI + «publicado
+                en producción».
 ```
 
 ### Escalado
@@ -129,7 +136,7 @@ un subagente, dale siempre:
 Qué ha cambiado: <2-4 bullets>
 Cómo probarlo: <el "Probar en la UI" de la feature>
 
-PR: https://github.com/DidacMaymo/cisne/pull/N · CI ✅ · pendiente de tu merge
+PR: https://github.com/DidacMaymo/cisne/pull/N · CI ✅ · mergeado y publicado en producción
 Commit:
 ```
 feat(poemas): botón para denunciar un poema
