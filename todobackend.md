@@ -19,12 +19,13 @@ Mientras no hagas esto, la web funciona en **modo local** (todo se guarda en tu 
 ## 2. Crear las tablas
 
 - [ ] En el menú de la izquierda: **SQL Editor → New query**.
-- [ ] Hay **tres** archivos en `supabase/migrations/` y van **en este orden**, cada uno en una consulta nueva:
+- [ ] Hay **cuatro** archivos en `supabase/migrations/` y van **en este orden**, cada uno en una consulta nueva:
   1. `20261018120000_init.sql` (tablas y seguridad)
   2. `20261019120000_fuentes_cisne_negro_apoyos.sql` (tipografías, Cisne negro, apoyos y descripción de 150 palabras)
   3. `20261020120000_comentarios_y_apoyos.sql` (comentarios en los versos y «dejar de apoyar»)
+  4. `20261101120000_denunciar_poema.sql` (denunciar un poema)
 - [ ] Para cada uno: ábrelo en tu editor, copia **todo** su contenido, pégalo y pulsa **Run**. Debe decir «Success. No rows returned».
-- [ ] Comprueba en **Table Editor** que aparecen: `profiles`, `poems`, `tags`, `poem_tags`, `collections`, `collection_poems`, `favorites`, `reports`, `poem_supports`, `author_supports`, `verse_comments`.
+- [ ] Comprueba en **Table Editor** que aparecen: `profiles`, `poems`, `tags`, `poem_tags`, `collections`, `collection_poems`, `favorites`, `reports`, `poem_supports`, `author_supports`, `verse_comments`. (Las denuncias van en `reports`, que ya existía.)
 - [ ] Si el **Security Advisor** avisa de vistas con «security definer» (`public_poems`, etc.), es normal: está hecho a propósito.
 
 ## 3. Configurar la autenticación

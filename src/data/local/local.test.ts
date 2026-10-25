@@ -75,6 +75,32 @@ describe('repositorio local: «Mi página»', () => {
   })
 })
 
+describe('repositorio local: denuncias', () => {
+  it('no se denuncia el poema propio', async () => {
+    const p = await repos.poems.save(base)
+    await expect(repos.reports.report(p.id, { category: 'odio' })).rejects.toThrow('propio')
+  })
+
+  it('«Otro motivo» exige texto y el texto admite 50 palabras', async () => {
+    const p = await repos.poems.save(base)
+    await expect(repos.reports.report(p.id, { category: 'otro' })).rejects.toThrow('motivo')
+    await expect(
+      repos.reports.report(p.id, { category: 'plagio', detail: Array(51).fill('a').join(' ') }),
+    ).rejects.toThrow('50 palabras')
+  })
+})
+
+describe('repositorio local: denuncias a poemas ajenos', () => {
+  it('se denuncia un poema de ejemplo y la segunda vez dice «Ya has denunciado»', async () => {
+    vi.resetModules()
+    vi.stubEnv('DEV', true)
+    const dev = (await import('./index')).localRepositories
+    const [ajeno] = await dev.poems.listPublic()
+    await dev.reports.report(ajeno.id, { category: 'plagio' })
+    await expect(dev.reports.report(ajeno.id, { category: 'plagio' })).rejects.toThrow('Ya has denunciado')
+  })
+})
+
 describe('repositorio local: anonimato', () => {
   it('un poema anónimo no expone al autor', async () => {
     const p = await repos.poems.save({ ...base, publicationIdentity: 'anonymous' })

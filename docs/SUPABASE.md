@@ -23,6 +23,7 @@ Sin las variables de entorno, la web sigue funcionando en **modo local**
    1. [`20261018120000_init.sql`](../supabase/migrations/20261018120000_init.sql)
    2. [`20261019120000_fuentes_cisne_negro_apoyos.sql`](../supabase/migrations/20261019120000_fuentes_cisne_negro_apoyos.sql)
    3. [`20261020120000_comentarios_y_apoyos.sql`](../supabase/migrations/20261020120000_comentarios_y_apoyos.sql)
+   4. [`20261101120000_denunciar_poema.sql`](../supabase/migrations/20261101120000_denunciar_poema.sql)
 3. Cada uno debe terminar con «Success. No rows returned». En *Table Editor* verás `profiles`, `poems`, `tags`, `poem_tags`, `collections`, `collection_poems`, `favorites`, `reports`, `poem_supports`, `author_supports` y `verse_comments`, todas con el candado de RLS.
 
 > Alternativa con la CLI de Supabase: `npx supabase login`, `npx supabase link --project-ref TU-REF` y `npx supabase db push`.

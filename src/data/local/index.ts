@@ -705,4 +705,28 @@ export const localRepositories: Repositories = {
       })
     },
   },
+
+  reports: {
+    async report(poemId, { category, detail }) {
+      const w = await world()
+      const p = w.poems.find((x) => x.id === poemId)
+      commit((s) => {
+        const userId = requireMe(s)
+        if (!['odio', 'acoso', 'plagio', 'otro'].includes(category)) throw new Error('Elige un motivo.')
+        const text = (detail ?? '').trim()
+        if (text && (countWords(text) > 50 || text.length > 600)) {
+          throw new Error('La explicación admite hasta 50 palabras.')
+        }
+        if (category === 'otro' && !text) throw new Error('Cuéntanos brevemente el motivo.')
+        if (!p || !(isPublic(p) || p.authorId === userId)) {
+          throw new Error('Este poema no existe o es privado.')
+        }
+        if (p.authorId === userId) throw new Error('No puedes denunciar tu propio poema.')
+        if (s.reports.some((r) => r.userId === userId && r.poemId === poemId)) {
+          throw new Error('Ya has denunciado este poema. Lo revisaremos.')
+        }
+        s.reports.push({ userId, poemId, category, detail: text, createdAt: new Date().toISOString() })
+      })
+    },
+  },
 }

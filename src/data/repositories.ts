@@ -142,6 +142,13 @@ export interface CommentRepository {
   remove(commentId: string): Promise<void>
 }
 
+export type ReportCategory = 'odio' | 'acoso' | 'plagio' | 'otro'
+
+export interface ReportRepository {
+  /** Denuncia un poema ajeno y visible. Falla con un mensaje claro si ya se denunció. */
+  report(poemId: string, input: { category: ReportCategory; detail?: string }): Promise<void>
+}
+
 export type Repositories = {
   auth: AuthRepository
   poems: PoemRepository
@@ -151,4 +158,5 @@ export type Repositories = {
   favorites: FavoriteRepository
   supports: SupportRepository
   comments: CommentRepository
+  reports: ReportRepository
 }

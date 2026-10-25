@@ -8,6 +8,7 @@ import { AnnotatedPoem } from '../components/comments/AnnotatedPoem'
 import { FavoriteButton } from '../components/FavoriteButton'
 import { LoadState } from '../components/LoadState'
 import { PoemReader } from '../components/PoemReader'
+import { ReportButton } from '../components/ReportButton'
 import { RelatedPoems } from '../components/RelatedPoems'
 import { ShareButton } from '../components/ShareButton'
 import { SupportButton } from '../components/SupportButton'
@@ -94,6 +95,7 @@ export function PoemPage() {
           <AddToCollection poemId={poem.id} poemTitle={poem.title ?? firstLine(poem.content)} signedIn={signedIn} />
           <SupportButton kind="poem" poemId={poem.id} name={poem.title ?? firstLine(poem.content)} />
           {!notPublic && <ShareButton title={poem.title ?? firstLine(poem.content)} author={poem.authorName} />}
+          {!poem.isOwner && !notPublic && <ReportButton poemId={poem.id} signedIn={signedIn} />}
           {poem.isOwner && (
             <>
               <Link to={`/escribir/${poem.id}`} className="meta inline-flex min-h-11 items-center hover:text-tinta">

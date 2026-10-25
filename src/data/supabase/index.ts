@@ -814,6 +814,14 @@ export function supabaseRepositories(sb: SupabaseClient): Repositories {
         changed()
       },
     },
+
+    reports: {
+      async report(poemId, { category, detail }) {
+        await requireMe()
+        const { error } = await sb.rpc('report_poem', { p: poemId, p_category: category, p_detail: detail ?? null })
+        fail(error)
+      },
+    },
   }
   return repos
 }
