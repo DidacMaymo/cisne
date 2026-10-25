@@ -75,7 +75,7 @@
   - [ ] Anon no puede insertar en `reports` (caso en `test:db`, si no existe ya).
 
 ### U1 — Conectar Supabase (usuario)
-- **Estado:** pending
+- **Estado:** done
 - **Qué:** crear el proyecto en supabase.com, aplicar las 3 migraciones, configurar Auth y crear `.env.local`. Guía: `todobackend.md` §1-5.
 - **Hecho cuando:** en *Entrar* ya no sale la nota «Versión de prueba…».
 
@@ -88,11 +88,14 @@
   - [ ] `progress/F10-impl.md` con cada punto de §6 marcado OK o con el fallo y su feature/fix asociado.
   - [ ] Ningún fallo de privacidad o anonimato abierto.
 
-### U2 — Publicar en Cloudflare Pages (usuario)
-- **Estado:** pending
-- **Depende de:** F10
-- **Qué:** conectar el repo en Cloudflare Pages con las variables de entorno y ajustar las URLs de Auth en Supabase. Guía: `docs/deploy.md` § Pasos y `todobackend.md` §7.
-- **Hecho cuando:** la web abre en `https://<proyecto>.pages.dev`, se puede registrar una cuenta y publicar.
+### U2 — Publicar en Cloudflare (usuario)
+- **Estado:** in_progress
+- **Qué:** web publicada como Worker con static assets en **https://cisneverso.dmaymo.es**, desplegada sola en cada merge a `main`. Guía: `docs/deploy.md` § Pasos.
+  - [x] Repo conectado a Cloudflare (Workers Builds) y dominio propio.
+  - [x] Redirect URL `https://cisneverso.dmaymo.es/**` en Supabase.
+  - [ ] *Site URL* de Supabase = `https://cisneverso.dmaymo.es`.
+  - [ ] Variables **de build** `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY` en Cloudflare (*Settings → Build → Variables and secrets*).
+- **Hecho cuando:** en `https://cisneverso.dmaymo.es/entrar` ya no sale «Versión de prueba…», se puede registrar una cuenta y publicar.
 
 ### F11 — Rendimiento: rutas con carga diferida
 - **Estado:** pending
