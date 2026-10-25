@@ -37,6 +37,11 @@ echo "OK ($IN_PROGRESS feature en curso)"
 #    errores raros de módulos que no existen)
 step "Dependencias"
 if [ ! -f node_modules/.package-lock.json ] || [ package-lock.json -nt node_modules/.package-lock.json ]; then
+  # npm ci borra node_modules: con Vite encendido, Windows bloquea ficheros y
+  # la instalación se queda a medias. Mejor parar antes.
+  if curl -s -o /dev/null --max-time 2 http://localhost:5173/ 2>/dev/null; then
+    fail "Hay que reinstalar dependencias, pero el servidor de desarrollo está encendido en :5173. Páralo (Ctrl+C o scripts/app.sh stop) y repite."
+  fi
   echo "node_modules desactualizado → npm ci"
   npm ci --no-audit --no-fund > "$LOG" 2>&1 || { tail -30 "$LOG"; fail "npm ci falló."; }
 fi

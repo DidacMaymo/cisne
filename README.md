@@ -22,14 +22,16 @@ npm run lint
 - Tipografía: **Cormorant Garamond** (títulos, autores, poemas) + **Inter** (interfaz), self-hosted con `@fontsource`.
 - Emblema: `src/components/brand/SwanMark.tsx` (trazos SVG en `swan-paths.ts`, vectorizados de `brand/cisne-emblema.png`). Favicon: `public/favicon.svg`.
 
-## Desplegar (Cloudflare Pages)
+## Desplegar (Cloudflare)
 
-Es una SPA estática: Pages sirve los ficheros de `dist/` desde su CDN, sin servidor propio.
+Es una SPA estática: Cloudflare sirve los ficheros de `dist/` desde su CDN, como Worker con *static assets* (`wrangler.jsonc`), sin servidor propio. En cada `push` a `main` se vuelve a publicar.
 
-1. En Cloudflare → Workers & Pages → Create → Pages → conectar este repositorio.
-2. Build command: `npm run build` · Output directory: `dist`.
-3. Variable de entorno `NODE_VERSION=20` (o superior).
-4. `public/_redirects` (`/* /index.html 200`) hace que las rutas de la SPA, como `/poema/123`, funcionen al recargar.
+1. Cloudflare → Workers & Pages → Create application → importar este repositorio.
+2. Build command: `npm run build` · Deploy command: `npx wrangler deploy`.
+3. Variables **de build** (*Settings → Build → Variables and secrets*): `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY`.
+4. `wrangler.jsonc` (`not_found_handling: single-page-application`) hace que las rutas de la SPA, como `/poema/123`, funcionen al recargar. No uses `_redirects`: en Workers da error de bucle infinito.
+
+Detalle en [docs/deploy.md](docs/deploy.md).
 
 ## Backend (Supabase)
 
