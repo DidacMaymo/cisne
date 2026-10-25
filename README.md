@@ -2,7 +2,7 @@
 
 Plataforma minimalista de poesía en español. *Menos ruido, más poesía.*
 
-Producto y diseño: [docs/BRIEF.md](docs/BRIEF.md). Guía de implementación y fases: [CLAUDE.md](CLAUDE.md).
+Producto y diseño: [docs/BRIEF.md](docs/BRIEF.md). Mapa del repo y forma de trabajar con agentes: [AGENTS.md](AGENTS.md). Tareas: [feature_list.md](feature_list.md). Despliegue: [docs/deploy.md](docs/deploy.md).
 
 ## Arrancar
 
@@ -13,6 +13,7 @@ npm install
 npm run dev      # http://localhost:5173
 npm run build    # compila a dist/
 npm run lint
+./init.sh        # health check completo (lo mismo que la CI)
 ```
 
 ## Identidad
