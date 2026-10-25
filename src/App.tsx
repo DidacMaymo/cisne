@@ -8,8 +8,7 @@ import { CollectionPage } from './pages/CollectionPage'
 import { Explore } from './pages/Explore'
 import { Home } from './pages/Home'
 import { Library } from './pages/Library'
-import { MyCollections } from './pages/MyCollections'
-import { MyPoems } from './pages/MyPoems'
+import { MyPageRedirect } from './pages/MyPageRedirect'
 import { NewPassword } from './pages/NewPassword'
 import { NotFound } from './pages/NotFound'
 import { PoemPage } from './pages/PoemPage'
@@ -35,10 +34,11 @@ export function App() {
         <Route path="/etiqueta/:tag" element={<TagPage />} />
         <Route path="/autor/:accountName" element={<AuthorPage />} />
         <Route path="/coleccion/:id" element={<CollectionPage />} />
-        <Route path="/colecciones" element={priv('Mis colecciones', <MyCollections />)} />
-        <Route path="/mis/colecciones" element={priv('Mis colecciones', <MyCollections />)} />
-        <Route path="/mis/poemas" element={priv('Mis poemas', <MyPoems status="published" />)} />
-        <Route path="/mis/borradores" element={priv('Mis borradores', <MyPoems status="draft" />)} />
+        <Route path="/mi-pagina" element={<MyPageRedirect />} />
+        <Route path="/colecciones" element={<MyPageRedirect ver="colecciones" />} />
+        <Route path="/mis/colecciones" element={<MyPageRedirect ver="colecciones" />} />
+        <Route path="/mis/poemas" element={<MyPageRedirect ver="publicados" />} />
+        <Route path="/mis/borradores" element={<MyPageRedirect ver="borradores" />} />
         <Route path="/mis/biblioteca" element={priv('Mi biblioteca', <Library />)} />
         <Route path="/ajustes/perfil" element={priv('Perfil', <ProfileSettings />)} />
         <Route path="/ajustes/cuenta" element={priv('Cuenta', <AccountSettings />)} />

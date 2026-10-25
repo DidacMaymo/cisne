@@ -29,7 +29,9 @@ for f in AGENTS.md CLAUDE.md CHECKPOINTS.md feature_list.md progress/current.md 
          .claude/agents/implementer.md .claude/agents/reviewer.md; do
   [ -f "$f" ] || fail "Falta $f"
 done
-IN_PROGRESS=$(grep -c '^\- \*\*Estado:\*\* in_progress' feature_list.md || true)
+# Solo cuentan las features F*: las tareas U* son del usuario y no compiten
+# con el trabajo de los agentes.
+IN_PROGRESS=$(awk '/^### /{f=($2 ~ /^F/)} f && /^- \*\*Estado:\*\* in_progress/{n++} END{print n+0}' feature_list.md)
 [ "$IN_PROGRESS" -le 1 ] || fail "Hay $IN_PROGRESS features en in_progress (máximo 1)."
 echo "OK ($IN_PROGRESS feature en curso)"
 

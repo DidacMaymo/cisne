@@ -64,7 +64,7 @@
   - [x] Tests del repositorio local: un poema privado o borrador no sale en `listPublic`/`search`; uno anónimo no expone autor.
 
 ### F15 — «Mi página»: poemas, borradores y colecciones en una sola página
-- **Estado:** pending
+- **Estado:** done
 - **Depende de:** F08
 - **Prioridad:** la siguiente (pedida por el usuario el 2026-10-25).
 - **Qué:** hoy «Mis poemas», «Mis borradores» y «Mis colecciones» son tres páginas sueltas y casi escondidas en el pie; el propio usuario no encontró «Mis poemas». Se unen en **una sola página de autor** que, vista por su dueño, muestra todo lo suyo en tres pestañas. Y se ordena la navegación: en móvil, barra inferior; en escritorio, todo arriba y sin menús duplicados abajo.
@@ -91,13 +91,13 @@
   5. A 375 px: barra inferior con 5 entradas, sin scroll horizontal, objetivos ≥ 44 px; las pestañas caben o se desplazan sin cortarse.
   6. Sin sesión: «Mi página» lleva a entrar y, tras entrar, vuelve a mi página.
 - **Aceptación:**
-  - [ ] Pestañas solo para el dueño, con estado en `?ver=` y accesibles (`role="tablist"`/`tab`/`tabpanel` o enlaces con `aria-current`), navegables con teclado.
-  - [ ] Publicados del dueño incluye privados, anónimos y con pseudónimo, marcados; la vista pública es idéntica a la actual (mismas consultas).
-  - [ ] Borradores y Colecciones reutilizan lo que hoy hacen `MyPoems` y `MyCollections` (sin duplicar lógica); esas páginas sueltas desaparecen o quedan solo como componentes.
-  - [ ] `/mi-pagina` y las rutas viejas redirigen a la pestaña correcta.
-  - [ ] Cabecera, barra inferior y pie según lo descrito; ninguna entrada de menú duplicada en escritorio.
-  - [ ] Test unitario o del repo local que demuestre que el anónimo y el privado del dueño no salen en `listPublic({ authorAccountName })`.
-  - [ ] Pasos de «Probar en la UI» documentados en `progress/F15-impl.md`, incluido 375 px.
+  - [x] Pestañas solo para el dueño, con estado en `?ver=` y accesibles (`role="tablist"`/`tab`/`tabpanel` o enlaces con `aria-current`), navegables con teclado.
+  - [x] Publicados del dueño incluye privados, anónimos y con pseudónimo, marcados; la vista pública es idéntica a la actual (mismas consultas).
+  - [x] Borradores y Colecciones reutilizan lo que hoy hacen `MyPoems` y `MyCollections` (sin duplicar lógica); esas páginas sueltas desaparecen o quedan solo como componentes.
+  - [x] `/mi-pagina` y las rutas viejas redirigen a la pestaña correcta.
+  - [x] Cabecera, barra inferior y pie según lo descrito; ninguna entrada de menú duplicada en escritorio.
+  - [x] Test unitario o del repo local que demuestre que el anónimo y el privado del dueño no salen en `listPublic({ authorAccountName })`.
+  - [x] Pasos de «Probar en la UI» documentados en `progress/F15-impl.md`, incluido 375 px.
 
 ### F09 — Denunciar un poema
 - **Estado:** pending
@@ -125,12 +125,12 @@
   - [ ] Ningún fallo de privacidad o anonimato abierto.
 
 ### U2 — Publicar en Cloudflare (usuario)
-- **Estado:** in_progress
+- **Estado:** done
 - **Qué:** web publicada como Worker con static assets en **https://cisneverso.dmaymo.es**, desplegada sola en cada merge a `main`. Guía: `docs/deploy.md` § Pasos.
   - [x] Repo conectado a Cloudflare (Workers Builds) y dominio propio.
   - [x] Redirect URL `https://cisneverso.dmaymo.es/**` en Supabase.
-  - [ ] *Site URL* de Supabase = `https://cisneverso.dmaymo.es`.
-  - [ ] Variables **de build** `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY` en Cloudflare (*Settings → Build → Variables and secrets*).
+  - [x] *Site URL* de Supabase = `https://cisneverso.dmaymo.es`.
+  - [x] Variables **de build** `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY` en Cloudflare (*Settings → Build → Variables and secrets*).
 - **Hecho cuando:** en `https://cisneverso.dmaymo.es/entrar` ya no sale «Versión de prueba…», se puede registrar una cuenta y publicar.
 
 ### F11 — Rendimiento: rutas con carga diferida

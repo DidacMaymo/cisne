@@ -59,6 +59,22 @@ describe('repositorio local: visibilidad', () => {
   })
 })
 
+describe('repositorio local: «Mi página»', () => {
+  it('listMine devuelve lo privado, anónimo y con pseudónimo; la vista pública del autor, solo lo suyo y público', async () => {
+    const pub = await repos.poems.save(base)
+    const priv = await repos.poems.save({ ...base, visibility: 'private' })
+    const anon = await repos.poems.save({ ...base, publicationIdentity: 'anonymous' })
+    const pseu = await repos.poems.save({ ...base, publicationIdentity: 'pseudonym', displayedPseudonym: 'Gaviota' })
+
+    const mine = (await repos.poems.listMine('published')).map((p) => p.id)
+    expect(mine).toEqual(expect.arrayContaining([pub.id, priv.id, anon.id, pseu.id]))
+    expect(mine).toHaveLength(4)
+
+    const publicView = (await repos.poems.listPublic({ authorAccountName: 'lucia-perez' })).map((p) => p.id)
+    expect(publicView).toEqual([pub.id])
+  })
+})
+
 describe('repositorio local: anonimato', () => {
   it('un poema anónimo no expone al autor', async () => {
     const p = await repos.poems.save({ ...base, publicationIdentity: 'anonymous' })

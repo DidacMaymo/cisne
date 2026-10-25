@@ -1,4 +1,7 @@
-import { Link, useParams } from 'react-router-dom'
+import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom'
+import { useSession } from '../hooks/useSession'
+import { MyCollections } from './MyCollections'
+import { MyPoems } from './MyPoems'
 import { repos } from '../data'
 import { CollectionCard } from '../components/CollectionCard'
 import { EmptyState } from '../components/EmptyState'
@@ -9,9 +12,23 @@ import { SwanDivider } from '../components/brand/SwanDivider'
 import { useQuery } from '../hooks/useQuery'
 import { linkLabel } from '../lib/links'
 
+const tabs = [
+  { id: 'publicados', label: 'Publicados' },
+  { id: 'borradores', label: 'Borradores' },
+  { id: 'colecciones', label: 'Colecciones' },
+] as const
+type Tab = (typeof tabs)[number]['id']
+
 /** Página de autor: solo palabras. Nombre, unas líneas, sus enlaces y lo que escribe. */
 export function AuthorPage() {
   const { accountName = '' } = useParams()
+  const [params] = useSearchParams()
+  const { session, loading: sessionLoading } = useSession()
+  const flash = (useLocation().state as { flash?: string } | null)?.flash
+  const ver = params.get('ver')
+  // Solo su dueño ve las pestañas; `?ver=publica` es la vista pública, como la ven los demás.
+  const isOwnerView = !!session && session.accountName === accountName && ver !== 'publica'
+  const tab: Tab = tabs.find((t) => t.id === ver)?.id ?? 'publicados'
   const { data, error, loading } = useQuery(async () => {
     const profile = await repos.profiles.getPublicByAccountName(accountName)
     if (!profile) return { profile, poems: [], collections: [] }
@@ -22,7 +39,7 @@ export function AuthorPage() {
     return { profile, poems, collections }
   }, [accountName])
 
-  if (loading || error) return <LoadState loading={loading} error={error} />
+  if (loading || error || sessionLoading) return <LoadState loading={loading || sessionLoading} error={error} />
   if (!data?.profile) {
     return (
       <>
@@ -67,10 +84,63 @@ export function AuthorPage() {
         <div className="mt-2 flex justify-center">
           <SupportButton kind="author" accountName={profile.accountName} name={profile.displayName} />
         </div>
+        {isOwnerView && (
+          <p className="mt-2 flex flex-wrap justify-center gap-x-6">
+            <Link
+              to="?ver=publica"
+              className="meta inline-flex min-h-11 items-center underline-offset-4 hover:text-tinta hover:underline"
+            >
+              Ver como lo ven los demás
+            </Link>
+            <Link
+              to="/ajustes/perfil"
+              className="meta inline-flex min-h-11 items-center underline-offset-4 hover:text-tinta hover:underline"
+            >
+              Ajustes
+            </Link>
+          </p>
+        )}
         <SwanDivider className="mx-auto mt-8 h-6 w-48 text-gris" />
       </header>
 
-      {collections.length > 0 && (
+      {isOwnerView && (
+        <>
+          {flash && (
+            <p role="status" className="meta mb-6 text-center">
+              {flash}
+            </p>
+          )}
+          <nav aria-label="Tu página" className="mb-8 flex justify-center gap-x-8">
+            {tabs.map((t) => (
+              <Link
+                key={t.id}
+                to={`?ver=${t.id}`}
+                aria-current={t.id === tab ? 'page' : undefined}
+                className={`inline-flex min-h-11 items-center border-b text-ui hover:text-tinta ${
+                  t.id === tab ? 'border-tinta text-tinta' : 'border-transparent text-gris'
+                }`}
+              >
+                {t.label}
+              </Link>
+            ))}
+          </nav>
+          <div className="mx-auto max-w-pagina">
+            {tab === 'publicados' && <MyPoems status="published" />}
+            {tab === 'borradores' && <MyPoems status="draft" />}
+            {tab === 'colecciones' && <MyCollections />}
+          </div>
+        </>
+      )}
+
+      {!isOwnerView && !!session && session.accountName === accountName && (
+        <p className="mb-6 text-center">
+          <Link to="?ver=publicados" className="enlace">
+            Volver a mi página
+          </Link>
+        </p>
+      )}
+
+      {!isOwnerView && collections.length > 0 && (
         <section aria-labelledby="colecciones" className="mx-auto mt-6 max-w-pagina">
           <h2 id="colecciones" className="meta text-center">
             Colecciones
@@ -85,16 +155,18 @@ export function AuthorPage() {
         </section>
       )}
 
-      <section aria-labelledby="poemas" className="mt-14">
-        <h2 id="poemas" className="meta mb-6 text-center">
-          Poemas
-        </h2>
-        {poems.length === 0 ? (
-          <EmptyState title="Todavía no hay poemas publicados." />
-        ) : (
-          <PoemList poems={poems} />
-        )}
-      </section>
+      {!isOwnerView && (
+        <section aria-labelledby="poemas" className="mt-14">
+          <h2 id="poemas" className="meta mb-6 text-center">
+            Poemas
+          </h2>
+          {poems.length === 0 ? (
+            <EmptyState title="Todavía no hay poemas publicados." />
+          ) : (
+            <PoemList poems={poems} />
+          )}
+        </section>
+      )}
     </>
   )
 }

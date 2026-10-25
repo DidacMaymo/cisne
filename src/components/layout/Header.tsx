@@ -37,7 +37,7 @@ export function Header() {
           </Link>
           {account}
         </div>
-        <div className="md:hidden">{account}</div>
+        <div className="md:hidden">{!loading && !session && account}</div>
       </div>
     </header>
   )
