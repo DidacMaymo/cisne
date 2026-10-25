@@ -189,3 +189,26 @@
   - [x] `src/pages/Library.tsx`: estado vacío «Tu biblioteca está vacía.» en lugar de «Tu biblioteca espera su primer poema.».
   - [x] `src/pages/MyCollections.tsx`: «Reúne tus poemas en poemarios, o guarda juntos los de otros.» (sin «que te acompañan»).
   - [x] Ningún test ni otro texto depende de las frases antiguas; `./init.sh` en verde.
+
+### F17 — Menú fijo, Biblioteca dentro de Mi página y redes en el pie
+- **Estado:** done
+- **Depende de:** F15
+- **Qué:** la cabecera se queda fija arriba al hacer scroll; «Biblioteca» sale de la navegación (cabecera y barra inferior móvil) y pasa a ser una pestaña de Mi página junto a Colecciones; el pie enlaza a Instagram y TikTok.
+- **Probar en la UI:** hacer scroll en Explorar → la cabecera sigue visible arriba, sin tapar contenido al cargar ni al saltar con «Saltar al contenido». Con sesión: el menú ya no tiene «Biblioteca»; Mi página muestra Publicados · Borradores · Colecciones · Biblioteca, y `/mis/biblioteca` lleva a esa pestaña. Pie: enlaces «Instagram» y «TikTok» que abren en otra pestaña. Todo a 375 px y en escritorio.
+- **Aceptación:**
+  - [x] Cabecera fija (`sticky top-0`, fondo blanco, línea inferior, sin sombra), por encima del contenido; el foco por teclado no queda oculto bajo ella (`scroll-padding-top`).
+  - [x] «Biblioteca» desaparece de la cabecera y de la barra inferior móvil; la barra móvil sigue sin scroll horizontal y con objetivos ≥ 44 px.
+  - [x] Mi página tiene la pestaña «Biblioteca» (`?ver=biblioteca`) tras «Colecciones», con el mismo contenido y estado vacío que la antigua página; solo la ve su dueño.
+  - [x] `/mis/biblioteca` redirige a `?ver=biblioteca` de Mi página (sin sesión, como las otras rutas privadas).
+  - [x] Pie con enlaces de texto «Instagram» y «TikTok» (`target="_blank" rel="noopener noreferrer"`, texto para lectores de pantalla «se abre en otra pestaña»). Las URLs viven en un único sitio (p. ej. `src/lib/social.ts`); de momento `https://www.instagram.com/` y `https://www.tiktok.com/` hasta que existan las cuentas (U4).
+  - [x] `./init.sh` en verde.
+
+### U4 — Cuentas de CISNE en redes (usuario)
+- **Estado:** pending
+- **Depende de:** F17
+- **Qué:** crear las cuentas de Instagram y TikTok de CISNE y pasar las URLs al líder para cambiarlas en `src/lib/social.ts` (ahora apuntan a las portadas genéricas).
+
+### F18 — Página de privacidad (antes de abrir al público)
+- **Estado:** pending
+- **Depende de:** U1
+- **Qué:** página «Privacidad» enlazada desde el pie: qué datos guarda CISNE (cuenta, poemas, preferencias en el navegador), que no usa cookies de seguimiento ni analítica (por eso no hay banner), responsable y email de contacto, y cómo borrar la cuenta. Hace falta que el usuario dé nombre del responsable y email. Hacer antes de U3.

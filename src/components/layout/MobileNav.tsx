@@ -4,7 +4,6 @@ const items = [
   { to: '/', label: 'Inicio' },
   { to: '/explorar', label: 'Explorar' },
   { to: '/escribir', label: 'Escribir' },
-  { to: '/mis/biblioteca', label: 'Biblioteca' },
   { to: '/mi-pagina', label: 'Mi página' },
 ] as const
 
@@ -14,7 +13,7 @@ export function MobileNav() {
       aria-label="Principal"
       className="fixed inset-x-0 bottom-0 z-40 border-t border-linea bg-blanco pb-[env(safe-area-inset-bottom)] md:hidden"
     >
-      <ul className="grid grid-cols-5">
+      <ul className="grid grid-cols-4">
         {items.map((i) => (
           <li key={i.to}>
             <NavLink

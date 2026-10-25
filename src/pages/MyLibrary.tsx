@@ -3,19 +3,16 @@ import { repos } from '../data'
 import { EmptyState } from '../components/EmptyState'
 import { LoadState } from '../components/LoadState'
 import { PoemList } from '../components/PoemList'
-import { SwanDivider } from '../components/brand/SwanDivider'
 import { useQuery } from '../hooks/useQuery'
 
-/** Biblioteca privada: los poemas guardados, el último primero. */
-export function Library() {
+/** Biblioteca privada (pestaña de «Mi página»): los poemas guardados, el último primero. */
+export function MyLibrary() {
   const { data, error, loading } = useQuery(() => repos.favorites.list(), [])
   return (
-    <>
-      <header className="py-4 text-center">
-        <h1 className="font-serif text-5xl">Mi biblioteca</h1>
-        <p className="mt-3 font-serif text-xl italic text-gris">Solo tú ves lo que guardas aquí.</p>
-        <SwanDivider className="mx-auto mt-8 h-6 w-48 text-gris" />
-      </header>
+    <div>
+      <p className="mx-auto max-w-[44ch] text-center font-serif text-xl italic text-gris">
+        Solo tú ves lo que guardas aquí.
+      </p>
       <LoadState loading={loading} error={error} />
       {data && data.length === 0 && (
         <EmptyState title="Tu biblioteca está vacía.">
@@ -24,7 +21,11 @@ export function Library() {
           </Link>
         </EmptyState>
       )}
-      {data && data.length > 0 && <PoemList poems={data} />}
-    </>
+      {data && data.length > 0 && (
+        <div className="mt-8">
+          <PoemList poems={data} />
+        </div>
+      )}
+    </div>
   )
 }

@@ -14,9 +14,12 @@
 
 - 2026-10-25 — F16 Ajustes de textos (portada «que te emocionan», pie sin el lema, biblioteca vacía, colecciones). APPROVED.
 
+- 2026-10-25 — F17 Cabecera fija, Biblioteca como pestaña de Mi página, Instagram y TikTok en el pie (URLs genéricas hasta U4); `.claude/launch.json` fuera del repo. APPROVED (3 vueltas: pestañas de Mi página a 375 px en una línea).
+
 ## Deuda
 - `CLAUDE.md` anterior (fases 1-6) sustituido por el arnés; su contenido de diseño vive en `docs/conventions.md` y el técnico en `docs/architecture.md`.
 - `todobackend.md` sigue siendo la guía de las tareas U1-U3; cuando estén hechas, moverla a `docs/` o borrarla.
 - El brief pide "sin contadores"; los apoyos muestran número al autor (decisión tomada). Si se revisa, es una feature.
 - `poem-text` se testea dentro de `poem-markup.test.tsx`; un fichero propio sería más claro (observación del review F08).
 - F15: «Mi página» no se marca activa en `/autor/<yo>`; PoemPage.tsx:35, Editor.tsx:221 y CollectionPage.tsx:234 navegan a rutas viejas (funcionan por redirección) y podrían apuntar directo a la pestaña; la consulta pública de AuthorPage también se ejecuta para el dueño sin usarse.
+- F17: `scroll-padding-top` fijo (5.5rem) en `index.css`; ajustarlo si cambia la altura de la cabecera.

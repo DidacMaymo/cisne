@@ -7,7 +7,6 @@ import { AuthorPage } from './pages/AuthorPage'
 import { CollectionPage } from './pages/CollectionPage'
 import { Explore } from './pages/Explore'
 import { Home } from './pages/Home'
-import { Library } from './pages/Library'
 import { MyPageRedirect } from './pages/MyPageRedirect'
 import { NewPassword } from './pages/NewPassword'
 import { NotFound } from './pages/NotFound'
@@ -39,7 +38,7 @@ export function App() {
         <Route path="/mis/colecciones" element={<MyPageRedirect ver="colecciones" />} />
         <Route path="/mis/poemas" element={<MyPageRedirect ver="publicados" />} />
         <Route path="/mis/borradores" element={<MyPageRedirect ver="borradores" />} />
-        <Route path="/mis/biblioteca" element={priv('Mi biblioteca', <Library />)} />
+        <Route path="/mis/biblioteca" element={<MyPageRedirect ver="biblioteca" />} />
         <Route path="/ajustes/perfil" element={priv('Perfil', <ProfileSettings />)} />
         <Route path="/ajustes/cuenta" element={priv('Cuenta', <AccountSettings />)} />
         <Route path="/ajustes/privacidad" element={priv('Privacidad', <PrivacySettings />)} />
