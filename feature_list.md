@@ -177,3 +177,15 @@
   - [ ] HTML de correo compatible (tablas y estilos en línea, sin fuentes web obligatorias, con texto alternativo para el cisne); se ve bien en Gmail y en móvil.
   - [ ] Guía corta en `docs/SUPABASE.md`: dónde pegarlas (*Authentication → Emails → Templates*).
   - [ ] Nota: el remitente «CISNE <hola@tu-dominio>» y quitar el «powered by Supabase» exigen SMTP propio (U3).
+
+### F16 — Ajustes de textos (portada, pie, biblioteca, colecciones)
+- **Estado:** done
+- **Depende de:** —
+- **Qué:** cuatro cambios de texto pedidos por el usuario, sin tocar nada más.
+- **Probar en la UI:** inicio → la frase bajo el título dice «…guarda los versos que te emocionan…»; pie de cualquier página → «CISNE · poesía en español»; Mi biblioteca vacía → «Tu biblioteca está vacía.»; Mis colecciones → «Reúne tus poemas en poemarios, o guarda juntos los de otros.»
+- **Aceptación:**
+  - [x] `src/pages/Home.tsx`: «que te acompañan» → «que te emocionan» («Lee a poetas que todavía no conoces, guarda los versos que te emocionan y escribe los tuyos con total libertad.»).
+  - [x] `src/components/layout/Footer.tsx`: el pie dice «CISNE · poesía en español» (sin «· menos ruido, más poesía.»).
+  - [x] `src/pages/Library.tsx`: estado vacío «Tu biblioteca está vacía.» en lugar de «Tu biblioteca espera su primer poema.».
+  - [x] `src/pages/MyCollections.tsx`: «Reúne tus poemas en poemarios, o guarda juntos los de otros.» (sin «que te acompañan»).
+  - [x] Ningún test ni otro texto depende de las frases antiguas; `./init.sh` en verde.

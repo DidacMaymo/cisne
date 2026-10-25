@@ -18,7 +18,7 @@ export function Library() {
       </header>
       <LoadState loading={loading} error={error} />
       {data && data.length === 0 && (
-        <EmptyState title="Tu biblioteca espera su primer poema.">
+        <EmptyState title="Tu biblioteca está vacía.">
           <Link to="/explorar" className="btn">
             Explorar poemas
           </Link>

@@ -37,7 +37,7 @@ export function Home() {
           Un lugar para las palabras que merecen quedarse.
         </h1>
         <p className="mx-auto mt-8 max-w-[46ch] text-pretty font-serif text-2xl leading-snug">
-          Lee a poetas que todavía no conoces, guarda los versos que te acompañan y escribe los tuyos con total
+          Lee a poetas que todavía no conoces, guarda los versos que te emocionan y escribe los tuyos con total
           libertad.
         </p>
         <div className="mt-10 flex flex-wrap justify-center gap-3">
