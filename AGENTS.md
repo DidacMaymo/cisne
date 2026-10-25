@@ -70,7 +70,8 @@ en `2.109.0`). Si `npm` falla con "engine", es esto.
 - **Una migración aplicada no se edita nunca**: cada cambio de esquema es un
   fichero nuevo en `supabase/migrations/`.
 - **Toda rama sale de `main` recién actualizado.** Una rama y un PR por
-  feature. Solo el líder hace commit, push y PR; el merge lo hace el usuario.
+  feature. Solo el líder hace commit, push, PR y merge (con review APPROVED y
+  CI en verde; nunca `--admin`). Cada merge a `main` publica en producción.
 - **Si no sabes algo, busca en `docs/`** antes de inventarlo. Si no está,
   anótalo como duda.
 
