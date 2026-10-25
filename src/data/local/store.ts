@@ -36,6 +36,7 @@ export type Store = {
     body: string
     createdAt: string
   }[]
+  reports: { userId: string; poemId: string; category: string; detail: string; createdAt: string }[]
 }
 
 export function fresh(): Store {
@@ -59,6 +60,7 @@ export function fresh(): Store {
     poemSupports: [],
     authorSupports: [],
     verseComments: [],
+    reports: [],
   }
 }
 

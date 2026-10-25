@@ -18,6 +18,8 @@
 
 - 2026-10-25 — F19 Textos de la portada más simples (título «Un lugar para la poesía.», Leer/Descubrir/Escribir, «Aquí solo hay palabras» sin «Sin contadores»). APPROVED (2ª vuelta: espacio en la lista).
 
+- 2026-10-25 — F09 Denunciar un poema (motivos: odio/ofensa, acoso, plagio, otro; texto ≤ 50 palabras; una denuncia por persona y poema; solo vía `report_poem`, nadie lee `reports` desde el navegador). Migración `20261101120000_denunciar_poema.sql`. APPROVED (2ª vuelta: el modo local no encontraba los poemas de ejemplo; lo detectó el smoke test).
+
 ## Deuda
 - `CLAUDE.md` anterior (fases 1-6) sustituido por el arnés; su contenido de diseño vive en `docs/conventions.md` y el técnico en `docs/architecture.md`.
 - `todobackend.md` sigue siendo la guía de las tareas U1-U3; cuando estén hechas, moverla a `docs/` o borrarla.
@@ -25,3 +27,4 @@
 - `poem-text` se testea dentro de `poem-markup.test.tsx`; un fichero propio sería más claro (observación del review F08).
 - F15: «Mi página» no se marca activa en `/autor/<yo>`; PoemPage.tsx:35, Editor.tsx:221 y CollectionPage.tsx:234 navegan a rutas viejas (funcionan por redirección) y podrían apuntar directo a la pestaña; la consulta pública de AuthorPage también se ejecuta para el dueño sin usarse.
 - F17: `scroll-padding-top` fijo (5.5rem) en `index.css`; ajustarlo si cambia la altura de la cabecera.
+- F09: los tests «no puede leer reports» aceptan error o 0 filas (`.catch(() => [])`); «Ya denunciado» solo se detecta al enviar.

@@ -75,7 +75,7 @@ Migraciones en orden:
 | `favorites` | Biblioteca privada |
 | `poem_supports`, `author_supports` | Apoyos |
 | `verse_comments` | Comentarios anclados a un verso (máx. 50 palabras) |
-| `reports` | Denuncias (sin UI todavía, ver F09) |
+| `reports` | Denuncias. Solo se insertan por `report_poem` (una por persona y poema); se leen en el panel de Supabase |
 
 ### Seguridad
 

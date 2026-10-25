@@ -255,6 +255,35 @@ await as(null, async () => {
   check('cerrar comentarios los oculta', (await q('select * from public.public_verse_comments where id = $1', [anaComment])).length === 0)
 })
 
+// Denuncias.
+await as(null, async () => {
+  check('anon no puede denunciar', !!(await fails(`select public.report_poem($1, 'odio')`, [ids.named])))
+  check('anon no puede insertar en reports', !!(await fails(`insert into public.reports (poem_id, reason) values ($1, 'x')`, [ids.named])))
+})
+await as(BEA, async () => {
+  const words = (n) => Array.from({ length: n }, () => 'palabra').join(' ')
+  check('Bea no puede insertar en reports a mano', !!(await fails(`insert into public.reports (reporter_id, poem_id, reason) values ($1, $2, 'x')`, [BEA, ids.named])))
+  check('motivo desconocido rechazado', !!(await fails(`select public.report_poem($1, 'spam')`, [ids.named])))
+  check('«Otro motivo» exige texto', !!(await fails(`select public.report_poem($1, 'otro', '  ')`, [ids.named])))
+  check('el texto admite 50 palabras, no 51', !!(await fails(`select public.report_poem($1, 'otro', $2)`, [ids.named, words(51)])))
+  check('no se denuncia un privado ajeno', !!(await fails(`select public.report_poem($1, 'odio')`, [ids.priv])))
+  check('no se denuncia un borrador ajeno', !!(await fails(`select public.report_poem($1, 'odio')`, [ids.draft])))
+  check('Bea denuncia un poema público', !(await fails(`select public.report_poem($1, 'plagio', $2)`, [ids.named, words(50)])))
+  const again = await fails(`select public.report_poem($1, 'odio')`, [ids.named])
+  check('denunciar dos veces: mensaje claro', !!again && again.includes('Ya has denunciado'), again ?? '')
+  check('Bea denuncia otro poema con «Otro motivo»', !(await fails(`select public.report_poem($1, 'otro', 'Me parece mal')`, [ids.anon])))
+  check('Bea no puede leer reports', (await q('select * from public.reports').catch(() => [])).length === 0)
+})
+await as(ANA, async () => {
+  const own = await fails(`select public.report_poem($1, 'odio')`, [ids.named])
+  check('no se denuncia el poema propio', !!own && own.includes('propio'), own ?? '')
+  check('Ana no puede leer reports', (await q('select * from public.reports').catch(() => [])).length === 0)
+})
+{
+  const rows = await q('select category, reason, reporter_id from public.reports order by created_at, reason')
+  check('las denuncias quedan legibles para el panel', rows.length === 2 && rows.some((r) => r.reason === 'Otro motivo — Me parece mal' && r.category === 'otro'))
+}
+
 await as(BEA, () => q('select public.delete_my_account()'))
 const left = await q(`select (select count(*) from public.profiles where id = $1)::int as p,
   (select count(*) from public.collections where owner_id = $1)::int as c,

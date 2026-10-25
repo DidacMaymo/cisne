@@ -100,15 +100,15 @@
   - [x] Pasos de «Probar en la UI» documentados en `progress/F15-impl.md`, incluido 375 px.
 
 ### F09 — Denunciar un poema
-- **Estado:** pending
+- **Estado:** done
 - **Depende de:** F07
 - **Qué:** botón discreto «Denunciar» en la página de lectura (no en el propio poema del usuario) que guarda en `reports` (la tabla y su política ya existen). Sin panel de moderación: se revisa en Supabase.
 - **Probar en la UI:** con sesión, abrir un poema ajeno → «Denunciar» → elegir motivo → confirmación discreta. En un poema propio el botón no aparece. Sin sesión, lleva a entrar.
 - **Aceptación:**
-  - [ ] `ReportRepository` (o método en `poems`) en `repositories.ts` con implementación local y supabase.
-  - [ ] Diálogo accesible con motivo breve (lista corta + texto opcional) y confirmación.
-  - [ ] Una usuaria no puede denunciar dos veces el mismo poema (mensaje claro, no error técnico); si hace falta, migración nueva con restricción única + caso en `test:db`.
-  - [ ] Anon no puede insertar en `reports` (caso en `test:db`, si no existe ya).
+  - [x] `ReportRepository` (o método en `poems`) en `repositories.ts` con implementación local y supabase.
+  - [x] Diálogo accesible con motivo breve (lista corta + texto opcional) y confirmación. Motivos decididos con el usuario: «Contenido de odio u ofensivo», «Acoso a una persona», «Plagio: no es de quien lo firma», «Otro motivo». Texto opcional de hasta 50 palabras (obligatorio si el motivo es «Otro motivo»).
+  - [x] Una usuaria no puede denunciar dos veces el mismo poema (mensaje claro, no error técnico); si hace falta, migración nueva con restricción única + caso en `test:db`.
+  - [x] Anon no puede insertar en `reports` (caso en `test:db`, si no existe ya).
 
 ### U1 — Conectar Supabase (usuario)
 - **Estado:** done
