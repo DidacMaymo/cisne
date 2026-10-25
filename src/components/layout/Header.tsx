@@ -21,7 +21,7 @@ export function Header() {
     </Link>
   )
   return (
-    <header className="border-b border-linea">
+    <header className="sticky top-0 z-30 border-b border-linea bg-blanco">
       <div className="mx-auto flex w-full max-w-ancho items-center justify-between px-6 py-2 md:px-10 md:py-4">
         <Logo />
         <nav aria-label="Principal" className="hidden items-center gap-8 md:flex">

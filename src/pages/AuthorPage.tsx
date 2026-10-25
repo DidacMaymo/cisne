@@ -1,6 +1,7 @@
 import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { useSession } from '../hooks/useSession'
 import { MyCollections } from './MyCollections'
+import { MyLibrary } from './MyLibrary'
 import { MyPoems } from './MyPoems'
 import { repos } from '../data'
 import { CollectionCard } from '../components/CollectionCard'
@@ -16,6 +17,7 @@ const tabs = [
   { id: 'publicados', label: 'Publicados' },
   { id: 'borradores', label: 'Borradores' },
   { id: 'colecciones', label: 'Colecciones' },
+  { id: 'biblioteca', label: 'Biblioteca' },
 ] as const
 type Tab = (typeof tabs)[number]['id']
 
@@ -110,13 +112,13 @@ export function AuthorPage() {
               {flash}
             </p>
           )}
-          <nav aria-label="Tu página" className="mb-8 flex justify-center gap-x-8">
+          <nav aria-label="Tu página" className="mb-8 flex flex-wrap justify-center gap-x-3 sm:gap-x-8">
             {tabs.map((t) => (
               <Link
                 key={t.id}
                 to={`?ver=${t.id}`}
                 aria-current={t.id === tab ? 'page' : undefined}
-                className={`inline-flex min-h-11 items-center border-b text-ui hover:text-tinta ${
+                className={`inline-flex min-h-11 items-center border-b text-meta sm:text-ui hover:text-tinta ${
                   t.id === tab ? 'border-tinta text-tinta' : 'border-transparent text-gris'
                 }`}
               >
@@ -128,6 +130,7 @@ export function AuthorPage() {
             {tab === 'publicados' && <MyPoems status="published" />}
             {tab === 'borradores' && <MyPoems status="draft" />}
             {tab === 'colecciones' && <MyCollections />}
+            {tab === 'biblioteca' && <MyLibrary />}
           </div>
         </>
       )}
