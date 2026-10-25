@@ -4,7 +4,12 @@
 > resume en una línea en "Hecho" y se limpia "En curso".
 
 ## En curso
-- —
+- F12 — Revisión de accesibilidad y móvil (rama `fix/F12-accesibilidad-movil`). **Parada por límite de uso; aún sin implementer.**
+  - Auditoría del líder en navegador (2026-10-25), 19 rutas a 375 px: sin scroll horizontal en ninguna; todos los controles con nombre accesible.
+  - Contraste: único fallo, `gris #888888` sobre blanco 3,54:1 (texto meta, menú inactivo, acciones). Decisión del usuario: oscurecer a `#767676`.
+  - Objetivos táctiles: títulos enlazados de los listados miden 37–43 px.
+  - Pendiente de revisar: recorrido solo con teclado (inicio → poema → escribir → publicar → colección), foco visible en diálogos y `prefers-reduced-motion`.
+  - Siguiente paso: lanzar implementer con esta lista → reviewer → smoke test con teclado → PR y merge.
 
 ## Hecho
 - 2026-10-24 — F07 Arnés de agentes y CI (líder, solo docs/config). El build estaba en rojo en esta máquina solo porque `node_modules` no estaba al día con `package-lock.json` (faltaban `@supabase/supabase-js` y `@electric-sql/pglite`); `init.sh` ahora ejecuta `npm ci` cuando pasa esto. Tras `npm install`: lint, build y `test:db` en verde.
