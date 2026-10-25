@@ -1,8 +1,6 @@
+import { lazy, Suspense } from 'react'
 import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { useSession } from '../hooks/useSession'
-import { MyCollections } from './MyCollections'
-import { MyLibrary } from './MyLibrary'
-import { MyPoems } from './MyPoems'
 import { repos } from '../data'
 import { CollectionCard } from '../components/CollectionCard'
 import { EmptyState } from '../components/EmptyState'
@@ -12,6 +10,10 @@ import { SupportButton } from '../components/SupportButton'
 import { SwanDivider } from '../components/brand/SwanDivider'
 import { useQuery } from '../hooks/useQuery'
 import { linkLabel } from '../lib/links'
+
+const MyCollections = lazy(() => import('./MyCollections').then((m) => ({ default: m.MyCollections })))
+const MyLibrary = lazy(() => import('./MyLibrary').then((m) => ({ default: m.MyLibrary })))
+const MyPoems = lazy(() => import('./MyPoems').then((m) => ({ default: m.MyPoems })))
 
 const tabs = [
   { id: 'publicados', label: 'Publicados' },
@@ -127,10 +129,12 @@ export function AuthorPage() {
             ))}
           </nav>
           <div className="mx-auto max-w-pagina">
-            {tab === 'publicados' && <MyPoems status="published" />}
-            {tab === 'borradores' && <MyPoems status="draft" />}
-            {tab === 'colecciones' && <MyCollections />}
-            {tab === 'biblioteca' && <MyLibrary />}
+            <Suspense fallback={<LoadState loading />}>
+              {tab === 'publicados' && <MyPoems status="published" />}
+              {tab === 'borradores' && <MyPoems status="draft" />}
+              {tab === 'colecciones' && <MyCollections />}
+              {tab === 'biblioteca' && <MyLibrary />}
+            </Suspense>
           </div>
         </>
       )}

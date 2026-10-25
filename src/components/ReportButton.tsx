@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { Link, useLocation } from 'react-router-dom'
 import { repos } from '../data'
 import type { ReportCategory } from '../data/repositories'
-import { countWords, MAX_COMMENT_WORDS } from '../data/schemas'
+import { countWords, MAX_COMMENT_WORDS } from '../data/words'
 import { signInHref } from '../lib/links'
 
 const REASONS: { value: ReportCategory; label: string }[] = [

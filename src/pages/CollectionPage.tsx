@@ -1,14 +1,15 @@
-import { useState } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { repos } from '../data'
 import { CollectionCover } from '../components/CollectionCover'
-import { CollectionForm } from '../components/CollectionForm'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { EmptyState } from '../components/EmptyState'
 import { LoadState } from '../components/LoadState'
 import { ShareButton } from '../components/ShareButton'
 import { useQuery } from '../hooks/useQuery'
 import { firstLine } from '../lib/poem-text'
+
+const CollectionForm = lazy(() => import('../components/CollectionForm').then((m) => ({ default: m.CollectionForm })))
 
 const small = 'meta inline-flex min-h-11 min-w-11 items-center justify-center hover:text-tinta disabled:opacity-30'
 
@@ -62,15 +63,17 @@ export function CollectionPage() {
     return (
       <div className="mx-auto max-w-xl">
         <h1 className="mb-10 text-center font-serif text-4xl">Editar colección</h1>
-        <CollectionForm
-          initial={{ title: c.title, description: c.description, visibility: c.visibility }}
-          submitLabel="Guardar cambios"
-          onCancel={() => setEditing(false)}
-          onSubmit={async (v) => {
-            await repos.collections.update(c.id, v)
-            setEditing(false)
-          }}
-        />
+        <Suspense fallback={<LoadState loading />}>
+          <CollectionForm
+            initial={{ title: c.title, description: c.description, visibility: c.visibility }}
+            submitLabel="Guardar cambios"
+            onCancel={() => setEditing(false)}
+            onSubmit={async (v) => {
+              await repos.collections.update(c.id, v)
+              setEditing(false)
+            }}
+          />
+        </Suspense>
       </div>
     )
   }

@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import { Link, useLocation } from 'react-router-dom'
 import { repos } from '../../data'
 import type { VerseComment } from '../../data'
-import { commentSchema, countWords, MAX_COMMENT_WORDS } from '../../data/schemas'
+import { countWords, MAX_COMMENT_WORDS } from '../../data/words'
 import { formatDate } from '../../lib/format'
 import { signInHref } from '../../lib/links'
 
@@ -39,6 +39,8 @@ export function VerseThread({ poemId, verses, initial, commentsFor, signedIn, on
   async function submit(e: FormEvent) {
     e.preventDefault()
     if (line === null) return
+    // Zod se descarga al comentar, no al leer.
+    const { commentSchema } = await import('../../data/schemas')
     const parsed = commentSchema.safeParse({ body })
     if (!parsed.success) return setProblem(parsed.error.issues[0].message)
     setBusy(true)

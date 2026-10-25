@@ -20,6 +20,8 @@
 
 - 2026-10-25 — F09 Denunciar un poema (motivos: odio/ofensa, acoso, plagio, otro; texto ≤ 50 palabras; una denuncia por persona y poema; solo vía `report_poem`, nadie lee `reports` desde el navegador). Migración `20261101120000_denunciar_poema.sql`. APPROVED (2ª vuelta: el modo local no encontraba los poemas de ejemplo; lo detectó el smoke test).
 
+- 2026-10-25 — F11 Carga diferida: editor, ajustes, auth, pestañas privadas, Zod y los repositorios (local y Supabase) se descargan al usarse. Entrada: local 467,54 → 323,31 KB (−30,8 %); con Supabase 680,85 → 323,41 KB (−52,5 %). Proxy en `src/data/lazy.ts` con tests. APPROVED (3 vueltas).
+
 ## Deuda
 - `CLAUDE.md` anterior (fases 1-6) sustituido por el arnés; su contenido de diseño vive en `docs/conventions.md` y el técnico en `docs/architecture.md`.
 - `todobackend.md` sigue siendo la guía de las tareas U1-U3; cuando estén hechas, moverla a `docs/` o borrarla.
@@ -28,3 +30,4 @@
 - F15: «Mi página» no se marca activa en `/autor/<yo>`; PoemPage.tsx:35, Editor.tsx:221 y CollectionPage.tsx:234 navegan a rutas viejas (funcionan por redirección) y podrían apuntar directo a la pestaña; la consulta pública de AuthorPage también se ejecuta para el dueño sin usarse.
 - F17: `scroll-padding-top` fijo (5.5rem) en `index.css`; ajustarlo si cambia la altura de la cabecera.
 - F09: los tests «no puede leer reports» aceptan error o 0 filas (`.catch(() => [])`); «Ya denunciado» solo se detecta al enviar.
+- F11: en modo local el build emite chunks de Supabase y Zod que nunca se descargan (inocuo); en local los datos llegan tras un import dinámico extra.

@@ -1,5 +1,5 @@
 import { firstLine } from '../../lib/poem-text'
-import { countWords } from '../schemas'
+import { countWords } from '../words'
 import { shuffleDiverse } from '../discover'
 import { foldText, normalizePoemText, normalizeTag, slugify } from '../normalize'
 import type { Repositories } from '../repositories'
