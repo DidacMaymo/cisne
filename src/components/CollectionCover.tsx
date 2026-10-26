@@ -21,7 +21,7 @@ export function CollectionCover({ title, ownerName, size = 'sm', className = '' 
       </span>
       <span className="flex flex-col items-center gap-2">
         <SwanDivider className={`text-gris ${lg ? 'h-5 w-32' : 'h-3 w-20'}`} />
-        {ownerName && <span className={`text-gris ${lg ? 'text-meta' : 'text-[0.625rem]'}`}>{ownerName}</span>}
+        {ownerName && <span className={`text-tinta ${lg ? 'text-meta' : 'text-[0.625rem]'}`}>{ownerName}</span>}
       </span>
     </div>
   )

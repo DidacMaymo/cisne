@@ -8,7 +8,7 @@
 ## Identidad visual (no negociable)
 
 - **Paleta única**, tokens en `src/styles/index.css` (`@theme`):
-  `blanco #FFFFFF`, `tinta #111111`, `papel #F5F5F3`, `gris #888888`,
+  `blanco #FFFFFF`, `tinta #111111`, `papel #F5F5F3`, `gris #767676` (oscurecido desde `#888888` en F12 para cumplir contraste AA 4,5:1 sobre blanco),
   `linea #E7E7E4`. Usa las clases de Tailwind de esos tokens (`text-tinta`,
   `border-linea`…), nunca colores sueltos. Sin colores de acento, sin
   degradados, sin sombras marcadas, sin tarjetas con sombra.

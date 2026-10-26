@@ -36,7 +36,7 @@ export function PoemListItem({ poem, saved, signedIn }: Props) {
       )}
       {poem.title && (
         <h2 className="font-serif text-4xl leading-tight">
-          <Link to={to} className="underline-offset-4 hover:underline">
+          <Link to={to} className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">
             {poem.title}
           </Link>
         </h2>
@@ -59,7 +59,7 @@ export function PoemListItem({ poem, saved, signedIn }: Props) {
 
       <p className="mt-6 font-serif text-xl italic">
         {poem.authorAccountName ? (
-          <Link to={`/autor/${poem.authorAccountName}`} className="underline-offset-4 hover:underline">
+          <Link to={`/autor/${poem.authorAccountName}`} className="inline-flex min-h-11 items-center underline-offset-4 hover:underline">
             {poem.authorName}
           </Link>
         ) : (

@@ -18,7 +18,7 @@ npm run lint
 
 ## Identidad
 
-- Color: `blanco #FFFFFF`, `tinta #111111`, `papel #F5F5F3`, `gris #888888`, `linea #E7E7E4` (tokens en `src/styles/index.css`).
+- Color: `blanco #FFFFFF`, `tinta #111111`, `papel #F5F5F3`, `gris #767676`, `linea #E7E7E4` (tokens en `src/styles/index.css`).
 - Tipografía: **Cormorant Garamond** (títulos, autores, poemas) + **Inter** (interfaz), self-hosted con `@fontsource`.
 - Emblema: `src/components/brand/SwanMark.tsx` (trazos SVG en `swan-paths.ts`, vectorizados de `brand/cisne-emblema.png`). Favicon: `public/favicon.svg`.
 

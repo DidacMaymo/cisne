@@ -144,14 +144,16 @@
   - [x] Todas las rutas siguen funcionando al recargar.
 
 ### F12 — Revisión de accesibilidad y móvil
-- **Estado:** pending
+- **Estado:** done
 - **Depende de:** F09, F11
 - **Qué:** repaso de los criterios del brief §15-16 y §22 en todas las pantallas: teclado, foco, nombres accesibles, contraste, 375 px, `prefers-reduced-motion`. Lo que se encuentre se arregla aquí si es pequeño o se divide en features.
 - **Probar en la UI:** recorrer inicio → poema → escribir → publicar → colección solo con teclado; repetir a 375 px.
 - **Aceptación:**
-  - [ ] Lista de pantallas revisadas en `progress/F12-impl.md` con lo encontrado y arreglado.
-  - [ ] Sin scroll horizontal a 375 px en ninguna ruta.
-  - [ ] Todas las acciones alcanzables con teclado y con foco visible.
+  - [x] Lista de pantallas revisadas en `progress/F12-impl.md` con lo encontrado y arreglado.
+  - [x] Sin scroll horizontal a 375 px en ninguna ruta.
+  - [x] Todas las acciones alcanzables con teclado y con foco visible.
+  - [x] Contraste AA: el usuario decidió oscurecer el token `gris` de `#888888` (3,54:1) a `#767676` (4,54:1) en `src/styles/index.css` y actualizar `docs/conventions.md` / `CLAUDE.md`.
+  - [x] Títulos de poema enlazados en listados (Explorar, autor, etiqueta) con objetivo táctil < 44 px (37–43 px): llevarlos a ≥ 44 px.
 
 ### U3 — Abrir al público (usuario)
 - **Estado:** pending
