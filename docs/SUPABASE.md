@@ -40,6 +40,19 @@ En *Authentication*:
 - [ ] **URL Configuration → Redirect URLs**: añade `http://localhost:5173/**` y `https://TU-PROYECTO.pages.dev/**`. Sin esto, los enlaces de confirmación y de «olvidé mi contraseña» no vuelven a CISNE.
 - [ ] **Correos**: el servidor de correo de serie de Supabase solo entrega a los emails del equipo del proyecto y con un límite muy bajo por hora. Para probar con cuentas tuyas basta; para usuarios reales, configura un SMTP propio en *Authentication → Emails → SMTP Settings* (Resend o Brevo tienen plan gratuito).
 
+## Correos de CISNE (plantillas en español)
+
+Las plantillas están en `supabase/templates/` (ver su `README.md`). Se pegan a mano en el panel:
+
+1. *Authentication → Emails → Templates*. Si el panel no deja editar plantillas, configura antes un SMTP propio (*Authentication → Emails → SMTP Settings*, tarea U3): sin él, Supabase bloquea la edición.
+2. Para cada casilla, pega el **Subject** y el HTML (*Source*) de su fichero:
+   - *Confirm signup* → `confirmar.html` · «Confirma tu correo en CISNE»
+   - *Reset password* → `recuperar.html` · «Recupera tu contraseña de CISNE»
+   - *Change email address* → `cambio-email.html` · «Confirma tu nuevo correo en CISNE»
+3. Guarda. El cisne se carga desde `https://cisneverso.dmaymo.es/email/cisne.png`, así que solo se ve cuando esa web está publicada.
+
+Nota: el remitente «CISNE <hola@tu-dominio>», el límite de envíos y quitar el «powered by Supabase» exigen **SMTP propio (U3)**.
+
 ## 3. Conectar el frontend
 
 1. Copia `.env.example` como `.env.local` (Git lo ignora).

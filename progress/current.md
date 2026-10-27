@@ -26,6 +26,8 @@
 
 - 2026-10-27 — F10 Supabase real: migración de F09 aplicada en producción, BD comprobada (11 tablas, funciones clave), `.env.local` local conectado. Cerrada por decisión de la usuaria tras su prueba manual (sin detalle por punto; ver Deuda).
 
+- 2026-10-27 — F14 Correos de CISNE: plantillas en español (`supabase/templates/`: confirmar, recuperar, cambio de email) con el cisne como PNG (`public/email/cisne.png`) y guía en `docs/SUPABASE.md`. APPROVED (2 vueltas).
+
 ## Correcciones
 - 2026-10-27 — En F11 se dijo que producción servía el modo local: era falso. Producción ya estaba conectada a Supabase (proyecto `cisne`, de Didac). Las cifras de F11 con Supabase (680,85 → 323,41 KB, −52,5 %) son las que aplican a producción. Faltaba aplicar en producción la migración de F09 (aplicada el 2026-10-27).
 
@@ -40,3 +42,4 @@
 - F11: en modo local el build emite chunks de Supabase y Zod que nunca se descargan (inocuo); en local los datos llegan tras un import dinámico extra.
 - F12: la prueba de «foco oculto bajo la cabecera fija» no fue fiable (panel del navegador oculto); repetirla con el panel visible. Logotipo «CISNE» gris en la portada de colección sobre papel (4,16:1), aceptado como decorativo. `text-[0.625rem]` (10 px) en la portada pequeña, fuera de la escala tipográfica.
 - F10: repetir `todobackend.md` §6 punto por punto en el navegador con dos cuentas de prueba (A en `localhost:5173`, B en `[::1]:5173`), sobre todo privacidad (4, 5, 7). Las pruebas escriben en la BD de producción: borrar cuentas de prueba al terminar.
+- F14: falta pegar las plantillas en Supabase y comprobar un correo real (Gmail y móvil). Si el panel exige SMTP propio, depende de U3.
