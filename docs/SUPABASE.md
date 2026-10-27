@@ -48,6 +48,7 @@ En *Authentication*:
    VITE_SUPABASE_URL=https://TU-PROYECTO.supabase.co
    VITE_SUPABASE_PUBLISHABLE_KEY=sb_publishable_...
    ```
+   > ⚠️ Solo el dominio, sin `/rest/v1` al final. Si lo pones, la web llama a `/rest/v1/rest/v1/…` y Supabase responde «Invalid path» (PGRST125).
 3. Para el servidor de desarrollo y vuelve a lanzarlo: `npm run dev`. Las variables `VITE_*` se leen al arrancar.
 4. Señal de que funciona: en *Entrar* ya no aparece la nota «Versión de prueba…».
 

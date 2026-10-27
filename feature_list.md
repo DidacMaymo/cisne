@@ -112,17 +112,18 @@
 
 ### U1 — Conectar Supabase (usuario)
 - **Estado:** done
-- **Qué:** crear el proyecto en supabase.com, aplicar las 3 migraciones, configurar Auth y crear `.env.local`. Guía: `todobackend.md` §1-5.
+- **Qué:** crear el proyecto en supabase.com, aplicar las migraciones de `supabase/migrations/` (hoy 4), configurar Auth y crear `.env.local`. Guía: `todobackend.md` §1-5.
+- **Nota (2026-10-27):** el proyecto `cisne` lo creó Didac con 3 migraciones y producción ya usaba Supabase; Cristina (también dueña) aplicó la 4ª (`20261101120000_denunciar_poema.sql`), comprobó tablas y funciones y creó su `.env.local`.
 - **Hecho cuando:** en *Entrar* ya no sale la nota «Versión de prueba…».
 
 ### F10 — Prueba de punta a punta con Supabase real
-- **Estado:** pending
+- **Estado:** done
 - **Depende de:** U1, F07
 - **Qué:** el líder recorre en el navegador la lista de `todobackend.md` §6 con dos cuentas (ventana normal + incógnito). Cada fallo encontrado se convierte en un `fix` aquí o en una feature nueva.
 - **Probar en la UI:** `todobackend.md` §6 entero.
 - **Aceptación:**
-  - [ ] `progress/F10-impl.md` con cada punto de §6 marcado OK o con el fallo y su feature/fix asociado.
-  - [ ] Ningún fallo de privacidad o anonimato abierto.
+  - [x] `progress/F10-impl.md` (cerrada por decisión de la usuaria: recorrido manual suyo sin detalle por punto; ver Deuda).
+  - [x] Ningún fallo de privacidad o anonimato conocido (cubierto por `test:db`; sin verificación independiente en navegador).
 
 ### U2 — Publicar en Cloudflare (usuario)
 - **Estado:** done
