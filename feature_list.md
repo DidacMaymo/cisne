@@ -211,10 +211,21 @@
 - **Depende de:** F17
 - **Qué:** crear las cuentas de Instagram y TikTok de CISNE y pasar las URLs al líder para cambiarlas en `src/lib/social.ts` (ahora apuntan a las portadas genéricas).
 
-### F18 — Página de privacidad (antes de abrir al público)
-- **Estado:** pending
+### F18 — Páginas legales: aviso legal, privacidad y cookies
+- **Estado:** done
 - **Depende de:** U1
-- **Qué:** página «Privacidad» enlazada desde el pie: qué datos guarda CISNE (cuenta, poemas, preferencias en el navegador), que no usa cookies de seguimiento ni analítica (por eso no hay banner), responsable y email de contacto, y cómo borrar la cuenta. Hace falta que el usuario dé nombre del responsable y email. Hacer antes de U3.
+- **Qué:** tres páginas legales en español, sobrias y legibles (misma estética que una página de lectura), enlazadas desde el pie: **Aviso legal y condiciones de uso**, **Política de privacidad** y **Política de cookies**. Responsable y contacto: **info@cisneverso.es** (decisión del usuario, 2026-10-28; sin nombre ni NIF por ahora).
+- **Contenido mínimo:**
+  - *Aviso legal y condiciones* (`/aviso-legal`): titular/contacto (info@cisneverso.es), objeto de la web, condiciones de uso (contenido original y propio, prohibido odio/acoso/plagio, denuncias y retirada de contenido), **propiedad intelectual: los poemas son de sus autores**; CISNE solo recibe permiso para mostrarlos mientras sigan publicados, y el autor puede borrarlos cuando quiera. Pseudónimos y anonimato: reales frente a otros usuarios, no frente al responsable ni a requerimientos legales. Exclusión de responsabilidad por contenido de usuarios. Ley española.
+  - *Privacidad* (`/privacidad`): responsable y contacto; qué datos se tratan (email y contraseña de la cuenta, nombre visible, pseudónimos, bio, enlaces, poemas, colecciones, guardados, apoyos, comentarios, denuncias); finalidad (prestar el servicio) y base legal (ejecución del servicio que pide el usuario; interés legítimo para seguridad y denuncias); encargados del tratamiento: **Supabase** (base de datos y cuentas) y **Cloudflare** (alojamiento), con posibles transferencias internacionales cubiertas por cláusulas contractuales tipo / Marco de Privacidad UE-EE. UU.; conservación (mientras la cuenta exista; borrar cuenta lo borra todo, como ya hace *Ajustes → Cuenta*); derechos RGPD (acceso, rectificación, supresión, oposición, portabilidad, limitación) escribiendo a info@cisneverso.es, y reclamación ante la **AEPD**; sin decisiones automatizadas ni venta de datos.
+  - *Cookies* (`/cookies`): CISNE no usa cookies de publicidad ni de seguimiento; solo almacenamiento técnico necesario en el navegador (sesión de la cuenta, borradores autoguardados, preferencias) y por eso no hay banner. Si existe analítica, describirla tal cual (comprobar en el código; no inventar).
+- **Probar en la UI:** el pie muestra «Aviso legal · Privacidad · Cookies»; cada enlace abre su página, legible a 375 px, con fecha de última actualización y el email como enlace `mailto:`. La página de privacidad enlaza a *Ajustes → Cuenta* para borrar la cuenta.
+- **Aceptación:**
+  - [ ] Rutas `/aviso-legal`, `/privacidad`, `/cookies` públicas (sin sesión), con `<title>` propio, y enlazadas desde el pie en escritorio y móvil.
+  - [ ] Textos en español claro, sin jerga innecesaria, coherentes con lo que hace de verdad el código (no prometer nada que no exista).
+  - [ ] Estética de CISNE (serif para títulos, columna de lectura, tokens de la paleta); sin scroll horizontal a 375 px.
+  - [ ] Email `info@cisneverso.es` en un solo sitio del código (constante), usado por las tres páginas.
+  - [ ] No choca con `/ajustes/privacidad` (preferencias de la cuenta), que sigue igual.
 
 ### F19 — Textos de la portada más simples
 - **Estado:** done
