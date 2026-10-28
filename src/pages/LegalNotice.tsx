@@ -2,7 +2,7 @@ import { ContactLink, LegalPage, LegalSection } from '../components/LegalPage'
 
 export function LegalNotice() {
   return (
-    <LegalPage title="Aviso legal y condiciones de uso">
+    <LegalPage title="Aviso legal y condiciones de uso" path="/aviso-legal">
       <LegalSection title="Quién está detrás">
         <p>
           CISNE es una plataforma de poesía en español para leer, escribir y publicar poemas. El responsable de la web

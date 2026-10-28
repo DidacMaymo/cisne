@@ -3,7 +3,7 @@
 > Lista de mejoras posibles para que CISNE se encuentre en buscadores, saber
 > cuánta gente entra y, si algún día hay tráfico, poder poner anuncios. No es
 > backlog: cuando una idea se vaya a hacer, se convierte en una feature de
-> `feature_list.md`. Orden aproximado de impacto/esfuerzo.
+> `feature_list.md`. Lo marcado `[x]` está hecho (código en F11 y F20). Orden aproximado de impacto/esfuerzo.
 
 ## El problema de fondo: es una SPA
 
@@ -22,23 +22,23 @@ Casi todo lo de abajo ataca esto.
 
 ## Fase 1 — Lo básico (poco esfuerzo, hacerlo ya)
 
-- [ ] **Google Search Console** y **Bing Webmaster Tools**: dar de alta
-  `cisneverso.dmaymo.es` (verificación por DNS en Cloudflare). Es la
+- [x] **Google Search Console** y **Bing Webmaster Tools**: dar de alta
+  `cisneverso.es` (propiedad de dominio, verificada por DNS: hecho). Es la
   herramienta que dice qué se indexa, con qué búsquedas apareces y qué errores
   hay. Gratis.
-- [ ] **`public/robots.txt`**: permitir todo menos las zonas privadas
+- [x] **`public/robots.txt`**: permitir todo menos las zonas privadas
   (`/escribir`, `/mis/`, `/ajustes/`, `/entrar`, `/registro`, `/recuperar`,
   `/nueva-contrasena`) y apuntar al sitemap.
-- [ ] **Título y descripción por página**. React 19 permite poner `<title>` y
+- [x] **Título y descripción por página**. React 19 permite poner `<title>` y
   `<meta name="description">` dentro de cualquier componente y los sube al
   `<head>`. Ejemplos:
   - Poema: «Título del poema — Autora · CISNE», descripción = primeros versos.
   - Autor: «Nombre — poemas en CISNE», descripción = su bio.
   - Etiqueta: «Poemas de #amor · CISNE».
   - Páginas privadas: `<meta name="robots" content="noindex">`.
-- [ ] **URL canónica** (`<link rel="canonical">`) en poema, autor, colección y
+- [x] **URL canónica** (`<link rel="canonical">`) en poema, autor, colección y
   etiqueta, para que `?ver=…` o mayúsculas no cuenten como páginas distintas.
-- [ ] **Imagen para compartir por defecto** (`og:image`, 1200×630): el cisne
+- [x] **Imagen para compartir por defecto** (`og:image`, 1200×630): el cisne
   sobre blanco con «CISNE · poesía en español». Más `og:title`,
   `og:description`, `og:site_name` y `twitter:card` en `index.html`.
 - [ ] **Analítica sin cookies: Cloudflare Web Analytics**. Ya estáis en
@@ -48,7 +48,7 @@ Casi todo lo de abajo ataca esto.
 
 ## Fase 2 — Que los buscadores y las redes vean el poema
 
-- [ ] **Worker que rellena el `<head>` en el servidor** para `/poema/:id`,
+- [x] **Worker que rellena el `<head>` en el servidor** para `/poema/:id`,
   `/autor/:nombre`, `/coleccion/:id` y `/etiqueta/:tag`. El Worker ya existe
   (`wrangler.jsonc`): se le añade un poco de código que pide el dato a la vista
   pública de Supabase (`public_poems`, etc.) y, con `HTMLRewriter`, escribe el
@@ -57,10 +57,10 @@ Casi todo lo de abajo ataca esto.
   - Arregla las vistas previas al compartir en WhatsApp/X/Telegram.
   - Ayuda a Google, Bing y compañía.
   - Respeta el anonimato: solo usa lo que ya es público en `public_*`.
-- [ ] **`sitemap.xml` dinámico** servido por el mismo Worker: poemas públicos,
+- [x] **`sitemap.xml` dinámico** servido por el mismo Worker: poemas públicos,
   autores, colecciones públicas y etiquetas, con `lastmod`. Enviarlo en Search
   Console.
-- [ ] **Datos estructurados (JSON-LD)**: `CreativeWork` (con `genre: "poesía"`,
+- [x] **Datos estructurados (JSON-LD)**: `CreativeWork` (con `genre: "poesía"`,
   autor, fecha, idioma `es`) en cada poema y `Person` en la página de autor.
   Para anónimos, sin autor. Ayuda a que Google entienda qué es cada página.
 - [ ] (Opcional) **Imagen para compartir por poema**: una tarjeta con el
@@ -69,9 +69,9 @@ Casi todo lo de abajo ataca esto.
 
 ## Fase 3 — Rendimiento (Google lo puntúa)
 
-- [ ] **Cargar menos JavaScript al principio** (F11): leer un poema no
+- [x] **Cargar menos JavaScript al principio** (F11, hecho): leer un poema no
   necesita el editor ni los ajustes.
-- [ ] **Fuentes**: hoy se generan ~170 ficheros de fuente, con alfabetos
+- [x] **Fuentes** (F20: 169 → 42 ficheros): se generaban ~170 ficheros de fuente, con alfabetos
   cirílico, griego y vietnamita que una web en español no usa. Dejar solo
   `latin` y `latin-ext`, y precargar (`<link rel="preload">`) la Cormorant
   regular. Mejora el LCP (lo que tarda en verse el contenido principal).
@@ -89,9 +89,8 @@ Casi todo lo de abajo ataca esto.
   redes de anuncios (y la piden).
 - [ ] **Redes** (U4): compartir poemas (con permiso) enlazando a CISNE. Los
   enlaces que llegan de fuera son lo que más pesa en SEO.
-- [ ] **Dominio propio** (`cisne.es`, `cisneverso.com`…): mejor para la marca y
-  para AdSense que un subdominio de `dmaymo.es`. Si se cambia, redirección 301
-  desde el viejo para no perder lo indexado. Mejor decidirlo pronto.
+- [x] **Dominio propio**: `cisneverso.es` (el antiguo `cisneverso.dmaymo.es`
+  está retirado).
 - [ ] **Respeto a los autores**: opción «no mostrar este poema en buscadores»
   (`noindex`) por poema o por autor. Mucha gente escribe poesía para un
   círculo pequeño; encaja con el espíritu de CISNE.

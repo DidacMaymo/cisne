@@ -1,25 +1,5 @@
-@import '@fontsource-variable/inter';
-@import '@fontsource/cormorant-garamond/400.css';
-@import '@fontsource/cormorant-garamond/400-italic.css';
-@import '@fontsource/cormorant-garamond/500.css';
-@import '@fontsource/cormorant-garamond/600.css';
-@import '@fontsource/cormorant-garamond/700.css';
-@import '@fontsource/cormorant-garamond/700-italic.css';
-/* Fuentes que se pueden elegir para un poema. El navegador solo descarga las que se usan. */
-@import '@fontsource/eb-garamond/400.css';
-@import '@fontsource/eb-garamond/400-italic.css';
-@import '@fontsource/eb-garamond/700.css';
-@import '@fontsource/eb-garamond/700-italic.css';
-@import '@fontsource-variable/literata/wght.css';
-@import '@fontsource-variable/literata/wght-italic.css';
-@import '@fontsource/courier-prime/400.css';
-@import '@fontsource/courier-prime/400-italic.css';
-@import '@fontsource/courier-prime/700.css';
-@import '@fontsource/courier-prime/700-italic.css';
-@import '@fontsource/atkinson-hyperlegible/400.css';
-@import '@fontsource/atkinson-hyperlegible/400-italic.css';
-@import '@fontsource/atkinson-hyperlegible/700.css';
-@import '@fontsource/atkinson-hyperlegible/700-italic.css';
+/* Fuentes: solo latin y latin-ext (generado con `node scripts/gen-fonts.mjs`). El navegador solo descarga las que se usan. */
+@import './fonts.css';
 @import 'tailwindcss';
 
 @theme {

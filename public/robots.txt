@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Disallow: /escribir
+Disallow: /mis/
+Disallow: /mi-pagina
+Disallow: /colecciones
+Disallow: /ajustes/
+Disallow: /entrar
+Disallow: /registro
+Disallow: /recuperar
+Disallow: /nueva-contrasena
+
+Sitemap: https://cisneverso.es/sitemap.xml

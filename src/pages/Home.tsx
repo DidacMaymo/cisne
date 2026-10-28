@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom'
 import { SwanDivider } from '../components/brand/SwanDivider'
 import { SwanMark } from '../components/brand/SwanMark'
+import { Seo } from '../components/Seo'
+import { SITE_META } from '../lib/seo'
 
 const doors = [
   {
@@ -31,6 +33,7 @@ const principles = ['Sin fotografías', 'Sin seguidores', 'Sin rankings']
 export function Home() {
   return (
     <>
+      <Seo {...SITE_META} />
       <section className="mx-auto max-w-pagina py-6 text-center md:py-14">
         <p className="meta tracking-[0.2em] uppercase">Poesía en español</p>
         <h1 className="mx-auto mt-6 max-w-[20ch] text-balance font-serif text-5xl italic leading-[1.05] md:text-7xl">

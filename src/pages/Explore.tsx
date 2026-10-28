@@ -6,6 +6,8 @@ import { EmptyState } from '../components/EmptyState'
 import { LoadState } from '../components/LoadState'
 import { PoemList } from '../components/PoemList'
 import { SwanDivider } from '../components/brand/SwanDivider'
+import { Seo } from '../components/Seo'
+import { SITE_NAME } from '../lib/seo'
 import { useQuery } from '../hooks/useQuery'
 
 const PAGE = 10
@@ -54,6 +56,11 @@ export function Explore() {
 
   return (
     <>
+      <Seo
+        title={`Explorar poemas · ${SITE_NAME}`}
+        description="Abre un poema al azar o busca por tema, autor o etiqueta. Poesía en español, sin ruido."
+        path="/explorar"
+      />
       <header className="mx-auto max-w-pagina py-4 text-center">
         <h1 className="font-serif text-5xl md:text-6xl">Explorar</h1>
         <p className="mt-3 font-serif text-xl italic text-gris">Abre un poema al azar. Quizá sea el tuyo.</p>

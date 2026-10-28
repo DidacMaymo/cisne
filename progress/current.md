@@ -30,6 +30,8 @@
 
 - 2026-10-28 — F18 Páginas legales: `/aviso-legal`, `/privacidad` y `/cookies` enlazadas desde el pie, contacto info@cisneverso.es en `src/lib/contact.ts`. Textos contrastados con el código (sin analítica ni cookies; denuncias solo con cuenta y sobre poemas ajenos; al borrar la cuenta las denuncias enviadas quedan desvinculadas). APPROVED (2ª vuelta).
 
+- 2026-10-28 — F20 SEO técnico: metadatos y canónicas (`https://cisneverso.es`) por página, `noindex` en privadas, `robots.txt`, `og.png`, Worker que rellena el `<head>` de poema/autor/colección/etiqueta y sirve `/sitemap.xml` (23 tests; sin autor en anónimos, sin versos en «Cisne negro»), fuentes 169 → 42 ficheros (dist 4,4 → 2,1 MB), dominio cisneverso.es en plantillas de correo. APPROVED (2ª vuelta: un «Cisne negro» sin título filtraba su primer verso en el título).
+
 ## Correcciones
 - 2026-10-27 — En F11 se dijo que producción servía el modo local: era falso. Producción ya estaba conectada a Supabase (proyecto `cisne`, de Didac). Las cifras de F11 con Supabase (680,85 → 323,41 KB, −52,5 %) son las que aplican a producción. Faltaba aplicar en producción la migración de F09 (aplicada el 2026-10-27).
 
@@ -46,3 +48,4 @@
 - F10: repetir `todobackend.md` §6 punto por punto en el navegador con dos cuentas de prueba (A en `localhost:5173`, B en `[::1]:5173`), sobre todo privacidad (4, 5, 7). Las pruebas escriben en la BD de producción: borrar cuentas de prueba al terminar.
 - F14: falta pegar las plantillas en Supabase y comprobar un correo real (Gmail y móvil). Si el panel exige SMTP propio, depende de U3.
 - F18: sin nombre, NIF ni dirección del titular (decisión del usuario). Añadirlos antes de monetizar (LSSI). Conviene que un profesional revise los textos antes de abrir al público.
+- F20: el Worker no se ha podido ejecutar en local (wrangler pide Node 22); la prueba real es el primer despliegue. Necesita `SUPABASE_URL` y `SUPABASE_PUBLISHABLE_KEY` como variables de runtime en Cloudflare. Si se cambian las fuentes, regenerar `src/styles/fonts.css` con `scripts/gen-fonts.mjs`.

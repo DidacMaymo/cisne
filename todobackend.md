@@ -85,8 +85,8 @@ Usa una ventana normal (usuaria **A**) y una de incógnito (usuaria **B**).
 - [ ] En Cloudflare Pages → tu proyecto → **Settings → Environment variables** (Production y Preview), añade `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY`.
 - [ ] Lanza un **nuevo despliegue** (las variables se meten al compilar).
 - [ ] En Supabase → **Authentication → URL Configuration**:
-  - Site URL: tu dominio de Pages (p. ej. `https://cisne.pages.dev`).
-  - Redirect URLs: añade `https://cisne.pages.dev/**`.
+  - Site URL: `https://cisneverso.es`.
+  - Redirect URLs: añade `https://cisneverso.es/**`.
 - [ ] Vuelve a activar **Confirm email**.
 
 ## 8. Antes de abrir la web a gente real

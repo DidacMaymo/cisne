@@ -5,9 +5,11 @@ import { CollectionCover } from '../components/CollectionCover'
 import { ConfirmDialog } from '../components/ConfirmDialog'
 import { EmptyState } from '../components/EmptyState'
 import { LoadState } from '../components/LoadState'
+import { Seo } from '../components/Seo'
 import { ShareButton } from '../components/ShareButton'
 import { useQuery } from '../hooks/useQuery'
 import { firstLine } from '../lib/poem-text'
+import { collectionMeta, SITE_META } from '../lib/seo'
 
 const CollectionForm = lazy(() => import('../components/CollectionForm').then((m) => ({ default: m.CollectionForm })))
 
@@ -46,6 +48,7 @@ export function CollectionPage() {
   if (!data) {
     return (
       <>
+        <Seo title={SITE_META.title} noindex />
         <h1 className="sr-only">Colección no encontrada</h1>
         <EmptyState title="Esta colección no existe o es privada.">
           <Link to="/explorar" className="enlace">
@@ -80,6 +83,7 @@ export function CollectionPage() {
 
   return (
     <div className="mx-auto max-w-pagina">
+      <Seo {...collectionMeta(c)} noindex={c.visibility !== 'public'} />
       {(flash || (isOwner && c.visibility === 'private')) && (
         <p role="status" className="meta mb-8 text-center">
           {flash}

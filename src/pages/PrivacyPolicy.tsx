@@ -3,7 +3,7 @@ import { ContactLink, LegalPage, LegalSection } from '../components/LegalPage'
 
 export function PrivacyPolicy() {
   return (
-    <LegalPage title="Política de privacidad">
+    <LegalPage title="Política de privacidad" path="/privacidad">
       <LegalSection title="Responsable">
         <p>
           El responsable del tratamiento de tus datos es CISNE. Puedes escribirnos a <ContactLink />.

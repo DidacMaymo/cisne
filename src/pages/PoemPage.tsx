@@ -10,12 +10,14 @@ import { LoadState } from '../components/LoadState'
 import { PoemReader } from '../components/PoemReader'
 import { ReportButton } from '../components/ReportButton'
 import { RelatedPoems } from '../components/RelatedPoems'
+import { Seo } from '../components/Seo'
 import { ShareButton } from '../components/ShareButton'
 import { SupportButton } from '../components/SupportButton'
 import { useQuery } from '../hooks/useQuery'
 import { useSavedIds } from '../hooks/useSavedIds'
 import { useSession } from '../hooks/useSession'
 import { firstLine } from '../lib/poem-text'
+import { poemMeta, SITE_META } from '../lib/seo'
 
 export function PoemPage() {
   const { id = '' } = useParams()
@@ -46,6 +48,7 @@ export function PoemPage() {
   if (!poem) {
     return (
       <>
+        <Seo title={SITE_META.title} noindex />
         <h1 className="sr-only">Poema no encontrado</h1>
         <EmptyState title="Este poema no existe o es privado.">
           <Link to="/" className="enlace">
@@ -60,6 +63,7 @@ export function PoemPage() {
 
   return (
     <>
+      <Seo {...poemMeta({ ...poem, title: poem.title ?? null })} noindex={notPublic} />
       {(flash || notPublic) && (
         <p role="status" className="meta mb-8 text-center">
           {flash}

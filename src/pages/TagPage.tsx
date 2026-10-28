@@ -5,6 +5,8 @@ import { EmptyState } from '../components/EmptyState'
 import { LoadState } from '../components/LoadState'
 import { PoemList } from '../components/PoemList'
 import { SwanDivider } from '../components/brand/SwanDivider'
+import { Seo } from '../components/Seo'
+import { tagMeta } from '../lib/seo'
 import { useQuery } from '../hooks/useQuery'
 
 export function TagPage() {
@@ -14,6 +16,7 @@ export function TagPage() {
 
   return (
     <>
+      <Seo {...tagMeta(name)} noindex={!!data && data.length === 0} />
       <header className="py-4 text-center">
         <p className="meta">Etiqueta</p>
         <h1 className="mt-2 font-serif text-5xl italic">#{name}</h1>

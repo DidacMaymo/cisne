@@ -1,6 +1,6 @@
-import { useEffect } from 'react'
 import type { ReactNode } from 'react'
 import { CONTACT_EMAIL, LEGAL_UPDATED } from '../lib/contact'
+import { Seo } from './Seo'
 
 export function ContactLink() {
   return (
@@ -19,17 +19,10 @@ export function LegalSection({ title, children }: { title: string; children: Rea
   )
 }
 
-export function LegalPage({ title, children }: { title: string; children: ReactNode }) {
-  useEffect(() => {
-    const previous = document.title
-    document.title = `${title} — CISNE`
-    return () => {
-      document.title = previous
-    }
-  }, [title])
-
+export function LegalPage({ title, path, children }: { title: string; path: string; children: ReactNode }) {
   return (
     <article className="mx-auto w-full max-w-pagina px-6 py-10 leading-relaxed break-words md:px-10 md:py-16">
+      <Seo title={`${title} — CISNE`} description={`${title} de CISNE, plataforma de poesía en español.`} path={path} />
       <h1 className="font-serif text-4xl">{title}</h1>
       <p className="meta mt-2">Última actualización: {LEGAL_UPDATED}</p>
       {children}
