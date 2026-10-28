@@ -28,6 +28,8 @@
 
 - 2026-10-27 — F14 Correos de CISNE: plantillas en español (`supabase/templates/`: confirmar, recuperar, cambio de email) con el cisne como PNG (`public/email/cisne.png`) y guía en `docs/SUPABASE.md`. APPROVED (2 vueltas).
 
+- 2026-10-28 — F18 Páginas legales: `/aviso-legal`, `/privacidad` y `/cookies` enlazadas desde el pie, contacto info@cisneverso.es en `src/lib/contact.ts`. Textos contrastados con el código (sin analítica ni cookies; denuncias solo con cuenta y sobre poemas ajenos; al borrar la cuenta las denuncias enviadas quedan desvinculadas). APPROVED (2ª vuelta).
+
 ## Correcciones
 - 2026-10-27 — En F11 se dijo que producción servía el modo local: era falso. Producción ya estaba conectada a Supabase (proyecto `cisne`, de Didac). Las cifras de F11 con Supabase (680,85 → 323,41 KB, −52,5 %) son las que aplican a producción. Faltaba aplicar en producción la migración de F09 (aplicada el 2026-10-27).
 
@@ -43,3 +45,4 @@
 - F12: la prueba de «foco oculto bajo la cabecera fija» no fue fiable (panel del navegador oculto); repetirla con el panel visible. Logotipo «CISNE» gris en la portada de colección sobre papel (4,16:1), aceptado como decorativo. `text-[0.625rem]` (10 px) en la portada pequeña, fuera de la escala tipográfica.
 - F10: repetir `todobackend.md` §6 punto por punto en el navegador con dos cuentas de prueba (A en `localhost:5173`, B en `[::1]:5173`), sobre todo privacidad (4, 5, 7). Las pruebas escriben en la BD de producción: borrar cuentas de prueba al terminar.
 - F14: falta pegar las plantillas en Supabase y comprobar un correo real (Gmail y móvil). Si el panel exige SMTP propio, depende de U3.
+- F18: sin nombre, NIF ni dirección del titular (decisión del usuario). Añadirlos antes de monetizar (LSSI). Conviene que un profesional revise los textos antes de abrir al público.

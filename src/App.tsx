@@ -14,7 +14,10 @@ import { TagPage } from './pages/TagPage'
 
 // Lectura: en el chunk inicial. Editor, ajustes y cuenta: se descargan al entrar.
 const AccountSettings = lazy(() => import('./pages/AccountSettings').then((m) => ({ default: m.AccountSettings })))
+const CookiePolicy = lazy(() => import('./pages/CookiePolicy').then((m) => ({ default: m.CookiePolicy })))
+const LegalNotice = lazy(() => import('./pages/LegalNotice').then((m) => ({ default: m.LegalNotice })))
 const NewPassword = lazy(() => import('./pages/NewPassword').then((m) => ({ default: m.NewPassword })))
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy').then((m) => ({ default: m.PrivacyPolicy })))
 const PrivacySettings = lazy(() => import('./pages/PrivacySettings').then((m) => ({ default: m.PrivacySettings })))
 const ProfileSettings = lazy(() => import('./pages/ProfileSettings').then((m) => ({ default: m.ProfileSettings })))
 const Recover = lazy(() => import('./pages/Recover').then((m) => ({ default: m.Recover })))
@@ -50,6 +53,9 @@ export function App() {
         <Route path="/registro" element={<SignIn key="registro" mode="registro" />} />
         <Route path="/recuperar" element={<Recover />} />
         <Route path="/nueva-contrasena" element={<NewPassword />} />
+        <Route path="/aviso-legal" element={<LegalNotice />} />
+        <Route path="/privacidad" element={<PrivacyPolicy />} />
+        <Route path="/cookies" element={<CookiePolicy />} />
         <Route path="*" element={<NotFound />} />
       </Route>
     </Routes>
