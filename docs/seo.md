@@ -49,7 +49,8 @@ Casi todo lo de abajo ataca esto.
 ## Fase 2 — Que los buscadores y las redes vean el poema
 
 - [x] **Worker que rellena el `<head>` en el servidor** para `/poema/:id`,
-  `/autor/:nombre`, `/coleccion/:id` y `/etiqueta/:tag`. El Worker ya existe
+  `/autor/:nombre`, `/coleccion/:id` y `/etiqueta/:tag` (en producción desde
+  el 2026-10-28; vista previa comprobada en opengraph.xyz). El Worker ya existe
   (`wrangler.jsonc`): se le añade un poco de código que pide el dato a la vista
   pública de Supabase (`public_poems`, etc.) y, con `HTMLRewriter`, escribe el
   título, la descripción, el `og:*` y la canónica en el `index.html` antes de
@@ -58,8 +59,11 @@ Casi todo lo de abajo ataca esto.
   - Ayuda a Google, Bing y compañía.
   - Respeta el anonimato: solo usa lo que ya es público en `public_*`.
 - [x] **`sitemap.xml` dinámico** servido por el mismo Worker: poemas públicos,
-  autores, colecciones públicas y etiquetas, con `lastmod`. Enviarlo en Search
+  autores, colecciones públicas y etiquetas, con `lastmod`. Enviado en Search
   Console.
+- [ ] **Bing Webmaster Tools**: importar la propiedad desde Search Console.
+- [ ] **Solicitar indexación** de la portada y algunos poemas (Search Console →
+  Inspección de URLs).
 - [x] **Datos estructurados (JSON-LD)**: `CreativeWork` (con `genre: "poesía"`,
   autor, fecha, idioma `es`) en cada poema y `Person` en la página de autor.
   Para anónimos, sin autor. Ayuda a que Google entienda qué es cada página.
