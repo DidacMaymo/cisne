@@ -37,7 +37,7 @@ En *Authentication*:
 - [ ] **Sign In / Providers → Email**: activado. *Minimum password length*: 8.
 - [ ] **Confirm email**: actívalo para la web real. Para probar rápido puedes desactivarlo (las cuentas entran al instante).
 - [ ] **URL Configuration → Site URL**: `http://localhost:5173` mientras pruebas; luego, tu dominio de Cloudflare Pages.
-- [ ] **URL Configuration → Redirect URLs**: añade `http://localhost:5173/**` y `https://TU-PROYECTO.pages.dev/**`. Sin esto, los enlaces de confirmación y de «olvidé mi contraseña» no vuelven a CISNE.
+- [ ] **URL Configuration → Redirect URLs**: añade `http://localhost:5173/**` y `https://cisneverso.es/**`. Sin esto, los enlaces de confirmación y de «olvidé mi contraseña» no vuelven a CISNE.
 - [ ] **Correos**: el servidor de correo de serie de Supabase solo entrega a los emails del equipo del proyecto y con un límite muy bajo por hora. Para probar con cuentas tuyas basta; para usuarios reales, configura un SMTP propio en *Authentication → Emails → SMTP Settings* (Resend o Brevo tienen plan gratuito).
 
 ## Correos de CISNE (plantillas en español)
@@ -49,7 +49,7 @@ Las plantillas están en `supabase/templates/` (ver su `README.md`). Se pegan a 
    - *Confirm signup* → `confirmar.html` · «Confirma tu correo en CISNE»
    - *Reset password* → `recuperar.html` · «Recupera tu contraseña de CISNE»
    - *Change email address* → `cambio-email.html` · «Confirma tu nuevo correo en CISNE»
-3. Guarda. El cisne se carga desde `https://cisneverso.dmaymo.es/email/cisne.png`, así que solo se ve cuando esa web está publicada.
+3. Guarda. El cisne se carga desde `https://cisneverso.es/email/cisne.png`, así que solo se ve cuando esa web está publicada.
 
 Nota: el remitente «CISNE <hola@tu-dominio>», el límite de envíos y quitar el «powered by Supabase» exigen **SMTP propio (U3)**.
 

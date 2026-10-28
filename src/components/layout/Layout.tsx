@@ -1,6 +1,8 @@
 import { Suspense, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
+import { isPrivatePath, SITE_META } from '../../lib/seo'
 import { LoadState } from '../LoadState'
+import { Seo } from '../Seo'
 import { Header } from './Header'
 import { MobileNav } from './MobileNav'
 import { Footer } from './Footer'
@@ -19,6 +21,7 @@ export function Layout() {
       >
         Saltar al contenido
       </a>
+      {isPrivatePath(pathname) && <Seo title={SITE_META.title} noindex />}
       <Header />
       <main
         id="contenido"

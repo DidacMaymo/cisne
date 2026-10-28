@@ -1,13 +1,19 @@
-// Despliegue en Cloudflare Workers (static assets): sirve dist/ desde su CDN.
-// Sin código de servidor: es la web compilada por `npm run build`.
+// Despliegue en Cloudflare Workers: sirve dist/ (static assets) y, para unas pocas
+// rutas, un Worker pequeño (worker/) que rellena el <head> (SEO) y sirve el sitemap.
 {
   "name": "cisne",
+  "main": "worker/index.ts",
   "compatibility_date": "2026-10-01",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
     // Rutas de la SPA (/poema/123…) → index.html, y React Router decide.
-    "not_found_handling": "single-page-application"
+    "not_found_handling": "single-page-application",
+    // Solo estas rutas pasan por el Worker; el resto lo sirven los assets directamente.
+    "run_worker_first": ["/poema/*", "/autor/*", "/coleccion/*", "/etiqueta/*", "/sitemap.xml"]
   },
+  // Conserva las variables de runtime puestas en el panel (SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY).
+  "keep_vars": true,
   // Vista previa por rama/PR (`wrangler preview`). Puede ir vacío.
   "previews": {}
 }

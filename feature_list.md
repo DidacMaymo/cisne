@@ -126,13 +126,15 @@
   - [x] Ningún fallo de privacidad o anonimato conocido (cubierto por `test:db`; sin verificación independiente en navegador).
 
 ### U2 — Publicar en Cloudflare (usuario)
-- **Estado:** done
-- **Qué:** web publicada como Worker con static assets en **https://cisneverso.dmaymo.es**, desplegada sola en cada merge a `main`. Guía: `docs/deploy.md` § Pasos.
+- **Estado:** in_progress
+- **Qué:** web publicada como Worker con static assets en **https://cisneverso.es** (antes `cisneverso.dmaymo.es`), desplegada sola en cada merge a `main`. Guía: `docs/deploy.md` § Pasos.
   - [x] Repo conectado a Cloudflare (Workers Builds) y dominio propio.
-  - [x] Redirect URL `https://cisneverso.dmaymo.es/**` en Supabase.
-  - [x] *Site URL* de Supabase = `https://cisneverso.dmaymo.es`.
+  - [x] Redirect URL `https://cisneverso.es/**` en Supabase (antes `cisneverso.dmaymo.es`).
+  - [x] *Site URL* de Supabase = `https://cisneverso.es`.
+  - [x] `cisneverso.dmaymo.es` retirado de Cloudflare (ya no apunta a la web; no hace falta redirección).
+  - [ ] Plantillas de correo en Supabase con la imagen en `cisneverso.es` (ver F20).
   - [x] Variables **de build** `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY` en Cloudflare (*Settings → Build → Variables and secrets*).
-- **Hecho cuando:** en `https://cisneverso.dmaymo.es/entrar` ya no sale «Versión de prueba…», se puede registrar una cuenta y publicar.
+- **Hecho cuando:** en `https://cisneverso.es/entrar` ya no sale «Versión de prueba…», se puede registrar una cuenta y publicar.
 
 ### F11 — Rendimiento: rutas con carga diferida
 - **Estado:** done
@@ -226,6 +228,32 @@
   - [ ] Estética de CISNE (serif para títulos, columna de lectura, tokens de la paleta); sin scroll horizontal a 375 px.
   - [ ] Email `info@cisneverso.es` en un solo sitio del código (constante), usado por las tres páginas.
   - [ ] No choca con `/ajustes/privacidad` (preferencias de la cuenta), que sigue igual.
+
+### F20 — SEO técnico (todo lo que se puede hacer en código)
+- **Estado:** done
+- **Depende de:** F18
+- **Qué:** aplicar en código las fases 1-3 de `docs/seo.md`. Dominio canónico **https://cisneverso.es** (decisión del usuario, 2026-10-28; Search Console ya dado de alta como propiedad de dominio). La web sigue siendo la misma SPA; el Worker de Cloudflare solo rellena el `<head>` de algunas rutas y sirve el sitemap.
+- **Partes:**
+  1. **`index.html`**: metadatos por defecto (descripción, `og:*`, `twitter:card` = `summary_large_image`, `og:locale` `es_ES`, `og:site_name` CISNE, `og:image` absoluta) y un hueco marcado (comentarios `<!--seo-->…<!--/seo-->` o similar) que el Worker pueda sustituir.
+  2. **Imagen para compartir** `public/og.png` (1200×630): el cisne (`public/email/cisne.png` o el SVG del emblema) y «CISNE · poesía en español» sobre blanco, tinta `#111111`, sobrio. Si hace falta, un script reproducible en `scripts/` (Python con PIL está disponible en la máquina; no añadir dependencias npm para esto).
+  3. **Metadatos por página en la SPA** (para navegación interna y Google): un componente pequeño (p. ej. `Seo`) usando los `<title>`/`<meta>`/`<link>` nativos de React 19. Título y descripción en inicio, explorar, etiqueta, poema (título — autor; descripción = primeros versos), autor (nombre; descripción = bio), colección, legales. `<link rel="canonical">` absoluto con el dominio canónico y **sin query** (`?ver=…`). `noindex` en rutas privadas o sin valor: `/escribir*`, `/mis/*`, `/mi-pagina`, `/ajustes/*`, `/entrar`, `/registro`, `/recuperar`, `/nueva-contrasena`, 404 y poema no encontrado. Sustituye el `useEffect` de título de `LegalPage`.
+  4. **`public/robots.txt`**: permite todo salvo las rutas privadas anteriores; `Sitemap: https://cisneverso.es/sitemap.xml`.
+  5. **Worker** (`worker/` + `main` en `wrangler.jsonc`, con binding de assets y `run_worker_first` **solo** para `/poema/*`, `/autor/*`, `/coleccion/*`, `/etiqueta/*` y `/sitemap.xml`; el resto lo siguen sirviendo los assets sin pasar por el Worker):
+     - Para esas rutas, pide el `index.html` a los assets, consulta la vista pública correspondiente de Supabase por REST (`public_poems`, `public_profiles`, `public_collections`; solo lo que ya es público) y sustituye el hueco del `<head>` por título, descripción, canónica, `og:*`/`twitter:*` y **JSON-LD** (`CreativeWork` con `genre` poesía, `inLanguage` es, fecha y autor —**sin autor si es anónimo o con pseudónimo que no enlaza a perfil**— en poemas; `Person` en autores; `CollectionPage` en colecciones). Si no existe o falla Supabase: devuelve el `index.html` tal cual (nunca romper la página) y, para poema/autor inexistente, `noindex`.
+     - `/sitemap.xml`: inicio, explorar, legales, poemas públicos, autores con algo público, colecciones públicas y etiquetas usadas, con `lastmod` cuando exista. Cabecera de caché razonable (p. ej. 1 h).
+     - Lógica pura (construir metadatos, escapar HTML/XML/JSON-LD, inyectar en el HTML, construir el sitemap) en módulos sin APIs de Cloudflare, **con tests Vitest** (incluido: el anónimo no saca autor; caracteres `<`, `"`, `&` escapados; poema inexistente → noindex).
+     - Configuración: la URL de Supabase y la **clave publicable** como variables de runtime del Worker. Que `wrangler deploy` no borre las del panel (`keep_vars: true`) o declararlas en `wrangler.jsonc` (la publicable es pública por diseño); sin ellas, el Worker solo sirve el HTML por defecto. Documentar en `docs/deploy.md` qué tiene que configurar el usuario.
+     - Tipos con `@cloudflare/workers-types` (devDependency, versión compatible con Node 20.10) y el Worker incluido en `tsc -b` para que la CI lo compruebe. `wrangler` local no funciona en la máquina del usuario (pide Node 22): la verificación local son los tests; la prueba real es el primer despliegue.
+  6. **Fuentes**: importar solo los subconjuntos `latin` y `latin-ext` de todas las familias de `@fontsource` (hoy salen ~170 ficheros con cirílico, griego y vietnamita) y precargar la Cormorant Garamond regular latina si se puede hacer sin romper el hash de Vite. Citar nº de ficheros de fuente en `dist/` antes y después.
+  7. **Dominio**: cambiar `cisneverso.dmaymo.es` por `cisneverso.es` en `supabase/templates/` (imagen del cisne en los correos) y en cualquier otro sitio del código. Constante única para la URL canónica (junto a `src/lib/contact.ts` o similar) compartida con el Worker si es posible.
+- **Probar en la UI:** navegar inicio → poema → autor: el título de la pestaña cambia; en `/ajustes/perfil` hay `<meta name="robots" content="noindex">`; `/robots.txt` sirve el fichero. Tras el despliegue (lo comprueba el usuario): `curl https://cisneverso.es/poema/<id>` devuelve en el `<head>` el título del poema y su `og:image`; `https://cisneverso.es/sitemap.xml` lista poemas; pegar un enlace de poema en opengraph.xyz o WhatsApp muestra su título y primeros versos.
+- **Aceptación:**
+  - [ ] Partes 1-7 hechas.
+  - [ ] Tests Vitest de la lógica del Worker, incluido anonimato y escapado.
+  - [ ] Nada privado en metadatos ni sitemap: solo datos de vistas `public_*`; anónimos y pseudónimos sin autor ni enlace a perfil.
+  - [ ] Canónicas absolutas con `https://cisneverso.es` y sin query.
+  - [ ] `./init.sh` en verde (incluye el Worker en los tipos).
+  - [ ] `docs/deploy.md` explica las variables del Worker.
 
 ### F19 — Textos de la portada más simples
 - **Estado:** done

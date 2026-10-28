@@ -2,7 +2,7 @@
 
 HTML con tablas y estilos en línea (compatible con Gmail y móvil). El cisne es
 `public/email/cisne.png`, servido por la propia web
-(`https://cisneverso.dmaymo.es/email/cisne.png`).
+(`https://cisneverso.es/email/cisne.png`).
 
 | Fichero | Casilla del panel (*Authentication → Emails → Templates*) | Asunto |
 |---|---|---|

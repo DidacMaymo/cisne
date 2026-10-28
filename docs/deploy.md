@@ -2,7 +2,7 @@
 
 ## Dónde está
 
-- Web: **https://cisneverso.dmaymo.es** (Worker `cisne` en la cuenta de Cloudflare del usuario). Cada merge a `main` despliega producción; cada rama/PR tiene su vista previa en `*.workers.dev`.
+- Web: **https://cisneverso.es** (dominio canónico; Worker `cisne` en la cuenta de Cloudflare del usuario). Cada merge a `main` despliega producción. Las vistas previas por rama están desactivadas (*Builds for non-production branches* apagado).
 - Backend: proyecto `cisne` de Supabase.
 
 ## Un repo, dos despliegues
@@ -68,6 +68,23 @@ día que se quede, el plan Pro son ~25 $/mes.
      de runtime del Worker no sirven. Si ya desplegó sin ellas, añádelas y
      relanza el build.
    - En Supabase → *Authentication → URL Configuration*: Site URL y Redirect
-     URLs (`https://cisne.<tu-subdominio>.workers.dev/**`).
+     URLs (`https://cisneverso.es/**`).
 3. **U3** — Antes de abrir al público: SMTP propio (Resend/Brevo, gratis) y
    *Confirm email* activado.
+
+## Worker de SEO (`worker/`)
+
+Un Worker pequeño (`worker/index.ts`, declarado como `main` en `wrangler.jsonc`) intercepta **solo** `/poema/*`, `/autor/*`, `/coleccion/*`, `/etiqueta/*` y `/sitemap.xml`; el resto lo sirven los assets sin pasar por él. Para las cuatro primeras pide el `index.html`, consulta la vista pública de Supabase (`public_poems`, `public_profiles`, `public_collections`, `public_tags`) y rellena el `<head>` (título, descripción, canónica, `og:*`, JSON-LD). `/sitemap.xml` lo genera con las mismas vistas. Si algo falla, devuelve el `index.html` normal (el sitemap, un 503).
+
+**Variables de runtime del Worker** (tarea del usuario, una sola vez): Cloudflare → *Workers & Pages → cisne → Settings → Variables and Secrets* (las de **runtime**, no las de *Build*):
+
+| Variable | Valor |
+|---|---|
+| `SUPABASE_URL` | la misma URL del proyecto que `VITE_SUPABASE_URL` |
+| `SUPABASE_PUBLISHABLE_KEY` | la clave **publicable** (`sb_publishable_…`), la misma que `VITE_SUPABASE_PUBLISHABLE_KEY`. Nunca la `secret` |
+
+`wrangler.jsonc` lleva `keep_vars: true`: `wrangler deploy` no borra las variables puestas en el panel. Sin ellas el Worker no rompe nada: sirve el HTML por defecto y el sitemap responde 503.
+
+**Dominio**: el canónico es `https://cisneverso.es` (constante `SITE_URL` en `src/lib/seo.ts`). El antiguo `cisneverso.dmaymo.es` está retirado. Tras el primer despliegue, enviar `https://cisneverso.es/sitemap.xml` en Search Console.
+
+Local: `wrangler` no funciona con Node 20.10; la lógica del Worker se prueba con `npm test` (`worker/worker.test.ts`) y se comprueba en el primer despliegue: `curl https://cisneverso.es/poema/<id>`.

@@ -2,7 +2,7 @@ import { ContactLink, LegalPage, LegalSection } from '../components/LegalPage'
 
 export function CookiePolicy() {
   return (
-    <LegalPage title="Política de cookies">
+    <LegalPage title="Política de cookies" path="/cookies">
       <LegalSection title="En resumen">
         <p>
           CISNE no usa cookies de publicidad ni de seguimiento, y no incluye ninguna herramienta de analítica. Solo
