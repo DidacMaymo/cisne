@@ -51,6 +51,7 @@ en `2.109.0`). Si `npm` falla con "engine", es esto.
 | `docs/conventions.md` | Identidad visual, estilo TS/React, SQL, textos | Antes de escribir código |
 | `docs/verification.md` | Qué tests escribir y cómo demostrar que funciona | Antes de dar algo por terminado |
 | `docs/deploy.md` | Cómo se despliega frontend y backend, costes, alternativa VPS | Si la feature toca despliegue |
+| `docs/seo.md` | Ideas de SEO, analítica y anuncios (no es backlog) | Si la feature toca SEO, metadatos o analítica |
 | `docs/SUPABASE.md` · `todobackend.md` | Guía paso a paso para conectar Supabase (tareas del usuario) | Si la feature necesita Supabase real |
 | `CHECKPOINTS.md` | Checklist objetivo del reviewer | Al revisar |
 | `.claude/agents/` | Subagentes `implementer` y `reviewer` | Si orquestas |
