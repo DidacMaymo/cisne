@@ -126,14 +126,16 @@
   - [x] Ningún fallo de privacidad o anonimato conocido (cubierto por `test:db`; sin verificación independiente en navegador).
 
 ### U2 — Publicar en Cloudflare (usuario)
-- **Estado:** in_progress
+- **Estado:** done
 - **Qué:** web publicada como Worker con static assets en **https://cisneverso.es** (antes `cisneverso.dmaymo.es`), desplegada sola en cada merge a `main`. Guía: `docs/deploy.md` § Pasos.
   - [x] Repo conectado a Cloudflare (Workers Builds) y dominio propio.
   - [x] Redirect URL `https://cisneverso.es/**` en Supabase (antes `cisneverso.dmaymo.es`).
   - [x] *Site URL* de Supabase = `https://cisneverso.es`.
   - [x] `cisneverso.dmaymo.es` retirado de Cloudflare (ya no apunta a la web; no hace falta redirección).
-  - [ ] Plantillas de correo en Supabase con la imagen en `cisneverso.es` (ver F20).
+  - [x] Plantillas de correo en Supabase con la imagen en `cisneverso.es` (comprobado con un correo real de «recuperar contraseña», 2026-10-28).
   - [x] Variables **de build** `VITE_SUPABASE_URL` y `VITE_SUPABASE_PUBLISHABLE_KEY` en Cloudflare (*Settings → Build → Variables and secrets*).
+  - [x] Variables **de runtime** `SUPABASE_URL` y `SUPABASE_PUBLISHABLE_KEY` para el Worker de SEO (*Settings → Variables and Secrets*, no las de Build): `sitemap.xml` y metadatos de poema funcionando.
+  - [x] Sitemap enviado en Search Console.
 - **Hecho cuando:** en `https://cisneverso.es/entrar` ya no sale «Versión de prueba…», se puede registrar una cuenta y publicar.
 
 ### F11 — Rendimiento: rutas con carga diferida
@@ -162,6 +164,10 @@
 - **Estado:** pending
 - **Depende de:** U2
 - **Qué:** SMTP propio en Supabase (Resend o Brevo, gratis), activar *Confirm email*, revisar `reports` de vez en cuando. Guía: `todobackend.md` §8.
+  - [x] SMTP propio configurado (remitente `info@cisneverso.es`).
+  - [ ] *Sender name* «CISNE» (hoy sale «cisneverso»), opcional.
+  - [ ] *Confirm email* activado y probado con un registro nuevo.
+  - [ ] Revisar `reports` de vez en cuando.
 
 ### F13 — Migraciones automáticas desde GitHub (opcional)
 - **Estado:** pending
