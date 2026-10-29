@@ -5,7 +5,7 @@
 export const SITE_URL = 'https://cisneverso.es'
 export const SITE_NAME = 'CISNE'
 export const SITE_TAGLINE = 'poesía en español'
-export const SITE_DESCRIPTION = 'CISNE — poesía en español. Menos ruido, más poesía.'
+export const SITE_DESCRIPTION = 'CISNE — un lugar para la poesía en español.'
 export const OG_IMAGE_URL = `${SITE_URL}/og.png`
 
 /** URL canónica absoluta: sin query ni fragmento. */

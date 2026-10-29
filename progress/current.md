@@ -35,6 +35,8 @@
 - 2026-10-28 — U2 cerrada: plantillas de correo en Supabase con SMTP propio (correo real comprobado), variables de runtime del Worker, sitemap en Search Console, vista previa probada en opengraph.xyz.
 - 2026-10-29 — F21 Sobre CISNE (`/sobre`) y Contacto (`/contacto`, solo `mailto:`), en el pie y en el sitemap; `/cookies` y `/privacidad` describen Cloudflare Web Analytics (sin cookies). APPROVED a la primera.
 
+- 2026-10-29 — F22 Quitado el lema «menos ruido, más poesía» de la web (Sobre CISNE, SEO, metas para compartir) y de la documentación de agentes; sustituido por «un lugar para la poesía». APPROVED.
+
 ## Correcciones
 - 2026-10-27 — En F11 se dijo que producción servía el modo local: era falso. Producción ya estaba conectada a Supabase (proyecto `cisne`, de Didac). Las cifras de F11 con Supabase (680,85 → 323,41 KB, −52,5 %) son las que aplican a producción. Faltaba aplicar en producción la migración de F09 (aplicada el 2026-10-27).
 

@@ -1,6 +1,6 @@
 # CISNE
 
-Plataforma minimalista de poesía en español. *Menos ruido, más poesía.*
+Plataforma minimalista de poesía en español. *Un lugar para la poesía.*
 
 Producto y diseño: [docs/BRIEF.md](docs/BRIEF.md). Mapa del repo y forma de trabajar con agentes: [AGENTS.md](AGENTS.md). Tareas: [feature_list.md](feature_list.md). Despliegue: [docs/deploy.md](docs/deploy.md).
 
