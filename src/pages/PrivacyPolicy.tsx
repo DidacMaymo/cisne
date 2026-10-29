@@ -27,11 +27,24 @@ export function PrivacyPolicy() {
         </p>
       </LegalSection>
 
+      <LegalSection title="Analítica de visitas">
+        <p>
+          Medimos el uso de la web con Cloudflare Web Analytics, sin cookies ni almacenamiento en tu navegador, sin
+          huella digital y sin seguimiento entre sitios. Solo se obtienen datos agregados de las visitas: páginas,
+          país, navegador y rendimiento. La base legal es nuestro interés legítimo en medir el uso de forma anónima.
+          Más en la{' '}
+          <Link to="/cookies" className="underline underline-offset-4">
+            política de cookies
+          </Link>
+          .
+        </p>
+      </LegalSection>
+
       <LegalSection title="Quién más accede a los datos">
         <p>Para funcionar usamos dos proveedores, que tratan datos por nuestra cuenta:</p>
         <ul className="list-disc space-y-1 pl-6">
           <li>Supabase: base de datos y cuentas.</li>
-          <li>Cloudflare: alojamiento de la web.</li>
+          <li>Cloudflare: alojamiento de la web y analítica de visitas (Cloudflare Web Analytics).</li>
         </ul>
         <p>
           Pueden estar fuera del Espacio Económico Europeo. En ese caso, las transferencias se amparan en cláusulas

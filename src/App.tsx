@@ -14,6 +14,8 @@ import { TagPage } from './pages/TagPage'
 
 // Lectura: en el chunk inicial. Editor, ajustes y cuenta: se descargan al entrar.
 const AccountSettings = lazy(() => import('./pages/AccountSettings').then((m) => ({ default: m.AccountSettings })))
+const About = lazy(() => import('./pages/About').then((m) => ({ default: m.About })))
+const Contact = lazy(() => import('./pages/Contact').then((m) => ({ default: m.Contact })))
 const CookiePolicy = lazy(() => import('./pages/CookiePolicy').then((m) => ({ default: m.CookiePolicy })))
 const LegalNotice = lazy(() => import('./pages/LegalNotice').then((m) => ({ default: m.LegalNotice })))
 const NewPassword = lazy(() => import('./pages/NewPassword').then((m) => ({ default: m.NewPassword })))
@@ -53,6 +55,8 @@ export function App() {
         <Route path="/registro" element={<SignIn key="registro" mode="registro" />} />
         <Route path="/recuperar" element={<Recover />} />
         <Route path="/nueva-contrasena" element={<NewPassword />} />
+        <Route path="/sobre" element={<About />} />
+        <Route path="/contacto" element={<Contact />} />
         <Route path="/aviso-legal" element={<LegalNotice />} />
         <Route path="/privacidad" element={<PrivacyPolicy />} />
         <Route path="/cookies" element={<CookiePolicy />} />

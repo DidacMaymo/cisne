@@ -5,9 +5,17 @@ export function CookiePolicy() {
     <LegalPage title="Política de cookies" path="/cookies">
       <LegalSection title="En resumen">
         <p>
-          CISNE no usa cookies de publicidad ni de seguimiento, y no incluye ninguna herramienta de analítica. Solo
-          guarda en tu navegador lo imprescindible para que la web funcione. Por eso no te mostramos un banner de
-          cookies: no hay nada que aceptar.
+          CISNE no usa cookies de publicidad ni de seguimiento. Solo guarda en tu navegador lo imprescindible para que
+          la web funcione, y mide las visitas con una herramienta de analítica que no usa cookies (ver abajo). Por eso
+          no te mostramos un banner de cookies: no hay nada que aceptar.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="Analítica de visitas">
+        <p>
+          Usamos Cloudflare Web Analytics para saber cuánto se usa CISNE. No usa cookies ni guarda nada en tu
+          navegador, no crea huella digital tuya ni te sigue entre webs. Solo obtiene datos agregados de las visitas:
+          páginas vistas, país, navegador y rendimiento.
         </p>
       </LegalSection>
 
