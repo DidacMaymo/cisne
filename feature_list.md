@@ -161,13 +161,12 @@
   - [x] Títulos de poema enlazados en listados (Explorar, autor, etiqueta) con objetivo táctil < 44 px (37–43 px): llevarlos a ≥ 44 px.
 
 ### U3 — Abrir al público (usuario)
-- **Estado:** pending
+- **Estado:** done
 - **Depende de:** U2
 - **Qué:** SMTP propio en Supabase (Resend o Brevo, gratis), activar *Confirm email*, revisar `reports` de vez en cuando. Guía: `todobackend.md` §8.
   - [x] SMTP propio configurado (remitente `info@cisneverso.es`).
-  - [ ] *Sender name* «CISNE» (hoy sale «cisneverso»), opcional.
-  - [ ] *Confirm email* activado y probado con un registro nuevo.
-  - [ ] Revisar `reports` de vez en cuando.
+  - [x] *Sender name* y *Confirm email* (hecho por el usuario, 2026-10-29).
+  - Tarea continua: revisar `reports` de vez en cuando.
 
 ### F13 — Migraciones automáticas desde GitHub (opcional)
 - **Estado:** pending
@@ -274,3 +273,23 @@
   - [x] Lista: «Sin fotografías», «Sin seguidores», «Sin rankings» (se quita «Sin contadores», sin sustituto).
   - [x] Descripción bajo la lista: «Aquí los poemas se descubren al azar, no por popularidad.» (sustituye a la frase larga actual).
   - [x] El resto de la portada (subtítulo, botones, separador, bloque final) sin cambios; `./init.sh` en verde.
+
+### F21 — Sobre CISNE y contacto (y analítica en las páginas legales)
+- **Estado:** done
+- **Depende de:** F18, F20
+- **Qué:** dos páginas públicas cortas, `/sobre` y `/contacto`, enlazadas desde el pie junto a las legales. Dan confianza a lectores, buscadores y (algún día) redes de anuncios. Decisiones del usuario (2026-10-29): **dos páginas**; contacto **solo por `mailto:`** a `info@cisneverso.es` (sin formulario ni tabla nueva); «Sobre CISNE» habla **del proyecto, sin nombres** de quién lo hace (coherente con F18). Además, Cloudflare Web Analytics está activado en producción (inyecta `static.cloudflareinsights.com/beacon.min.js`): las páginas legales ya no dicen la verdad y hay que corregirlas.
+- **Partes:**
+  1. **`/sobre` — «Sobre CISNE»**: qué es CISNE y por qué existe, tomado de `docs/BRIEF.md` (no inventar funciones): un lugar para leer, escribir y publicar poesía en español; *menos ruido, más poesía*; firmar con nombre, pseudónimo o de forma anónima; sin fotos, seguidores ni rankings, descubrimiento al azar; colecciones, biblioteca, apoyos y comentarios en los versos; los poemas son de sus autores (enlace a `/aviso-legal`). Breve: se lee en un minuto. Llamada final discreta a «Leer» (`/explorar`) y «Escribir» (`/escribir`).
+  2. **`/contacto` — «Contacto»**: email `info@cisneverso.es` como enlace `mailto:` (constante de `src/lib/contact.ts`) y para qué escribir: dudas y sugerencias, problemas con la cuenta, denunciar un contenido (recordar que en cada poema hay «Denunciar»), derechos de autor / plagio, privacidad (enlace a `/privacidad`), prensa o colaboraciones. Plazo orientativo de respuesta solo si no promete nada que no exista (mejor sin plazo). Si existen las redes (`src/lib/social.ts`), enlazarlas.
+  3. **Pie**: añadir «Sobre CISNE» y «Contacto» a los enlaces del pie (escritorio y móvil), sin romper la línea a 375 px.
+  4. **SEO**: `<title>`, descripción y canónica con el componente `Seo` de F20; añadir `/sobre` y `/contacto` a `STATIC_PATHS` del sitemap del Worker (y su test).
+  5. **Páginas legales — analítica**: `/cookies` y `/privacidad` describen la realidad: se usa **Cloudflare Web Analytics**, sin cookies ni almacenamiento en el navegador, sin huella digital ni seguimiento entre sitios, datos agregados de visitas (páginas, país, navegador, rendimiento); Cloudflare como encargado del tratamiento (ya figura como alojamiento); base legal: interés legítimo en medir el uso de forma anónima; por eso sigue sin hacer falta banner. Actualizar la fecha de última actualización de las páginas cambiadas.
+- **Probar en la UI:** el pie muestra «Sobre CISNE» y «Contacto»; `/sobre` se lee bien a 375 px y en escritorio, y sus botones llevan a `/explorar` y `/escribir`; `/contacto` muestra `info@cisneverso.es` como enlace `mailto:`; `/cookies` y `/privacidad` mencionan Cloudflare Web Analytics sin cookies; la pestaña del navegador muestra el título de cada página.
+- **Aceptación:**
+  - [x] Rutas `/sobre` y `/contacto` públicas (sin sesión), con título, descripción y canónica, enlazadas desde el pie en escritorio y móvil.
+  - [x] Textos en español claro y breves, fieles a `docs/BRIEF.md` y al código (nada que no exista); sin nombres de personas.
+  - [x] Email solo desde la constante de `src/lib/contact.ts`.
+  - [x] Estética de CISNE (serif para títulos, columna de lectura, tokens); sin scroll horizontal a 375 px.
+  - [x] Sitemap incluye `/sobre` y `/contacto` (test actualizado).
+  - [x] `/cookies` y `/privacidad` describen Cloudflare Web Analytics tal cual, con fecha actualizada.
+  - [x] `./init.sh` en verde.

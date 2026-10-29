@@ -155,6 +155,8 @@ describe('sitemap', () => {
   it('lista estáticas, poemas, autores, colecciones y etiquetas con lastmod', () => {
     expect(xml).toContain('<loc>https://cisneverso.es/</loc>')
     expect(xml).toContain('<loc>https://cisneverso.es/aviso-legal</loc>')
+    expect(xml).toContain('<loc>https://cisneverso.es/sobre</loc>')
+    expect(xml).toContain('<loc>https://cisneverso.es/contacto</loc>')
     expect(xml).toContain(`<loc>https://cisneverso.es/poema/${ID}</loc><lastmod>2026-10-05</lastmod>`)
     expect(xml).toContain('<loc>https://cisneverso.es/poema/b</loc></url>')
     expect(xml).toContain('<loc>https://cisneverso.es/autor/ana-lia</loc><lastmod>2026-10-05</lastmod>')

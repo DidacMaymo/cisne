@@ -2,6 +2,8 @@ import { Link } from 'react-router-dom'
 import { socialLinks } from '../../lib/social'
 
 const legalLinks = [
+  { to: '/sobre', label: 'Sobre CISNE' },
+  { to: '/contacto', label: 'Contacto' },
   { to: '/aviso-legal', label: 'Aviso legal' },
   { to: '/privacidad', label: 'Privacidad' },
   { to: '/cookies', label: 'Cookies' },

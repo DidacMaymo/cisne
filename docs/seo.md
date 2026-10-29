@@ -41,7 +41,7 @@ Casi todo lo de abajo ataca esto.
 - [x] **Imagen para compartir por defecto** (`og:image`, 1200×630): el cisne
   sobre blanco con «CISNE · poesía en español». Más `og:title`,
   `og:description`, `og:site_name` y `twitter:card` en `index.html`.
-- [ ] **Analítica sin cookies: Cloudflare Web Analytics**. Ya estáis en
+- [x] **Analítica sin cookies: Cloudflare Web Analytics** (activada el 2026-10-29). Ya estáis en
   Cloudflare: se activa en el panel, es gratis, no usa cookies y por tanto
   **no necesita banner de consentimiento**. Da visitas, páginas más vistas,
   países, de dónde llega la gente y Core Web Vitals. Para empezar sobra.
@@ -61,8 +61,8 @@ Casi todo lo de abajo ataca esto.
 - [x] **`sitemap.xml` dinámico** servido por el mismo Worker: poemas públicos,
   autores, colecciones públicas y etiquetas, con `lastmod`. Enviado en Search
   Console.
-- [ ] **Bing Webmaster Tools**: importar la propiedad desde Search Console.
-- [ ] **Solicitar indexación** de la portada y algunos poemas (Search Console →
+- [x] **Bing Webmaster Tools**: importar la propiedad desde Search Console.
+- [x] **Solicitar indexación** de la portada y algunos poemas (Search Console →
   Inspección de URLs).
 - [x] **Datos estructurados (JSON-LD)**: `CreativeWork` (con `genre: "poesía"`,
   autor, fecha, idioma `es`) en cada poema y `Person` en la página de autor.
@@ -89,7 +89,7 @@ Casi todo lo de abajo ataca esto.
   etiquetas más usadas las hace más útiles para el buscador y para el lector.
 - [ ] **Enlaces internos**: poemas relacionados (ya existe), enlace a la
   etiqueta y a la colección desde cada poema, autor ↔ colecciones.
-- [ ] **Página «Sobre CISNE»** y **contacto**: dan confianza a buscadores y a
+- [x] **Página «Sobre CISNE»** y **contacto** (F21): dan confianza a buscadores y a
   redes de anuncios (y la piden).
 - [ ] **Redes** (U4): compartir poemas (con permiso) enlazando a CISNE. Los
   enlaces que llegan de fuera son lo que más pesa en SEO.

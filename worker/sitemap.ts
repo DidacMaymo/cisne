@@ -8,7 +8,7 @@ export interface SitemapData {
   tags: { normalized_name: string }[]
 }
 
-const STATIC_PATHS = ['/', '/explorar', '/aviso-legal', '/privacidad', '/cookies']
+const STATIC_PATHS = ['/', '/explorar', '/sobre', '/contacto', '/aviso-legal', '/privacidad', '/cookies']
 
 /** `2026-10-28` o `undefined` si la fecha no es válida. */
 function day(value: string | null | undefined): string | undefined {
