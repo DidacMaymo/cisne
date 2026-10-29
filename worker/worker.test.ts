@@ -36,6 +36,10 @@ describe('rutas del Worker', () => {
     expect(matchRoute('/poema/a/b')).toBeNull()
     expect(matchRoute('/autor/%E0%A4%A')).toBeNull()
   })
+  it('el manifiesto y los iconos no pasan por el Worker (los sirven los assets)', () => {
+    for (const p of ['/manifest.webmanifest', '/apple-touch-icon.png', '/icons/icon-192.png', '/icons/icon-maskable-512.png'])
+      expect(matchRoute(p), p).toBeNull()
+  })
 })
 
 describe('escapado', () => {

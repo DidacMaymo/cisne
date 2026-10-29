@@ -304,3 +304,21 @@
   - [x] `src/lib/seo.ts` (`SITE_DESCRIPTION`) e `index.html` (3 metas): «CISNE — un lugar para la poesía en español.».
   - [x] `grep -ri "menos ruido"` en `src/`, `worker/`, `public/`, `index.html` y `supabase/templates/` sin resultados; tests que dependan del texto, actualizados.
   - [x] `./init.sh` en verde.
+
+### F23 — CISNE en el móvil: instalar como app y apoyar el proyecto
+- **Estado:** done
+- **Depende de:** F21
+- **Qué:** que CISNE se pueda añadir a la pantalla de inicio con el icono del cisne y se abra a pantalla completa (manifiesto web + iconos, sin modo sin conexión), y una sección «¿Y en el móvil?» en Sobre CISNE con el tutorial para iPhone y Android y cómo apoyar el proyecto.
+- **Probar en la UI:** `/sobre` → sección «¿Y en el móvil?» con los pasos de iPhone y Android y «Apoyar el proyecto» (compartir, publicar; sin enlace de donación mientras no haya cuenta de Ko-fi). `/manifest.webmanifest` responde con nombre «CISNE», `display: standalone` y los iconos; `apple-touch-icon` enlazado en `index.html`. A 375 px y en escritorio.
+- **Aceptación:**
+  - [x] `public/manifest.webmanifest`: `name` «CISNE — un lugar para la poesía», `short_name` «CISNE», `lang` «es», `start_url` «/», `display` «standalone», `background_color` y `theme_color` `#FFFFFF`, iconos 192 y 512 (`any`) y 512 `maskable`.
+  - [x] Iconos PNG del cisne del emblema (`brand/cisne-emblema.png`) en tinta sobre blanco opaco: `public/icons/icon-192.png`, `icon-512.png`, `icon-maskable-512.png` (cisne dentro de la zona segura, ~60 % del lienzo) y `public/apple-touch-icon.png` (180×180). Sin dependencias nuevas.
+  - [x] `index.html`: `<link rel="manifest">` y `<link rel="apple-touch-icon">`; el Worker de producción los sirve (si `worker/` necesita algo, con test).
+  - [x] `/sobre`: sección «¿Y en el móvil?» (texto decidido con la usuaria): CISNE es, por ahora, una web; no se descarta una app para Android e iOS; mientras tanto se puede añadir a la pantalla de inicio. Pasos — iPhone (Safari): botón Compartir → «Añadir a pantalla de inicio» → «Añadir». Android (Chrome): menú ⋮ → «Añadir a pantalla de inicio» o «Instalar aplicación» → «Instalar».
+  - [x] `/sobre`: «Apoyar el proyecto» (no confundir con el botón «Apoyar» de poemas y autores): compartir CISNE y publicar poemas. La URL de Ko-fi vive en un único sitio (p. ej. junto a las redes en `src/lib/social.ts`) y vale `null` hasta U5; con `null` no se muestra ningún enlace de donación.
+  - [x] `./init.sh` en verde.
+
+### U5 — Cuenta de Ko-fi (usuario)
+- **Estado:** pending
+- **Depende de:** F23
+- **Qué:** crear la página de Ko-fi de CISNE y pasar la URL al líder para ponerla en «Apoyar el proyecto» (`src/lib/social.ts`). Recordatorio: las donaciones son ingresos; consultar cómo declararlas.
