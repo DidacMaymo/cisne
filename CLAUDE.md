@@ -154,7 +154,7 @@ Tipos: `feat`, `fix`, `test`, `refactor`, `docs`, `chore`.
 1. **Piensa antes de actuar.** Explicita supuestos. Si hay varias lecturas
    posibles, pregúntale al usuario *antes* de lanzar el implementer.
 2. **Simplicidad primero.** Lo mínimo que cumpla la aceptación; nada
-   especulativo. *Menos ruido, más poesía* también aplica al código.
+   especulativo. La sobriedad de CISNE también aplica al código.
 3. **Cambios quirúrgicos.** Cada línea cambiada se justifica con la feature.
    Si ves algo mal fuera del alcance, anótalo, no lo arregles.
 4. **Criterios verificables.** "Funciona" = test verde o evidencia en el

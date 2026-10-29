@@ -7,7 +7,7 @@
 
 **CISNE**, plataforma minimalista de poesía en español: leer, escribir y
 publicar poemas (con nombre, pseudónimo o anónimos), colecciones, biblioteca de
-guardados, apoyos y comentarios en los versos. *Menos ruido, más poesía.*
+guardados, apoyos y comentarios en los versos. *Un lugar para la poesía.*
 Producto y diseño: `docs/BRIEF.md`.
 
 Un solo repo, dos piezas que se despliegan por separado (detalle en

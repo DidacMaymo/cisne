@@ -9,11 +9,11 @@ export function About() {
     <article className="mx-auto w-full max-w-pagina px-6 py-10 leading-relaxed break-words md:px-10 md:py-16">
       <Seo
         title="Sobre CISNE"
-        description="CISNE es un lugar para leer, escribir y publicar poesía en español, con menos ruido y más poesía."
+        description="CISNE es un lugar para leer, escribir y publicar poesía en español."
         path="/sobre"
       />
       <h1 className="font-serif text-4xl">Sobre CISNE</h1>
-      <p className="mt-6 font-serif text-xl italic">Menos ruido, más poesía.</p>
+      <p className="mt-6 font-serif text-xl italic">Un lugar para la poesía.</p>
 
       <div className="mt-6 space-y-4">
         <p>

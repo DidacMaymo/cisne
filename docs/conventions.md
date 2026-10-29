@@ -1,8 +1,9 @@
 # Convenciones
 
 > Producto y diseño completos en `docs/BRIEF.md`. Esto es lo que un agente
-> necesita tener presente al escribir código. Esencia: *menos ruido, más
-> poesía.* Cada pantalla tiene un propósito, cada botón hace algo real, cada
+> necesita tener presente al escribir código. Esencia: *un lugar para la
+> poesía*, sobrio y sin ruido. **No uses el lema «menos ruido, más poesía»**
+> (descartado por la usuaria). Cada pantalla tiene un propósito, cada botón hace algo real, cada
 > adorno se justifica.
 
 ## Identidad visual (no negociable)

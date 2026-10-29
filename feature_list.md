@@ -293,3 +293,14 @@
   - [x] Sitemap incluye `/sobre` y `/contacto` (test actualizado).
   - [x] `/cookies` y `/privacidad` describen Cloudflare Web Analytics tal cual, con fecha actualizada.
   - [x] `./init.sh` en verde.
+
+### F22 — Quitar el lema «menos ruido, más poesía»
+- **Estado:** done
+- **Depende de:** F20, F21
+- **Qué:** a la usuaria no le gusta el lema; desaparece de todo lo que ve un visitante (página Sobre CISNE, descripción al compartir enlaces, SEO) y se sustituye por la idea «un lugar para la poesía».
+- **Probar en la UI:** `/sobre` → la frase en cursiva dice «Un lugar para la poesía.»; las etiquetas `description`, `og:description` y `twitter:description` de la portada (y la descripción por defecto de las páginas) dicen «CISNE — un lugar para la poesía en español.»; ninguna página contiene «menos ruido».
+- **Aceptación:**
+  - [x] `src/pages/About.tsx`: frase en cursiva «Un lugar para la poesía.» y descripción «CISNE es un lugar para leer, escribir y publicar poesía en español.».
+  - [x] `src/lib/seo.ts` (`SITE_DESCRIPTION`) e `index.html` (3 metas): «CISNE — un lugar para la poesía en español.».
+  - [x] `grep -ri "menos ruido"` en `src/`, `worker/`, `public/`, `index.html` y `supabase/templates/` sin resultados; tests que dependan del texto, actualizados.
+  - [x] `./init.sh` en verde.
