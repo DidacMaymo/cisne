@@ -333,3 +333,17 @@
   - [x] `src/lib/social.ts`: Instagram `https://www.instagram.com/cisneverso.es/`, TikTok `https://www.tiktok.com/@cisneverso.es` (quitar el comentario de «pendiente U4»).
   - [x] JSON-LD `Organization` (o `WebSite` + `publisher`) en la portada: `name` «CISNE», `url` `https://cisneverso.es`, `logo` (el icono 512 de F23), `sameAs` con las dos redes, leídas de `social.ts` (una sola fuente). Si la portada pasa por el Worker, que lo sirva también en el HTML inicial; si no, en `index.html`/`Seo`. Con test donde haya lógica.
   - [x] `./init.sh` en verde.
+
+### F25 — Comunidad de escritores (artículos)
+- **Estado:** done
+- **Depende de:** F19, F20, F24
+- **Qué:** una sección de artículos (recursos, guías, libros recomendados) para atraer búsquedas de Google. Cada artículo es un fichero Markdown en `content/comunidad/`; no hay panel de administración. Sin botón en la cabecera: una sección pequeña en la portada y un enlace en el pie.
+- **Probar en la UI:** portada → bajo «Leer · Descubrir · Escribir», bloque «Comunidad de escritores» con las últimas 3 entradas (título, una línea, fecha) y «Ver todas las entradas» → `/comunidad` lista todas → clic en una → `/comunidad/<slug>` la muestra en tipografía de lectura, con autor y fecha. Pie → «Comunidad». A 375 px nada se desborda. Un artículo con `borrador: true` se ve en `npm run dev` pero no en el build de producción ni en el sitemap.
+- **Aceptación:**
+  - [x] Artículos en `content/comunidad/<slug>.md` con frontmatter: `titulo`, `descripcion` (≤ 160 caracteres), `fecha` (AAAA-MM-DD), `autor`, `etiquetas` (lista), `borrador` (opcional). El slug es el nombre del fichero. Ordenados por fecha descendente.
+  - [x] El Markdown admite lo necesario y nada más: párrafos, `##`/`###`, listas, enlaces, cursiva, negrita y citas. Sin HTML crudo (no se inyecta HTML del fichero). Con tests del parser y de la carga (orden, borradores, frontmatter inválido).
+  - [x] Portada: sección «Comunidad de escritores» con las 3 últimas y «Ver todas las entradas»; si no hay ninguna publicada, la sección no aparece. Pie: enlace «Comunidad». Nada en la cabecera ni en la barra inferior móvil.
+  - [x] `/comunidad` y `/comunidad/:slug` (slug inexistente → la página de no encontrado de siempre). El artículo termina con una invitación a escribir en CISNE.
+  - [x] SEO: el HTML inicial de `/comunidad` y de cada artículo (servido por el Worker) lleva título, descripción, canonical y og; cada artículo, JSON-LD `BlogPosting` (headline, description, datePublished, author, publisher CISNE). Los artículos publicados entran en `sitemap.xml`. Los borradores, no. Con tests en `worker/worker.test.ts`.
+  - [x] Plantilla base `content/comunidad/_plantilla.md` (ignorada por la carga: los ficheros que empiezan por `_` no se publican) y guía `docs/comunidad.md`: cómo crear un artículo, campos, formato, buenas prácticas de SEO y cómo se publica (pedírselo a Claude o PR en GitHub → merge → producción).
+  - [x] `./init.sh` en verde.

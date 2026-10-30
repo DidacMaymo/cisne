@@ -10,7 +10,7 @@
     // Rutas de la SPA (/poema/123…) → index.html, y React Router decide.
     "not_found_handling": "single-page-application",
     // Solo estas rutas pasan por el Worker; el resto lo sirven los assets directamente.
-    "run_worker_first": ["/poema/*", "/autor/*", "/coleccion/*", "/etiqueta/*", "/sitemap.xml"]
+    "run_worker_first": ["/poema/*", "/autor/*", "/coleccion/*", "/etiqueta/*", "/comunidad", "/comunidad/*", "/sitemap.xml"]
   },
   // Conserva las variables de runtime puestas en el panel (SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY).
   "keep_vars": true,

@@ -3,6 +3,7 @@ import { socialLinks } from '../../lib/social'
 
 const legalLinks = [
   { to: '/sobre', label: 'Sobre CISNE' },
+  { to: '/comunidad', label: 'Comunidad' },
   { to: '/contacto', label: 'Contacto' },
   { to: '/aviso-legal', label: 'Aviso legal' },
   { to: '/privacidad', label: 'Privacidad' },

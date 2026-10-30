@@ -1,13 +1,18 @@
 // Construye el contenido del <head> de cada página a partir de filas de las
 // vistas `public_*` de Supabase. Lógica pura: sin APIs de Cloudflare.
+import type { ArticleMeta } from '../src/lib/comunidad'
 import {
+  articleMeta,
   authorMeta,
   canonicalUrl,
   collectionMeta,
+  COMMUNITY_META,
   firstVerse,
   OG_IMAGE_URL,
   poemMeta,
   SITE_META,
+  SITE_NAME,
+  SITE_URL,
   tagMeta,
   type PageMeta,
 } from '../src/lib/seo'
@@ -121,6 +126,31 @@ export function collectionHead(row: CollectionRow | null): HeadInput {
     }
   }
   return { meta, ogType: 'website', jsonLd: ld }
+}
+
+export function communityHead(): HeadInput {
+  return { meta: COMMUNITY_META, ogType: 'website' }
+}
+
+/** `null` = artículo inexistente o borrador: título genérico y `noindex`. */
+export function articleHead(a: ArticleMeta | null): HeadInput {
+  if (!a || a.borrador) return notFoundHead()
+  const meta = articleMeta(a)
+  const url = canonicalUrl(meta.path)
+  const ld: Record<string, unknown> = {
+    '@context': CTX,
+    '@type': 'BlogPosting',
+    headline: a.titulo,
+    description: a.descripcion,
+    datePublished: a.fecha,
+    inLanguage: 'es',
+    mainEntityOfPage: url,
+    url,
+    author: { '@type': 'Person', name: a.autor },
+    publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
+  }
+  if (a.etiquetas.length > 0) ld.keywords = a.etiquetas.join(', ')
+  return { meta, ogType: 'article', jsonLd: ld }
 }
 
 export function tagHead(tag: string, exists: boolean): HeadInput {

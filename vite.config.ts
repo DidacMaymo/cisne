@@ -1,6 +1,9 @@
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+import { loadArticles, toMeta } from './src/lib/comunidad'
 import { organizationJsonLd } from './src/lib/social'
 
 /** Precarga la Cormorant Garamond regular latina (el título de la portada y los poemas) con su nombre con hash. */
@@ -35,6 +38,26 @@ function organizationLd(): Plugin {
   }
 }
 
+/**
+ * Emite `comunidad.json` (metadatos de los artículos publicados) para que el Worker pueda
+ * rellenar el <head> y el sitemap. Usa el mismo parser que la SPA; un frontmatter inválido
+ * rompe el build en vez de publicar un artículo a medias.
+ */
+function communityIndex(): Plugin {
+  return {
+    name: 'cisne-community-index',
+    apply: 'build',
+    generateBundle() {
+      const dir = resolve(__dirname, 'content/comunidad')
+      const files: Record<string, string> = {}
+      if (existsSync(dir)) for (const f of readdirSync(dir)) if (f.endsWith('.md')) files[f] = readFileSync(resolve(dir, f), 'utf8')
+      const { articles, errors } = loadArticles(files, false)
+      if (errors.length > 0) this.error(`Artículos de la comunidad no válidos:\n${errors.join('\n')}`)
+      this.emitFile({ type: 'asset', fileName: 'comunidad.json', source: JSON.stringify(articles.map(toMeta)) })
+    },
+  }
+}
+
 export default defineConfig({
-  plugins: [react(), tailwindcss(), preloadCormorant(), organizationLd()],
+  plugins: [react(), tailwindcss(), preloadCormorant(), organizationLd(), communityIndex()],
 })

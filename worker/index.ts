@@ -1,7 +1,18 @@
-// Worker de CISNE. Solo intercepta /poema/*, /autor/*, /coleccion/*, /etiqueta/* y
-// /sitemap.xml (ver `run_worker_first` en wrangler.jsonc); el resto lo sirven los assets.
+// Worker de CISNE. Solo intercepta /poema/*, /autor/*, /coleccion/*, /etiqueta/*,
+// /comunidad, /comunidad/* y /sitemap.xml (ver `run_worker_first` en wrangler.jsonc); el resto lo sirven los assets.
 // Ante cualquier fallo devuelve el index.html normal: la SPA sigue funcionando sola.
-import { authorHead, collectionHead, poemHead, renderHead, tagHead, type HeadInput } from './head'
+import type { ArticleMeta } from '../src/lib/comunidad'
+import {
+  articleHead,
+  authorHead,
+  collectionHead,
+  communityHead,
+  notFoundHead,
+  poemHead,
+  renderHead,
+  tagHead,
+  type HeadInput,
+} from './head'
 import { injectSeo } from './html'
 import { matchRoute, type Route } from './routes'
 import { buildSitemap } from './sitemap'
@@ -21,8 +32,27 @@ interface Env {
   SUPABASE_PUBLISHABLE_KEY?: string
 }
 
+/**
+ * Artículos de la comunidad: `comunidad.json`, generado en el build (vite.config.ts) con el
+ * mismo parser que la SPA (src/lib/comunidad.ts). Si no está, lista vacía.
+ */
+async function loadArticleMeta(env: Env, request: Request): Promise<ArticleMeta[]> {
+  try {
+    const res = await env.ASSETS.fetch(new Request(new URL('/comunidad.json', request.url)))
+    if (!res.ok || !(res.headers.get('content-type') ?? '').includes('json')) return []
+    const data: unknown = await res.json()
+    return Array.isArray(data) ? (data as ArticleMeta[]) : []
+  } catch {
+    return []
+  }
+}
+
 async function headFor(route: Exclude<Route, { kind: 'sitemap' }>, cfg: SupabaseConfig): Promise<HeadInput> {
   switch (route.kind) {
+    case 'community':
+    case 'article':
+      return notFoundHead() // se resuelven aparte, sin Supabase
+
     case 'poem':
       return poemHead(await getPoem(cfg, route.id))
     case 'author':
@@ -34,10 +64,10 @@ async function headFor(route: Exclude<Route, { kind: 'sitemap' }>, cfg: Supabase
   }
 }
 
-async function sitemap(cfg: SupabaseConfig | null): Promise<Response> {
+async function sitemap(cfg: SupabaseConfig | null, articles: ArticleMeta[]): Promise<Response> {
   try {
     if (!cfg) throw new Error('Sin configuración de Supabase')
-    return new Response(buildSitemap(await getSitemapData(cfg)), {
+    return new Response(buildSitemap(await getSitemapData(cfg), articles), {
       headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600' },
     })
   } catch {
@@ -56,9 +86,17 @@ async function page(request: Request, env: Env, route: Exclude<Route, { kind: 's
   for (const h of ['content-length', 'content-encoding', 'etag']) headers.delete(h)
   const reply = (body: string) => new Response(body, { status: base.status, headers })
 
-  const cfg = supabaseConfig(env)
-  if (!cfg) return reply(html)
   try {
+    if (route.kind === 'community' || route.kind === 'article') {
+      const articles = await loadArticleMeta(env, request)
+      const head =
+        route.kind === 'community'
+          ? communityHead()
+          : articleHead(articles.find((a) => a.slug === route.slug) ?? null)
+      return reply(injectSeo(html, renderHead(head)))
+    }
+    const cfg = supabaseConfig(env)
+    if (!cfg) return reply(html)
     return reply(injectSeo(html, renderHead(await headFor(route, cfg))))
   } catch {
     return reply(html)
@@ -70,7 +108,7 @@ export default {
     try {
       const route = request.method === 'GET' ? matchRoute(new URL(request.url).pathname) : null
       if (!route) return await env.ASSETS.fetch(request)
-      if (route.kind === 'sitemap') return await sitemap(supabaseConfig(env))
+      if (route.kind === 'sitemap') return await sitemap(supabaseConfig(env), await loadArticleMeta(env, request))
       return await page(request, env, route)
     } catch {
       return env.ASSETS.fetch(request)

@@ -103,6 +103,16 @@ export function tagMeta(tag: string): PageMeta {
   }
 }
 
+export const COMMUNITY_META: PageMeta = {
+  title: `Comunidad de escritores · ${SITE_NAME}`,
+  description: 'Guías, recursos y libros recomendados para quienes escriben poesía en español.',
+  path: '/comunidad',
+}
+
+export function articleMeta(a: { slug: string; titulo: string; descripcion: string }): PageMeta {
+  return { title: `${a.titulo} · ${SITE_NAME}`, description: a.descripcion, path: `/comunidad/${a.slug}` }
+}
+
 /** Rutas privadas o sin valor para un buscador: `noindex` y `Disallow` en robots.txt. */
 export const PRIVATE_PREFIXES = [
   '/escribir',
