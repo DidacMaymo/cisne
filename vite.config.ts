@@ -1,6 +1,7 @@
 import { defineConfig, type Plugin } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
+import { organizationJsonLd } from './src/lib/social'
 
 /** Precarga la Cormorant Garamond regular latina (el título de la portada y los poemas) con su nombre con hash. */
 function preloadCormorant(): Plugin {
@@ -23,6 +24,17 @@ function preloadCormorant(): Plugin {
   }
 }
 
+/** Mete el JSON-LD `Organization` en el HTML inicial (la portada no pasa por el Worker). Datos de src/lib/social.ts. */
+function organizationLd(): Plugin {
+  return {
+    name: 'cisne-organization-ld',
+    transformIndexHtml() {
+      const json = JSON.stringify(organizationJsonLd()).replace(/</g, '\\u003c')
+      return [{ tag: 'script', attrs: { type: 'application/ld+json' }, children: json, injectTo: 'head' }]
+    },
+  }
+}
+
 export default defineConfig({
-  plugins: [react(), tailwindcss(), preloadCormorant()],
+  plugins: [react(), tailwindcss(), preloadCormorant(), organizationLd()],
 })

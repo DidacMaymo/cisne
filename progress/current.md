@@ -4,7 +4,7 @@
 > resume en una línea en "Hecho" y se limpia "En curso".
 
 ## En curso
-- —
+- (nada)
 
 ## Hecho
 - 2026-10-24 — F07 Arnés de agentes y CI (líder, solo docs/config). El build estaba en rojo en esta máquina solo porque `node_modules` no estaba al día con `package-lock.json` (faltaban `@supabase/supabase-js` y `@electric-sql/pglite`); `init.sh` ahora ejecuta `npm ci` cuando pasa esto. Tras `npm install`: lint, build y `test:db` en verde.
@@ -38,6 +38,8 @@
 - 2026-10-29 — F22 Quitado el lema «menos ruido, más poesía» de la web (Sobre CISNE, SEO, metas para compartir) y de la documentación de agentes; sustituido por «un lugar para la poesía». APPROVED.
 
 - 2026-10-29 — F23 CISNE en el móvil: manifiesto web e iconos del cisne (instalable desde Safari y Chrome), sección «¿Y en el móvil?» con tutorial y «Apoyar el proyecto» (Ko-fi pendiente de U5). APPROVED.
+
+- 2026-10-30 — F24 Enlaces reales a Instagram y TikTok (@cisneverso.es) y JSON-LD `Organization` en el HTML base (plugin de Vite; la portada no pasa por el Worker). APPROVED.
 
 ## Correcciones
 - 2026-10-27 — En F11 se dijo que producción servía el modo local: era falso. Producción ya estaba conectada a Supabase (proyecto `cisne`, de Didac). Las cifras de F11 con Supabase (680,85 → 323,41 KB, −52,5 %) son las que aplican a producción. Faltaba aplicar en producción la migración de F09 (aplicada el 2026-10-27).

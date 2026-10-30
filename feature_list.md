@@ -214,9 +214,10 @@
   - [x] `./init.sh` en verde.
 
 ### U4 — Cuentas de CISNE en redes (usuario)
-- **Estado:** pending
+- **Estado:** done
 - **Depende de:** F17
 - **Qué:** crear las cuentas de Instagram y TikTok de CISNE y pasar las URLs al líder para cambiarlas en `src/lib/social.ts` (ahora apuntan a las portadas genéricas).
+- **Hecho (2026-10-30):** usuario `cisneverso.es` en Instagram y TikTok; enlaces en F24.
 
 ### F18 — Páginas legales: aviso legal, privacidad y cookies
 - **Estado:** done
@@ -322,3 +323,13 @@
 - **Estado:** pending
 - **Depende de:** F23
 - **Qué:** crear la página de Ko-fi de CISNE y pasar la URL al líder para ponerla en «Apoyar el proyecto» (`src/lib/social.ts`). Recordatorio: las donaciones son ingresos; consultar cómo declararlas.
+
+### F24 — Enlaces reales a Instagram y TikTok
+- **Estado:** done
+- **Depende de:** F17, F20
+- **Qué:** las cuentas ya existen (U4, usuario `cisneverso.es` en ambas): el pie enlaza a ellas y la portada declara a Google, con datos estructurados, que son de CISNE.
+- **Probar en la UI:** pie de cualquier página → «Instagram» abre `https://www.instagram.com/cisneverso.es/` y «TikTok» abre `https://www.tiktok.com/@cisneverso.es`, en otra pestaña. En el HTML de la portada hay un JSON-LD `Organization` con esas dos URLs en `sameAs`.
+- **Aceptación:**
+  - [x] `src/lib/social.ts`: Instagram `https://www.instagram.com/cisneverso.es/`, TikTok `https://www.tiktok.com/@cisneverso.es` (quitar el comentario de «pendiente U4»).
+  - [x] JSON-LD `Organization` (o `WebSite` + `publisher`) en la portada: `name` «CISNE», `url` `https://cisneverso.es`, `logo` (el icono 512 de F23), `sameAs` con las dos redes, leídas de `social.ts` (una sola fuente). Si la portada pasa por el Worker, que lo sirva también en el HTML inicial; si no, en `index.html`/`Seo`. Con test donde haya lógica.
+  - [x] `./init.sh` en verde.
