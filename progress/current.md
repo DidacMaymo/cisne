@@ -43,6 +43,8 @@
 
 - 2026-10-30 — F25 Comunidad de escritores: artículos Markdown en `content/comunidad/`, sección en la portada, enlace en el pie, `/comunidad` y `/comunidad/:slug`, Worker con `BlogPosting` y sitemap (lee `dist/comunidad.json`), plantilla `_plantilla.md` y guía `docs/comunidad.md`. 3 artículos del líder en borrador hasta que el usuario los revise. APPROVED (2ª vuelta: saltos de verso en las citas).
 
+- 2026-10-30 — Comunidad: publicadas las 3 primeras entradas (dónde publicar, tipos de estrofas, concursos), revisadas por el usuario.
+
 ## Correcciones
 - 2026-10-27 — En F11 se dijo que producción servía el modo local: era falso. Producción ya estaba conectada a Supabase (proyecto `cisne`, de Didac). Las cifras de F11 con Supabase (680,85 → 323,41 KB, −52,5 %) son las que aplican a producción. Faltaba aplicar en producción la migración de F09 (aplicada el 2026-10-27).
 
@@ -62,4 +64,3 @@
 - Rendimiento: primera medida de Cloudflare Web Analytics (2026-10-29, 1 visita) da LCP 2,76 s en la portada («mejorable», el umbral bueno es 2,5 s). Esperar a tener más visitas antes de actuar; si se confirma, mirar fuentes/LCP de la portada.
 - F21: `LEGAL_UPDATED` es común a las tres legales (el aviso legal muestra 29 oct sin cambios de texto). Los textos de analítica asumen Web Analytics sin cookies: si se cambia el modo en Cloudflare, revisarlos.
 - F25: el enlace «Comunidad» del pie está dentro del `nav` con `aria-label="Legal"`; moverlo o renombrar la etiqueta cuando se toque el pie.
-- F25: al publicar un borrador de la Comunidad, poner la fecha real del día en `fecha`.

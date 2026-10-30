@@ -4,7 +4,6 @@ descripcion: Dónde encontrar concursos de poesía, cómo leer las bases, qué e
 fecha: 2026-10-30
 autor: Equipo de CISNE
 etiquetas: [concursos, publicar, consejos]
-borrador: true
 ---
 
 Presentarte a un concurso de poesía es una buena manera de que te lean personas que no te conocen, de ponerte plazos y, a veces, de publicar tu primer libro. Para que tu obra llegue al jurado, lo más importante es leer bien las bases y cumplirlas al pie de la letra.
