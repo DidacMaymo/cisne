@@ -7,12 +7,17 @@ export type Route =
   | { kind: 'collection'; id: string }
   | { kind: 'tag'; tag: string }
   | { kind: 'sitemap' }
+  | { kind: 'community' }
+  | { kind: 'article'; slug: string }
 
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 /** `null` = no es una ruta del Worker (o el parámetro no es válido): se sirve el HTML normal. */
 export function matchRoute(pathname: string): Route | null {
   if (pathname === '/sitemap.xml') return { kind: 'sitemap' }
+  if (/^\/comunidad\/?$/.test(pathname)) return { kind: 'community' }
+  const art = /^\/comunidad\/([a-z0-9-]{1,100})\/?$/.exec(pathname)
+  if (art) return { kind: 'article', slug: art[1] }
   const m = /^\/(poema|autor|coleccion|etiqueta)\/([^/]+)\/?$/.exec(pathname)
   if (!m) return null
   let value: string

@@ -16,5 +16,5 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["worker", "src/lib/seo.ts", "src/data/normalize.ts"]
+  "include": ["worker", "src/lib/seo.ts", "src/lib/comunidad.ts", "src/data/normalize.ts"]
 }

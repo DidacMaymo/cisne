@@ -1,4 +1,5 @@
 // sitemap.xml a partir de filas de las vistas `public_*`. Lógica pura.
+import type { ArticleMeta } from '../src/lib/comunidad'
 import { canonicalUrl } from '../src/lib/seo'
 import { escapeHtml } from './html'
 
@@ -21,9 +22,16 @@ function newest(a: string | undefined, b: string | undefined): string | undefine
   return a && b ? (a > b ? a : b) : (a ?? b)
 }
 
-export function buildSitemap(data: SitemapData): string {
+export function buildSitemap(data: SitemapData, articles: ArticleMeta[] = []): string {
   const urls = new Map<string, string | undefined>()
   for (const p of STATIC_PATHS) urls.set(p, undefined)
+
+  // Solo artículos publicados; /comunidad solo si hay alguno.
+  const published = articles.filter((a) => !a.borrador)
+  if (published.length > 0) {
+    urls.set('/comunidad', published.reduce((m, a) => (a.fecha > m ? a.fecha : m), ''))
+    for (const a of published) urls.set(`/comunidad/${a.slug}`, a.fecha)
+  }
 
   const authors = new Map<string, string | undefined>()
   for (const p of data.poems) {

@@ -5,6 +5,8 @@ import { Layout } from './components/layout/Layout'
 import { RequireSession } from './components/RequireSession'
 import { AuthorPage } from './pages/AuthorPage'
 import { CollectionPage } from './pages/CollectionPage'
+import { Comunidad } from './pages/Comunidad'
+import { ComunidadArticulo } from './pages/ComunidadArticulo'
 import { Explore } from './pages/Explore'
 import { Home } from './pages/Home'
 import { MyPageRedirect } from './pages/MyPageRedirect'
@@ -41,6 +43,8 @@ export function App() {
         <Route path="/etiqueta/:tag" element={<TagPage />} />
         <Route path="/autor/:accountName" element={<AuthorPage />} />
         <Route path="/coleccion/:id" element={<CollectionPage />} />
+        <Route path="/comunidad" element={<Comunidad />} />
+        <Route path="/comunidad/:slug" element={<ComunidadArticulo />} />
         <Route path="/mi-pagina" element={<MyPageRedirect />} />
         <Route path="/colecciones" element={<MyPageRedirect ver="colecciones" />} />
         <Route path="/mis/colecciones" element={<MyPageRedirect ver="colecciones" />} />

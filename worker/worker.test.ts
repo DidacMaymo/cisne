@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { authorHead, collectionHead, poemHead, renderHead, tagHead, type PoemRow } from './head'
+import { articleHead, authorHead, collectionHead, communityHead, poemHead, renderHead, tagHead, type PoemRow } from './head'
+import type { ArticleMeta } from '../src/lib/comunidad'
 import { escapeHtml, injectSeo, jsonLdScript } from './html'
 import { matchRoute } from './routes'
 import { buildSitemap } from './sitemap'
@@ -192,5 +193,63 @@ describe('utilidades compartidas', () => {
       url: 'https://x.supabase.co',
       key: 'k',
     })
+  })
+})
+
+describe('comunidad', () => {
+  const art: ArticleMeta = {
+    slug: 'como-escribir',
+    titulo: 'Cómo <escribir> "bien"',
+    descripcion: 'Una guía breve.',
+    fecha: '2026-10-20',
+    autor: 'Ana',
+    etiquetas: ['escritura', 'guías'],
+    borrador: false,
+  }
+  it('reconoce /comunidad y /comunidad/<slug>; ignora slugs inválidos', () => {
+    expect(matchRoute('/comunidad')).toEqual({ kind: 'community' })
+    expect(matchRoute('/comunidad/')).toEqual({ kind: 'community' })
+    expect(matchRoute('/comunidad/como-escribir')).toEqual({ kind: 'article', slug: 'como-escribir' })
+    expect(matchRoute('/comunidad/Mal Slug')).toBeNull()
+    expect(matchRoute('/comunidad/a/b')).toBeNull()
+    expect(matchRoute('/comunidad.json')).toBeNull()
+  })
+  it('el índice lleva título, descripción, canónica y og', () => {
+    const head = renderHead(communityHead())
+    expect(head).toContain('<title data-seo>Comunidad de escritores · CISNE</title>')
+    expect(head).toContain('rel="canonical" href="https://cisneverso.es/comunidad"')
+    expect(head).toContain('property="og:title"')
+    expect(head).toContain('name="description"')
+  })
+  it('el artículo lleva meta, canónica, og:type article y JSON-LD BlogPosting, todo escapado', () => {
+    const head = renderHead(articleHead(art))
+    expect(head).toContain('Cómo &lt;escribir&gt; &quot;bien&quot; · CISNE')
+    expect(head).not.toContain('<escribir>')
+    expect(head).toContain('href="https://cisneverso.es/comunidad/como-escribir"')
+    expect(head).toContain('property="og:type" content="article"')
+    const ld = JSON.parse(/<script[^>]*>([\s\S]*?)<\/script>/.exec(head)![1].replace(/\u003c/g, '<'))
+    expect(ld).toMatchObject({
+      '@type': 'BlogPosting',
+      headline: art.titulo,
+      description: art.descripcion,
+      datePublished: '2026-10-20',
+      author: { '@type': 'Person', name: 'Ana' },
+      publisher: { '@type': 'Organization', name: 'CISNE' },
+    })
+  })
+  it('un artículo inexistente o en borrador es noindex y sin JSON-LD', () => {
+    for (const h of [articleHead(null), articleHead({ ...art, borrador: true })]) {
+      const out = renderHead(h)
+      expect(out).toContain('content="noindex"')
+      expect(out).not.toContain('application/ld+json')
+    }
+  })
+  it('el sitemap incluye los publicados y /comunidad, y no los borradores', () => {
+    const empty = { poems: [], collections: [], tags: [] }
+    const xml = buildSitemap(empty, [art, { ...art, slug: 'oculto', borrador: true }])
+    expect(xml).toContain('<loc>https://cisneverso.es/comunidad/como-escribir</loc><lastmod>2026-10-20</lastmod>')
+    expect(xml).toContain('<loc>https://cisneverso.es/comunidad</loc>')
+    expect(xml).not.toContain('oculto')
+    expect(buildSitemap(empty, [])).not.toContain('/comunidad')
   })
 })

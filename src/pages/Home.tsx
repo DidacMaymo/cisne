@@ -2,7 +2,11 @@ import { Link } from 'react-router-dom'
 import { SwanDivider } from '../components/brand/SwanDivider'
 import { SwanMark } from '../components/brand/SwanMark'
 import { Seo } from '../components/Seo'
+import { formatArticleDate } from '../lib/comunidad'
+import { allArticles } from '../lib/comunidad-content'
 import { SITE_META } from '../lib/seo'
+
+const latest = allArticles.slice(0, 3)
 
 const doors = [
   {
@@ -69,6 +73,30 @@ export function Home() {
           ))}
         </ol>
       </section>
+
+      {latest.length > 0 && (
+        <section aria-labelledby="comunidad" className="mx-auto mt-20 max-w-pagina md:mt-28">
+          <h2 id="comunidad" className="text-center font-serif text-3xl italic">
+            Comunidad de escritores
+          </h2>
+          <ul className="mt-6 divide-y divide-linea border-y border-linea">
+            {latest.map((a) => (
+              <li key={a.slug} className="py-4">
+                <Link to={`/comunidad/${a.slug}`} className="block hover:text-gris">
+                  <span className="block font-serif text-2xl">{a.titulo}</span>
+                  <span className="mt-1 block text-ui leading-relaxed text-tinta/80">{a.descripcion}</span>
+                  <span className="meta mt-1 block">{formatArticleDate(a.fecha)}</span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <p className="mt-4 text-center">
+            <Link to="/comunidad" className="enlace text-ui">
+              Ver todas las entradas
+            </Link>
+          </p>
+        </section>
+      )}
 
       <section className="mx-auto mt-20 max-w-pagina border-y border-linea py-14 text-center md:mt-28 md:py-20">
         <h2 className="font-serif text-4xl italic md:text-5xl">Aquí solo hay palabras.</h2>
