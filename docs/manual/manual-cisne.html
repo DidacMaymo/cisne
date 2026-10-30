@@ -1,0 +1,491 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<title>Manual de CISNE</title>
+<style>
+@font-face { font-family: 'Cormorant'; font-weight: 400; font-style: normal; src: url('../../node_modules/@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Cormorant'; font-weight: 400; font-style: italic; src: url('../../node_modules/@fontsource/cormorant-garamond/files/cormorant-garamond-latin-400-italic.woff2') format('woff2'); }
+@font-face { font-family: 'Cormorant'; font-weight: 500; font-style: normal; src: url('../../node_modules/@fontsource/cormorant-garamond/files/cormorant-garamond-latin-500-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Cormorant'; font-weight: 500; font-style: italic; src: url('../../node_modules/@fontsource/cormorant-garamond/files/cormorant-garamond-latin-500-italic.woff2') format('woff2'); }
+@font-face { font-family: 'Inter'; font-weight: 100 900; font-style: normal; src: url('../../node_modules/@fontsource-variable/inter/files/inter-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Inter'; font-weight: 100 900; font-style: italic; src: url('../../node_modules/@fontsource-variable/inter/files/inter-latin-wght-italic.woff2') format('woff2'); }
+
+@font-face { font-family: 'EB Garamond'; src: url('../../node_modules/@fontsource/eb-garamond/files/eb-garamond-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Literata'; font-weight: 200 900; src: url('../../node_modules/@fontsource-variable/literata/files/literata-latin-wght-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Courier Prime'; src: url('../../node_modules/@fontsource/courier-prime/files/courier-prime-latin-400-normal.woff2') format('woff2'); }
+@font-face { font-family: 'Atkinson Hyperlegible'; src: url('../../node_modules/@fontsource/atkinson-hyperlegible/files/atkinson-hyperlegible-latin-400-normal.woff2') format('woff2'); }
+
+@page { size: A4; margin: 0; }
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: 'Inter', system-ui, sans-serif; color: #111111; background: #FFFFFF; font-size: 10pt; line-height: 1.6; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+
+.page { width: 210mm; height: 297mm; padding: 24mm 22mm 20mm; position: relative; page-break-after: always; break-after: page; overflow: hidden; display: flex; flex-direction: column; }
+.page:last-child { page-break-after: auto; break-after: auto; }
+.folio { position: absolute; left: 22mm; right: 22mm; bottom: 12mm; display: flex; justify-content: space-between; font-size: 7.5pt; color: #767676; letter-spacing: 0.08em; border-top: 0.5pt solid #E7E7E4; padding-top: 3mm; }
+.folio .n { font-family: 'Cormorant'; font-style: italic; font-size: 10pt; letter-spacing: 0; color: #111111; }
+
+.kicker { font-size: 7.5pt; letter-spacing: 0.3em; text-transform: uppercase; color: #767676; margin: 0; }
+h1 { font-family: 'Cormorant'; font-weight: 500; font-size: 34pt; line-height: 1.05; margin: 3mm 0 0; }
+h2 { font-family: 'Cormorant'; font-weight: 500; font-size: 17pt; line-height: 1.15; margin: 8mm 0 0; }
+h3 { font-family: 'Inter'; font-weight: 600; font-size: 9pt; margin: 5mm 0 0; letter-spacing: 0.01em; }
+p { margin: 2.5mm 0 0; }
+.lead { font-family: 'Cormorant'; font-size: 15pt; line-height: 1.4; margin-top: 5mm; max-width: 140mm; }
+.lead i { font-style: italic; }
+ul, ol { margin: 2.5mm 0 0; padding-left: 5mm; }
+li { margin-top: 1.2mm; }
+ol.pasos { list-style: none; padding: 0; counter-reset: paso; }
+ol.pasos li { counter-increment: paso; padding-left: 9mm; position: relative; margin-top: 2.5mm; }
+ol.pasos li::before { content: counter(paso, upper-roman); position: absolute; left: 0; top: -0.6mm; font-family: 'Cormorant'; font-style: italic; font-size: 13pt; }
+.meta { color: #767676; font-size: 8.5pt; }
+.serif { font-family: 'Cormorant'; }
+.it { font-style: italic; }
+strong { font-weight: 600; }
+kbd { font-family: 'Inter'; font-size: 7.5pt; border: 0.5pt solid #E7E7E4; padding: 0.3mm 1.4mm; border-radius: 1mm; background: #F5F5F3; }
+code { font-family: ui-monospace, 'Consolas', monospace; font-size: 8pt; background: #F5F5F3; padding: 0.2mm 1.2mm; }
+.ui { display: inline-block; font-size: 8.5pt; border: 0.5pt solid #111111; padding: 0.4mm 2.2mm; }
+.ui.prim { background: #111111; color: #FFFFFF; }
+.rule { height: 0.5pt; background: #E7E7E4; margin: 7mm 0 0; }
+.two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9mm; }
+.three { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7mm; }
+.box { background: #F5F5F3; padding: 5mm 6mm; margin-top: 5mm; }
+.box p:first-child, .box h3:first-child { margin-top: 0; }
+.note { border-left: 0.5pt solid #111111; padding-left: 4mm; margin-top: 5mm; font-size: 9pt; }
+table { width: 100%; border-collapse: collapse; margin-top: 4mm; font-size: 9pt; }
+th { text-align: left; font-weight: 600; font-size: 8pt; letter-spacing: 0.04em; border-bottom: 0.5pt solid #111111; padding: 2mm 3mm 2mm 0; vertical-align: bottom; }
+td { border-bottom: 0.5pt solid #E7E7E4; padding: 2.5mm 3mm 2.5mm 0; vertical-align: top; }
+td.serif { font-size: 12pt; }
+
+/* Maqueta de poema, como en la web */
+.poema-demo { border: 0.5pt solid #E7E7E4; padding: 7mm 9mm; margin-top: 5mm; }
+.poema-demo .t { font-family: 'Cormorant'; font-weight: 500; font-size: 17pt; margin: 0; }
+.poema-demo .v { font-family: 'Cormorant'; font-size: 12.5pt; line-height: 1.65; white-space: pre-line; margin: 3mm 0 0; }
+.poema-demo .a { font-family: 'Cormorant'; font-style: italic; font-size: 12pt; margin: 3mm 0 0; }
+.negro { background: #111111; color: #FFFFFF; border-color: #111111; }
+.negro .meta { color: #CFCFCF; }
+.dot { display: inline-flex; width: 4.2mm; height: 4.2mm; border-radius: 50%; border: 0.5pt solid #767676; color: #767676; font-size: 6.5pt; align-items: center; justify-content: center; vertical-align: middle; margin-left: 3mm; }
+
+/* Portada */
+.cover { justify-content: space-between; padding: 30mm 26mm 26mm; }
+.cover h1 { font-size: 54pt; font-style: italic; font-weight: 400; margin-top: 10mm; }
+.swan { color: #111111; }
+.toc { list-style: none; padding: 0; margin-top: 8mm; }
+.toc li { display: flex; align-items: baseline; gap: 4mm; border-bottom: 0.5pt solid #E7E7E4; padding: 2.4mm 0; margin: 0; }
+.toc .num { font-family: 'Cormorant'; font-style: italic; font-size: 12pt; width: 9mm; }
+.toc .tt { font-family: 'Cormorant'; font-size: 14pt; flex: 1; }
+.toc .pg { font-size: 8.5pt; color: #767676; }
+.f-clasica { font-family: 'Cormorant'; font-size: 13pt; }
+.f-libro { font-family: 'EB Garamond', Garamond, Georgia, serif; font-size: 12pt; }
+.f-pantalla { font-family: 'Literata', Georgia, serif; font-size: 10.5pt; }
+.f-maquina { font-family: 'Courier Prime', 'Courier New', monospace; font-size: 10pt; }
+.f-clara { font-family: 'Atkinson Hyperlegible', 'Segoe UI', sans-serif; font-size: 10.5pt; }
+</style>
+</head>
+<body>
+
+<!-- 1 · Portada -->
+<section class="page cover">
+  <div>
+    <p class="kicker">Manual de uso · edición de octubre de 2026</p>
+    <h1>Manual de CISNE</h1>
+    <p class="lead it">Un lugar para la poesía.</p>
+    <p class="lead" style="margin-top: 3mm">Cómo leer, escribir y publicar poesía en español en cisneverso.es.</p>
+  </div>
+  <svg class="swan" viewBox="325 375 585 670" style="width: 70mm; height: 80mm; align-self: center" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M686 505 C682 440 730 396 790 394 C845 394 880 435 880 480 L872 510 M686 505 C690 585 760 630 815 672 C870 715 888 770 874 830 C860 880 800 930 740 975 C710 998 690 1015 672 1028" stroke-width="7"/>
+    <path d="M642 612 C615 535 555 490 495 488 C410 488 348 560 346 640 C346 725 410 790 495 808 C550 820 595 825 625 842" stroke-width="7"/>
+    <path d="M404 585 C410 640 450 680 520 695 C580 705 640 712 690 740 C725 765 740 815 746 856" stroke-width="5"/>
+    <path d="M430 806 C455 850 520 895 580 930 C625 957 655 985 672 1028" stroke-width="6"/>
+    <path d="M515 886 C560 900 620 908 660 935" stroke-width="4"/>
+    <path d="M803 458 C800 485 815 503 845 508 C855 495 852 475 840 462" stroke-width="3.5"/>
+    <path d="M846 508 L881 574" stroke-width="11"/>
+  </svg>
+  <div style="display: flex; justify-content: space-between; align-items: flex-end">
+    <span style="font-family: 'Cormorant'; font-size: 20pt; letter-spacing: 0.3em">CISNE</span>
+    <span class="meta">cisneverso.es</span>
+  </div>
+</section>
+
+<!-- 2 · Qué es CISNE + índice -->
+<section class="page">
+  <p class="kicker">Presentación</p>
+  <h1>Qué es CISNE</h1>
+  <p class="lead">CISNE es una plataforma de poesía en español para leer a poetas que todavía no conoces, guardar los versos que te emocionan y escribir los tuyos con total libertad.</p>
+  <p>Nace de una idea sencilla: que la poesía se lea con calma, sin el ruido de las redes. Cada poema tiene su propia página, como en un libro, y nadie compite por la atención de nadie.</p>
+  <div class="three" style="margin-top: 6mm">
+    <div><p class="serif it" style="font-size: 13pt; margin: 0">Sin fotografías</p><p class="meta">Aquí solo hay palabras: ni fotos de perfil ni imágenes en los poemas.</p></div>
+    <div><p class="serif it" style="font-size: 13pt; margin: 0">Sin seguidores</p><p class="meta">No hay listas de seguidores ni muros: cada autor es su nombre y lo que escribe.</p></div>
+    <div><p class="serif it" style="font-size: 13pt; margin: 0">Sin rankings</p><p class="meta">Los poemas se descubren al azar, no por popularidad.</p></div>
+  </div>
+  <div class="rule"></div>
+  <h2 style="margin-top: 6mm">Índice</h2>
+  <ul class="toc">
+    <li><span class="num">I</span><span class="tt">Primeros pasos</span><span class="pg">3</span></li>
+    <li><span class="num">II</span><span class="tt">Escribir y publicar un poema</span><span class="pg">4</span></li>
+    <li><span class="num">III</span><span class="tt">Cómo firmar: nombre, pseudónimo o anónimo</span><span class="pg">5</span></li>
+    <li><span class="num">IV</span><span class="tt">Etiquetas y Cisne negro</span><span class="pg">6</span></li>
+    <li><span class="num">V</span><span class="tt">Explorar y leer</span><span class="pg">7</span></li>
+    <li><span class="num">VI</span><span class="tt">Comentarios en los versos</span><span class="pg">8</span></li>
+    <li><span class="num">VII</span><span class="tt">Apoyar a poemas y autores</span><span class="pg">9</span></li>
+    <li><span class="num">VIII</span><span class="tt">Tu página: perfil, colecciones y biblioteca</span><span class="pg">10</span></li>
+    <li><span class="num">IX</span><span class="tt">Privacidad, seguridad y CISNE en el móvil</span><span class="pg">11</span></li>
+    <li><span class="num">X</span><span class="tt">Para profesionales: ficha del proyecto</span><span class="pg">12</span></li>
+  </ul>
+  <div class="folio"><span>CISNE · Manual de uso</span><span class="n">2</span></div>
+</section>
+
+<!-- 3 · Primeros pasos -->
+<section class="page">
+  <p class="kicker">I</p>
+  <h1>Primeros pasos</h1>
+  <p class="lead">Para leer no hace falta nada. Para publicar, guardar y crear colecciones, una cuenta.</p>
+
+  <h2>Leer sin cuenta</h2>
+  <p>Entra en <strong>cisneverso.es</strong> y pulsa <span class="ui prim">Explorar poemas</span>. Puedes leer, buscar y compartir cualquier poema público sin registrarte.</p>
+
+  <h2>Crear una cuenta</h2>
+  <ol class="pasos">
+    <li>Pulsa <strong>Entrar</strong> arriba a la derecha y después <strong>Crear cuenta</strong>.</li>
+    <li>Escribe tu <strong>nombre público</strong>: puede ser tu nombre o un pseudónimo. Es lo que verán los demás y podrás cambiarlo cuando quieras.</li>
+    <li>Escribe tu <strong>email</strong> y una <strong>contraseña</strong> de al menos 8 caracteres. El email es privado: nunca se muestra a nadie.</li>
+    <li>Confirma tu cuenta desde el correo que te enviamos y entra.</li>
+  </ol>
+  <p class="meta" style="margin-top: 4mm">¿Has olvidado la contraseña? En <strong>Entrar</strong>, pulsa «He olvidado mi contraseña» y recibirás un enlace para elegir otra.</p>
+
+  <h2>Escribir antes de tener cuenta</h2>
+  <p>Puedes empezar a escribir sin registrarte: CISNE guarda lo que escribes en tu navegador. Cuando pulses <span class="ui prim">Publicar poema</span>, te pedirá entrar o crear la cuenta, y al volver tu texto seguirá ahí. La cuenta hace falta incluso para publicar como anónimo: así solo tú puedes editar o borrar tus poemas.</p>
+
+  <div class="box">
+    <h3>La navegación</h3>
+    <p>Arriba (o abajo, en el móvil) siempre tienes tres lugares: <strong>Inicio</strong>, <strong>Explorar</strong> y <strong>Mi página</strong>, más el botón <strong>Escribir un poema</strong>. La cabecera se queda fija al hacer scroll.</p>
+  </div>
+  <div class="folio"><span>CISNE · Manual de uso</span><span class="n">3</span></div>
+</section>
+
+<!-- 4 · Escribir y publicar -->
+<section class="page">
+  <p class="kicker">II</p>
+  <h1>Escribir y publicar un poema</h1>
+  <p class="lead">Un editor en blanco, sin distracciones. Los saltos de línea y las estrofas se respetan siempre.</p>
+
+  <div class="two">
+    <div>
+      <h2>El editor</h2>
+      <p>Pulsa <strong>Escribir un poema</strong>. Arriba va el <strong>título</strong> (opcional, hasta 120 caracteres) y debajo el <strong>texto</strong>. Bajo el texto encontrarás las opciones: tipografía, Cisne negro, comentarios, etiquetas, colección, visibilidad y firma.</p>
+      <h3>Dar formato</h3>
+      <p>Selecciona unas palabras y pulsa un estilo de la barra, o usa el atajo:</p>
+      <table>
+        <tr><th>Estilo</th><th>Atajo</th><th>Marca en el texto</th></tr>
+        <tr><td><strong>Negrita</strong></td><td><kbd>Ctrl+B</kbd></td><td><code>**así**</code></td></tr>
+        <tr><td><em>Cursiva</em></td><td><kbd>Ctrl+I</kbd></td><td><code>*así*</code></td></tr>
+        <tr><td><u>Subrayado</u></td><td><kbd>Ctrl+U</kbd></td><td><code>__así__</code></td></tr>
+        <tr><td><s>Tachado</s></td><td><kbd>Ctrl+Mayús+X</kbd></td><td><code>~~así~~</code></td></tr>
+      </table>
+      <p class="meta">En el editor ves las marcas; en la vista previa y al publicar, el resultado. Un estilo nunca cruza de un verso a otro.</p>
+    </div>
+    <div>
+      <h2>Cinco tipografías</h2>
+      <p>Cada poema puede leerse en la letra que elijas. Solo cambia el texto del poema, no la web.</p>
+      <table>
+        <tr><td class="f-clasica">Clásica</td><td class="meta">Cormorant Garamond, la de CISNE</td></tr>
+        <tr><td class="f-libro">Libro</td><td class="meta">EB Garamond, la de los poemarios impresos</td></tr>
+        <tr><td class="f-pantalla">Pantalla</td><td class="meta">Literata, pensada para leer en pantalla</td></tr>
+        <tr><td class="f-maquina">Máquina</td><td class="meta">Courier Prime, máquina de escribir</td></tr>
+        <tr><td class="f-clara">Clara</td><td class="meta">Atkinson Hyperlegible, máxima legibilidad</td></tr>
+      </table>
+      <h3>Visibilidad</h3>
+      <p><strong>Pública</strong>: aparece en Explorar y en tu página de autor. <strong>Privada</strong>: solo tú puedes leerla.</p>
+    </div>
+  </div>
+
+  <h2>Guardar, ver y publicar</h2>
+  <p><span class="ui">Guardar borrador</span> lo deja solo para ti, en <em>Mi página → Borradores</em>. <span class="ui">Vista previa</span> te enseña cómo se verá. <span class="ui prim">Publicar poema</span> lo publica. Después puedes <strong>editarlo</strong> o <strong>eliminarlo</strong> desde la página del poema; eliminar siempre pide confirmación.</p>
+  <div class="folio"><span>CISNE · Manual de uso</span><span class="n">4</span></div>
+</section>
+
+<!-- 5 · Cómo firmar -->
+<section class="page">
+  <p class="kicker">III</p>
+  <h1>Cómo firmar un poema</h1>
+  <p class="lead">En CISNE la identidad literaria va por delante de la personal. Cada poema se firma como tú decidas, en el apartado <em>Firmar con</em> del editor.</p>
+
+  <table style="margin-top: 7mm">
+    <tr><th style="width: 30%">Opción</th><th style="width: 36%">Qué ven los lectores</th><th>A tener en cuenta</th></tr>
+    <tr>
+      <td class="serif">Mi nombre público</td>
+      <td>Tu nombre público, enlazado a tu página de autor.</td>
+      <td>El poema aparece en tu página y en tus colecciones públicas.</td>
+    </tr>
+    <tr>
+      <td class="serif">Otro pseudónimo</td>
+      <td>El pseudónimo que escribas (de 2 a 40 caracteres), sin enlace a tu página.</td>
+      <td>Nadie puede saber que eres tú. Puedes guardar un «pseudónimo habitual» en <em>Ajustes → Perfil</em> para que el editor te lo proponga.</td>
+    </tr>
+    <tr>
+      <td class="serif">Anónimo</td>
+      <td>«Anónimo», sin enlace a ningún perfil.</td>
+      <td>No sale en tu página pública ni en tus colecciones públicas: eso delataría la autoría.</td>
+    </tr>
+  </table>
+
+  <div class="poema-demo" style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8mm">
+    <div><p class="meta" style="margin: 0">Con tu nombre</p><p class="a" style="text-decoration: underline; text-underline-offset: 1mm">Lía Prueba</p></div>
+    <div><p class="meta" style="margin: 0">Con pseudónimo</p><p class="a">La Garza</p></div>
+    <div><p class="meta" style="margin: 0">Anónimo</p><p class="a">Anónimo</p></div>
+  </div>
+
+  <div class="note">
+    <p style="margin: 0"><strong>Sobre el anonimato.</strong> Es real frente a los demás usuarios: la web nunca muestra ni envía quién escribió un poema anónimo o con pseudónimo. No es anonimato frente a quienes administran la plataforma ni frente a requisitos legales. Siempre podrás editar o borrar tus poemas anónimos desde tu cuenta.</p>
+  </div>
+  <div class="folio"><span>CISNE · Manual de uso</span><span class="n">5</span></div>
+</section>
+
+<!-- 6 · Etiquetas y Cisne negro -->
+<section class="page">
+  <p class="kicker">IV</p>
+  <h1>Etiquetas y Cisne negro</h1>
+
+  <h2>Etiquetas</h2>
+  <p>Las etiquetas ayudan a encontrar poemas por tema: <span class="serif it" style="font-size: 12pt">#amor #nostalgia #duelo #esperanza #mar</span>.</p>
+  <ul>
+    <li>Escribe una palabra y pulsa <kbd>Enter</kbd> o una coma para añadirla. El editor te sugiere las que ya existen.</li>
+    <li>Se normalizan solas: «#Nostalgia», «nostalgia» y « nostalgia » son la misma.</li>
+    <li>Hasta 10 por poema, aunque con unas pocas se encuentra mejor.</li>
+    <li>Al pulsar una etiqueta en cualquier poema, ves todos los poemas públicos que la llevan.</li>
+  </ul>
+
+  <h2>Cisne negro</h2>
+  <p>Algunos poemas tocan temas sensibles: muerte, violencia, autolesión, abusos… Para ellos existe <strong>Cisne negro</strong>, una casilla del editor: <em>«Este poema toca temas sensibles (+18)»</em>.</p>
+  <div class="two" style="align-items: start">
+    <div>
+      <ul>
+        <li>El poema se lee <strong>en negativo</strong>: fondo tinta y letras blancas, con un aviso.</li>
+        <li>En los listados aparece <strong>tapado</strong>: hay que pulsar <span class="ui">Mostrar el poema</span> para leerlo.</li>
+        <li>En Explorar, la casilla <strong>Ocultar Cisne negro</strong> los esconde. Tu navegador recuerda la preferencia.</li>
+      </ul>
+      <p class="meta" style="margin-top: 4mm">Márcalo siempre que tu poema pueda doler a quien no lo espera. Es una forma de cuidar a quien lee.</p>
+    </div>
+    <div class="poema-demo negro" style="margin-top: 2mm">
+      <p class="meta" style="margin: 0; letter-spacing: 0.2em; font-size: 7pt">CISNE NEGRO</p>
+      <p class="t" style="margin-top: 3mm">Mapa de la ausencia</p>
+      <p class="v">Aquí estuvo tu abrigo.
+Aquí, la silla que giraba
+cuando te reías de mí.</p>
+      <p class="meta" style="margin-top: 3mm">Poema de ejemplo</p>
+    </div>
+  </div>
+  <div class="folio"><span>CISNE · Manual de uso</span><span class="n">6</span></div>
+</section>
+
+<!-- 7 · Explorar y leer -->
+<section class="page">
+  <p class="kicker">V</p>
+  <h1>Explorar y leer</h1>
+  <p class="lead">Explorar es la puerta a los poemas de todos. Por defecto, al azar: cada visita es distinta.</p>
+
+  <div class="two">
+    <div>
+      <h2>Explorar</h2>
+      <ul>
+        <li><strong>Al azar</strong> o <strong>Recientes</strong>. <span class="ui">Barajar de nuevo</span> vuelve a mezclar.</li>
+        <li>El <strong>buscador</strong> encuentra por título, verso, autor o etiqueta, sin importar tildes ni mayúsculas: «corazon» encuentra «corazón».</li>
+        <li>Las <strong>etiquetas</strong> bajo el buscador filtran por tema.</li>
+        <li><strong>Ocultar Cisne negro</strong> esconde los poemas sensibles.</li>
+      </ul>
+    </div>
+    <div>
+      <h2>Cada poema, en el listado</h2>
+      <ul>
+        <li><strong>Leer</strong> o <strong>Leer completo</strong>: abre su página.</li>
+        <li><strong>Guardar</strong>: lo añade a tu biblioteca.</li>
+        <li><strong>A una colección</strong>: a una colección tuya, o a una nueva.</li>
+        <li><strong>Compartir</strong>: el menú de compartir del móvil o, en el ordenador, copia el enlace.</li>
+        <li>El nombre del autor lleva a su página, si firma con su nombre.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>La página de lectura</h2>
+  <p>Cada poema se lee como en un libro: una columna estrecha, los versos tal y como se escribieron, el cisne al final y, debajo, la fecha, sus etiquetas, el poemario al que pertenece y las acciones (<em>Guardar, A una colección, Apoyar, Compartir, Denunciar</em>). Al final, a veces, unos pocos poemas relacionados por sus etiquetas.</p>
+  <div class="poema-demo">
+    <p class="t">Casa de agua</p>
+    <p class="a" style="margin-top: 1mm">Ejemplo de desarrollo</p>
+    <p class="v">Mi casa era un río
+que no sabía irse.
+Las puertas se abrían hacia dentro
+como las manos de quien perdona.</p>
+  </div>
+  <p class="meta" style="margin-top: 2mm">Poema de ejemplo.</p>
+  <div class="folio"><span>CISNE · Manual de uso</span><span class="n">7</span></div>
+</section>
+
+<!-- 8 · Comentarios -->
+<section class="page">
+  <p class="kicker">VI</p>
+  <h1>Comentarios en los versos</h1>
+  <p class="lead">En CISNE no se comenta «el poema» en general: se comenta un verso concreto, como una nota al margen.</p>
+
+  <h2>Para quien escribe</h2>
+  <p>Los comentarios están <strong>cerrados por defecto</strong>. Para abrirlos, marca en el editor <em>«Abrir los versos a comentarios»</em>. Solo funcionan en poemas públicos. Puedes cerrarlos cuando quieras, y entonces dejan de verse. Como autor, <strong>puedes borrar cualquier comentario</strong> de tus poemas. Si un poema tuyo los tiene cerrados, su página te ofrece «Abrirlos».</p>
+
+  <h2>Para quien lee</h2>
+  <ol class="pasos">
+    <li>Con el ratón, <strong>subraya un fragmento</strong> de un verso.</li>
+    <li>Aparece el botón <span class="ui prim">Escribir comentario</span>.</li>
+    <li>Escribe tu nota, de hasta <strong>50 palabras</strong>, y publícala. Se firma con tu nombre público.</li>
+  </ol>
+  <p>Con teclado o en el móvil, usa <strong>Comentar un verso</strong>, bajo el poema, y elige el verso de una lista.</p>
+
+  <div class="poema-demo">
+    <p class="v" style="margin: 0">Mi casa era un río
+que no sabía irse.
+Las puertas se abrían hacia dentro<span class="dot">1</span>
+como las manos de quien perdona.</p>
+  </div>
+  <p class="meta" style="margin-top: 2mm">Cada verso comentado lleva un puntito con su número de comentarios, en el margen, sin tocar las palabras. Al pulsarlo se abre el hilo de ese verso. Cada persona puede borrar sus propios comentarios.</p>
+  <div class="folio"><span>CISNE · Manual de uso</span><span class="n">8</span></div>
+</section>
+
+<!-- 9 · Apoyar -->
+<section class="page">
+  <p class="kicker">VII</p>
+  <h1>Apoyar a poemas y autores</h1>
+  <p class="lead">Apoyar es un gesto entre quien lee y quien escribe. No sirve para ordenar poemas ni para destacar a nadie.</p>
+
+  <div class="two">
+    <div>
+      <h2>Cómo apoyar</h2>
+      <ul>
+        <li>En la página de un poema, pulsa <strong>Apoyar</strong>. Verás «✓ Lo apoyas».</li>
+        <li>En la página de un autor, <strong>Apoyar a</strong> + su nombre.</li>
+        <li>No se puede apoyar lo propio.</li>
+      </ul>
+      <h2>Dejar de apoyar</h2>
+      <p>En <strong>Ajustes → Apoyos</strong> tienes la lista de autores y poemas que apoyas, con <strong>Dejar de apoyar</strong> en cada uno. Solo tú ves esa lista, y dejar de apoyar no avisa a nadie.</p>
+    </div>
+    <div>
+      <h2>¿Quién ve el número?</h2>
+      <p>Por defecto, <strong>solo tú</strong> ves cuánta gente te apoya. En <strong>Ajustes → Privacidad</strong> puedes elegir:</p>
+      <table>
+        <tr><td class="serif">Solo yo</td><td>Ves tu número; nadie más.</td></tr>
+        <tr><td class="serif">Todo el mundo</td><td>Se ve en tu página de autor y en los poemas firmados con tu nombre.</td></tr>
+      </table>
+      <p class="meta" style="margin-top: 3mm">Los poemas anónimos o con pseudónimo nunca muestran su número a nadie más que a su autor: podría señalar quién los escribió.</p>
+    </div>
+  </div>
+
+  <div class="box">
+    <h3>Guardar no es apoyar</h3>
+    <p><strong>Guardar</strong> lleva un poema a tu biblioteca privada, para releerlo. <strong>Apoyar</strong> es decirle al autor que su poema te ha llegado. Puedes hacer una cosa, la otra o las dos.</p>
+  </div>
+  <div class="folio"><span>CISNE · Manual de uso</span><span class="n">9</span></div>
+</section>
+
+<!-- 10 · Tu página -->
+<section class="page">
+  <p class="kicker">VIII</p>
+  <h1>Tu página</h1>
+  <p class="lead">Tu página de autor es solo palabras: tu nombre, unas líneas sobre ti, tus enlaces y lo que escribes. Nunca fotografías.</p>
+
+  <div class="two">
+    <div>
+      <h2>Mi página</h2>
+      <p>Desde <strong>Mi página</strong> gestionas todo lo tuyo, en cuatro pestañas:</p>
+      <table>
+        <tr><td class="serif">Publicados</td><td>Tus poemas publicados, para leerlos o editarlos.</td></tr>
+        <tr><td class="serif">Borradores</td><td>Lo que guardaste sin publicar, para seguir escribiendo.</td></tr>
+        <tr><td class="serif">Colecciones</td><td>Tus poemarios y antologías.</td></tr>
+        <tr><td class="serif">Biblioteca</td><td>Los poemas que has guardado. Privada.</td></tr>
+      </table>
+      <p class="meta" style="margin-top: 3mm"><strong>Ver como lo ven los demás</strong> te enseña tu página pública.</p>
+    </div>
+    <div>
+      <h2>Colecciones</h2>
+      <p>Una colección es un poemario o una antología: puede reunir poemas tuyos y de otros autores.</p>
+      <ul>
+        <li>Título, descripción opcional y visibilidad: <strong>privada</strong> o <strong>pública</strong>, con su propio enlace para compartir.</li>
+        <li>Portada tipográfica generada con el título: sin imágenes.</li>
+        <li>Añade poemas desde cualquier poema con <strong>A una colección</strong>, ordénalos con las flechas o quítalos.</li>
+        <li>Eliminar una colección no borra sus poemas.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Tu perfil</h2>
+  <p>En <strong>Ajustes → Perfil</strong>: tu <strong>nombre público</strong>, <strong>unas líneas sobre ti</strong> (hasta 150 palabras), hasta <strong>4 enlaces</strong> a tus redes o tu web y tu pseudónimo habitual, que es privado. En <strong>Ajustes → Cuenta</strong>: cambiar la contraseña, cerrar sesión o eliminar la cuenta, lo que borra para siempre tu perfil, tus poemas, tus colecciones y tu biblioteca.</p>
+  <div class="folio"><span>CISNE · Manual de uso</span><span class="n">10</span></div>
+</section>
+
+<!-- 11 · Privacidad, seguridad, móvil -->
+<section class="page">
+  <p class="kicker">IX</p>
+  <h1>Privacidad, seguridad y móvil</h1>
+
+  <div class="two">
+    <div>
+      <h2>Tus datos</h2>
+      <ul>
+        <li>Tu <strong>email</strong> es privado: nunca aparece en la web.</li>
+        <li>Lo privado (borradores, poemas privados, biblioteca, colecciones privadas) <strong>solo lo puedes ver tú</strong>. Lo garantiza la propia base de datos, no solo la pantalla.</li>
+        <li>Sin cookies de seguimiento ni publicidad. Las páginas de <em>Privacidad</em>, <em>Cookies</em> y <em>Aviso legal</em> están en el pie de la web.</li>
+      </ul>
+      <h2>Denunciar un poema</h2>
+      <p>Si un poema incumple las normas, pulsa <strong>Denunciar</strong> en su página y elige el motivo: <em>contenido de odio u ofensivo</em>, <em>acoso a una persona</em>, <em>plagio</em> u <em>otro motivo</em> (con una explicación de hasta 50 palabras). Cada persona puede denunciar un poema una sola vez, y nadie ve quién denuncia.</p>
+    </div>
+    <div>
+      <h2>CISNE en el móvil</h2>
+      <p>CISNE es, por ahora, una web. Pero puedes añadirla a la pantalla de inicio y abrirla como una app, con el icono del cisne:</p>
+      <h3>iPhone (Safari)</h3>
+      <ol class="pasos">
+        <li>Abre cisneverso.es y toca <strong>Compartir</strong>.</li>
+        <li>Elige <strong>Añadir a pantalla de inicio</strong>.</li>
+        <li>Toca <strong>Añadir</strong>.</li>
+      </ol>
+      <h3>Android (Chrome)</h3>
+      <ol class="pasos">
+        <li>Abre cisneverso.es y el menú <strong>⋮</strong>.</li>
+        <li>Elige <strong>Añadir a pantalla de inicio</strong> o <strong>Instalar aplicación</strong>.</li>
+        <li>Toca <strong>Instalar</strong>.</li>
+      </ol>
+    </div>
+  </div>
+  <div class="folio"><span>CISNE · Manual de uso</span><span class="n">11</span></div>
+</section>
+
+<!-- 12 · Para profesionales -->
+<section class="page">
+  <p class="kicker">X</p>
+  <h1>Para profesionales</h1>
+  <p class="lead">Una ficha del proyecto para editoriales, librerías, docentes, festivales y medios.</p>
+
+  <table style="margin-top: 6mm">
+    <tr><td class="serif" style="width: 30%">Qué es</td><td>Plataforma web gratuita de poesía en español: lectura, escritura, publicación con nombre, pseudónimo o anónima, colecciones y biblioteca.</td></tr>
+    <tr><td class="serif">Principios</td><td>Sin fotografías, sin seguidores, sin rankings ni competición por la atención. Descubrimiento al azar. Identidad literaria por encima de la personal.</td></tr>
+    <tr><td class="serif">Diseño</td><td>Editorial y minimalista: blanco, tinta y papel; Cormorant Garamond e Inter; el cisne como única marca. Lectura tipo libro, en columna estrecha.</td></tr>
+    <tr><td class="serif">Cuidado</td><td>Cisne negro para temas sensibles, comentarios cerrados por defecto y anclados a versos, apoyos con número privado por defecto, denuncias sin panel público.</td></tr>
+    <tr><td class="serif">Accesibilidad</td><td>Contraste AA, uso completo con teclado y foco visible, objetivos táctiles de 44 px, respeto a «reducir movimiento». Diseñada primero para el móvil.</td></tr>
+    <tr><td class="serif">Privacidad</td><td>Seguridad en la base de datos (políticas por fila): lo privado y el anonimato no dependen de la interfaz. Email nunca público. Sin cookies de seguimiento.</td></tr>
+    <tr><td class="serif">Técnica</td><td>Aplicación web (React + TypeScript) servida desde la red de Cloudflare, con Supabase (Postgres) como base de datos. Instalable en el móvil desde el navegador.</td></tr>
+    <tr><td class="serif">Dónde</td><td>cisneverso.es · contacto en la página <em>Contacto</em> de la web.</td></tr>
+  </table>
+
+  <div class="box" style="margin-top: 7mm">
+    <h3>Colaborar con CISNE</h3>
+    <p>Si quieres proponer una colaboración (lecturas, retos de escritura, talleres, una antología), escríbenos desde <em>Contacto</em>. La mejor forma de apoyar el proyecto es darlo a conocer: compartir la web con quien ame la poesía y publicar poemas.</p>
+  </div>
+
+  <div style="margin-top: auto; display: flex; align-items: center; gap: 5mm; padding-bottom: 12mm">
+    <svg viewBox="325 375 585 670" style="width: 12mm; height: 14mm" fill="none" stroke="#111111" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M686 505 C682 440 730 396 790 394 C845 394 880 435 880 480 L872 510 M686 505 C690 585 760 630 815 672 C870 715 888 770 874 830 C860 880 800 930 740 975 C710 998 690 1015 672 1028" stroke-width="14"/>
+      <path d="M642 612 C615 535 555 490 495 488 C410 488 348 560 346 640 C346 725 410 790 495 808 C550 820 595 825 625 842" stroke-width="14"/>
+      <path d="M430 806 C455 850 520 895 580 930 C625 957 655 985 672 1028" stroke-width="12"/>
+      <path d="M846 508 L881 574" stroke-width="18"/>
+    </svg>
+    <span class="serif it" style="font-size: 16pt">Toda obra empieza con una primera palabra.</span>
+  </div>
+  <div class="folio"><span>CISNE · Manual de uso</span><span class="n">12</span></div>
+</section>
+
+</body>
+</html>
