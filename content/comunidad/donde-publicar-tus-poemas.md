@@ -4,7 +4,6 @@ descripcion: Webs, revistas, antologías, editoriales y autoedición: dónde pub
 fecha: 2026-10-30
 autor: Equipo de CISNE
 etiquetas: [publicar, concursos, consejos]
-borrador: true
 ---
 
 Si escribes poesía, tarde o temprano te preguntas dónde publicarla. Hay muchos sitios: plataformas como CISNE, redes sociales, revistas literarias, antologías, editoriales y la autoedición. Antes de elegir conviene saber una cosa que casi nadie cuenta: **muchos concursos de poesía solo aceptan obra inédita**, y para algunos un poema colgado en internet ya no lo es.

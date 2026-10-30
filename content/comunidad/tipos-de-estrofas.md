@@ -4,7 +4,6 @@ descripcion: Pareado, terceto, cuarteto, redondilla, copla, lira, décima, sonet
 fecha: 2026-10-30
 autor: Equipo de CISNE
 etiquetas: [escribir, métrica, estrofas]
-borrador: true
 ---
 
 Una **estrofa** es un grupo de versos que se repite con la misma forma a lo largo de un poema: mismo número de versos, misma medida y misma rima. Conocer las más usadas en español te ayuda a leer mejor a los clásicos y a elegir la forma de tus propios poemas, aunque luego decidas romperla.
