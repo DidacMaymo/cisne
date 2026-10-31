@@ -252,4 +252,14 @@ describe('comunidad', () => {
     expect(xml).not.toContain('oculto')
     expect(buildSitemap(empty, [])).not.toContain('/comunidad')
   })
+  it('un artículo programado no tiene head propio ni entra en el sitemap hasta su día (Madrid)', () => {
+    const prog = { ...art, slug: 'manana', fecha: '2026-11-05' }
+    const eve = new Date('2026-11-04T12:00:00Z')
+    const day = new Date('2026-11-04T23:30:00Z') // ya es el 5 en Madrid
+    const empty = { poems: [], collections: [], tags: [] }
+    expect(renderHead(articleHead(prog, eve))).toContain('content="noindex"')
+    expect(renderHead(articleHead(prog, day))).toContain('BlogPosting')
+    expect(buildSitemap(empty, [prog], eve)).not.toContain('/comunidad')
+    expect(buildSitemap(empty, [prog], day)).toContain('/comunidad/manana')
+  })
 })

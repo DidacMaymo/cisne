@@ -68,7 +68,7 @@ async function sitemap(cfg: SupabaseConfig | null, articles: ArticleMeta[]): Pro
   try {
     if (!cfg) throw new Error('Sin configuración de Supabase')
     return new Response(buildSitemap(await getSitemapData(cfg), articles), {
-      headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=3600' },
+      headers: { 'Content-Type': 'application/xml; charset=utf-8', 'Cache-Control': 'public, max-age=1800' },
     })
   } catch {
     // Un sitemap incompleto o un index.html no sirven: mejor decir «vuelve más tarde».
@@ -88,6 +88,8 @@ async function page(request: Request, env: Env, route: Exclude<Route, { kind: 's
 
   try {
     if (route.kind === 'community' || route.kind === 'article') {
+      // El artículo del día aparece por fecha, sin redesplegar: que ninguna caché lo retenga más de 5 min.
+      headers.set('Cache-Control', 'public, max-age=300')
       const articles = await loadArticleMeta(env, request)
       const head =
         route.kind === 'community'

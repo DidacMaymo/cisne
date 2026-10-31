@@ -347,3 +347,16 @@
   - [x] SEO: el HTML inicial de `/comunidad` y de cada artículo (servido por el Worker) lleva título, descripción, canonical y og; cada artículo, JSON-LD `BlogPosting` (headline, description, datePublished, author, publisher CISNE). Los artículos publicados entran en `sitemap.xml`. Los borradores, no. Con tests en `worker/worker.test.ts`.
   - [x] Plantilla base `content/comunidad/_plantilla.md` (ignorada por la carga: los ficheros que empiezan por `_` no se publican) y guía `docs/comunidad.md`: cómo crear un artículo, campos, formato, buenas prácticas de SEO y cómo se publica (pedírselo a Claude o PR en GitHub → merge → producción).
   - [x] `./init.sh` en verde.
+
+### F26 — Programar artículos de la Comunidad por fecha
+- **Estado:** done
+- **Depende de:** F25
+- **Qué:** un artículo con `fecha` futura queda programado: no se ve en ningún sitio hasta ese día (hora de Madrid) y aparece solo, sin volver a desplegar. Así se pueden dejar escritos varios artículos y que salga uno al día.
+- **Probar en la UI:** con un artículo de fecha mañana (sin `borrador`): en `npm run dev` se ve marcado «programado» (como los borradores); en producción, ni portada, ni `/comunidad`, ni `/comunidad/<slug>` (no encontrado, `noindex`), ni sitemap. Al llegar la fecha aparece en todos sin redeploy.
+- **Aceptación:**
+  - [x] El filtro es en tiempo de ejecución (SPA y Worker), con la fecha actual en `Europe/Madrid`: publicado = no borrador y `fecha` ≤ hoy. Una sola función compartida, con tests (víspera, mismo día, cambio de día en Madrid frente a UTC).
+  - [x] `comunidad.json` incluye los programados (con su fecha) para que el Worker los muestre al llegar el día; los borradores siguen fuera.
+  - [x] Portada (3 últimas), `/comunidad`, artículo, head/JSON-LD del Worker y sitemap respetan el filtro. Los enlaces internos de un artículo a otro aún programado no rompen nada (llevan a «no encontrado» hasta su día).
+  - [x] Caché: las respuestas del Worker para `/comunidad*` y `sitemap.xml` no se quedan cacheadas más de una hora, para que el artículo del día aparezca a tiempo.
+  - [x] `docs/comunidad.md` explica cómo programar (poner fecha futura) y qué ve quien entra antes de tiempo.
+  - [x] `./init.sh` en verde.

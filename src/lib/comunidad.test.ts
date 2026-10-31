@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { formatArticleDate, loadArticles, parseArticle, parseFrontmatter, toMeta } from './comunidad'
+import {
+  formatArticleDate,
+  isPublished,
+  loadArticles,
+  madridToday,
+  parseArticle,
+  parseFrontmatter,
+  toMeta,
+  visibleArticles,
+} from './comunidad'
 import { isSafeHref, parseInline, parseMarkdown } from './markdown'
 
 const fm = (over: Record<string, string | null> = {}, body = 'Texto.') => {
@@ -89,6 +98,33 @@ describe('loadArticles', () => {
   it('misma fecha: orden estable por slug', () => {
     const r = loadArticles({ 'b.md': fm(), 'a.md': fm() }, false)
     expect(r.articles.map((a) => a.slug)).toEqual(['a', 'b'])
+  })
+})
+
+describe('programación por fecha (Europe/Madrid)', () => {
+  const art = (fecha: string, borrador = false) => ({ fecha, borrador })
+  it('madridToday usa la fecha civil de Madrid, no la de UTC', () => {
+    expect(madridToday(new Date('2026-11-04T22:30:00Z'))).toBe('2026-11-04') // 23:30 en Madrid (CET)
+    expect(madridToday(new Date('2026-11-04T23:30:00Z'))).toBe('2026-11-05') // 00:30 en Madrid
+    expect(madridToday(new Date('2026-07-04T22:30:00Z'))).toBe('2026-07-05') // verano (CEST): 00:30
+  })
+  it('víspera: programado; mismo día: publicado; después: publicado', () => {
+    const a = art('2026-11-05')
+    expect(isPublished(a, new Date('2026-11-04T12:00:00Z'))).toBe(false)
+    expect(isPublished(a, new Date('2026-11-05T08:00:00Z'))).toBe(true)
+    expect(isPublished(a, new Date('2026-12-01T08:00:00Z'))).toBe(true)
+  })
+  it('cambio de día: a las 23:30 UTC ya es mañana en Madrid', () => {
+    expect(isPublished(art('2026-11-05'), new Date('2026-11-04T23:30:00Z'))).toBe(true)
+  })
+  it('un borrador nunca está publicado', () => {
+    expect(isPublished(art('2020-01-01', true), new Date('2026-11-05T08:00:00Z'))).toBe(false)
+  })
+  it('visibleArticles filtra, salvo includeHidden (dev)', () => {
+    const list = [art('2026-11-06'), art('2026-11-04'), art('2026-11-03', true)]
+    const now = new Date('2026-11-05T08:00:00Z')
+    expect(visibleArticles(list, false, now)).toEqual([art('2026-11-04')])
+    expect(visibleArticles(list, true, now)).toHaveLength(3)
   })
 })
 
