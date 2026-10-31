@@ -1,7 +1,7 @@
 ---
 titulo: Cómo escribir un poema: guía paso a paso para empezar
 descripcion: Cómo escribir un poema desde cero: de dónde sacar la idea, cómo escribir el borrador, cortar los versos y revisar, con un ejemplo completo.
-fecha: 2026-11-01
+fecha: 2026-10-31
 autor: Equipo de CISNE
 etiquetas: [escribir, empezar, poesía]
 ---

@@ -1,7 +1,7 @@
 ---
 titulo: Poemarios de amor que hay que leer: clásicos y contemporáneos
 descripcion: Catorce poemarios de amor en español, de Garcilaso a Elvira Sastre, con por qué leer cada uno y para quién es.
-fecha: 2026-11-08
+fecha: 2026-11-07
 autor: Equipo de CISNE
 etiquetas: [amor, lecturas, poemarios]
 ---

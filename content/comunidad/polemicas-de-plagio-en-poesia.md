@@ -1,7 +1,7 @@
 ---
 titulo: Plagio en poesía: polémicas recientes en premios y concursos (y cómo evitarlo)
 descripcion: Casos documentados de plagio en premios de poesía en español, cómo los detectan los jurados, qué hacer si te copian y qué dicen las bases sobre la IA.
-fecha: 2026-11-05
+fecha: 2026-11-04
 autor: Equipo de CISNE
 etiquetas: [plagio, concursos, derechos de autor, premios]
 ---

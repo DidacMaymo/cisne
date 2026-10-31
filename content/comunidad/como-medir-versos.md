@@ -1,7 +1,7 @@
 ---
 titulo: Cómo medir versos: sílabas métricas, sinalefa y rima
 descripcion: Aprende a medir versos en español: sílabas métricas, ley del acento final, sinalefa, hiato, diéresis y sinéresis, con ejemplos contados sílaba a sílaba.
-fecha: 2026-11-09
+fecha: 2026-11-08
 autor: Equipo de CISNE
 etiquetas: [métrica, escribir, versos]
 ---

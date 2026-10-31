@@ -1,7 +1,7 @@
 ---
 titulo: Cómo recitar poesía en voz alta (y perder el miedo al micro abierto)
 descripcion: Cómo recitar poesía en voz alta: respiración, pausas, ritmo, voz, mirada, nervios y dónde encontrar micros abiertos y recitales.
-fecha: 2026-11-14
+fecha: 2026-11-13
 autor: Equipo de CISNE
 etiquetas: [recitar, voz, micro abierto]
 ---

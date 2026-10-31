@@ -1,7 +1,7 @@
 ---
 titulo: Cómo autopublicar un poemario paso a paso
 descripcion: Corrección, maquetación, portada, ISBN, depósito legal, impresión y difusión: lo que necesitas para autopublicar tu poemario en España.
-fecha: 2026-11-10
+fecha: 2026-11-09
 autor: Equipo de CISNE
 etiquetas: [autopublicacion, poemario, publicar, isbn]
 ---
