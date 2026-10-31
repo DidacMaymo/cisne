@@ -4,7 +4,7 @@
 > resume en una línea en "Hecho" y se limpia "En curso".
 
 ## En curso
-- F27: PR abierto; falta que el usuario aplique `20261102120000_nombres_unicos.sql` en Supabase antes del merge.
+- (nada)
 
 ## Hecho
 - 2026-10-24 — F07 Arnés de agentes y CI (líder, solo docs/config). El build estaba en rojo en esta máquina solo porque `node_modules` no estaba al día con `package-lock.json` (faltaban `@supabase/supabase-js` y `@electric-sql/pglite`); `init.sh` ahora ejecuta `npm ci` cuando pasa esto. Tras `npm install`: lint, build y `test:db` en verde.
