@@ -1,7 +1,7 @@
 ---
 titulo: Cómo escribir un soneto paso a paso
 descripcion: Cómo escribir un soneto: estructura, rima ABBA ABBA, el endecasílabo y sus acentos, un ejemplo clásico analizado y un método práctico.
-fecha: 2026-11-06
+fecha: 2026-11-04
 autor: Equipo de CISNE
 etiquetas: [escribir, soneto, métrica]
 ---

@@ -1,7 +1,7 @@
 ---
 titulo: Derechos de autor de tus poemas: lo básico
 descripcion: Qué derechos tienes sobre tus poemas en España, cuánto duran, cómo registrarlos, qué son las licencias Creative Commons y qué hacer si te copian.
-fecha: 2026-11-11
+fecha: 2026-11-09
 autor: Equipo de CISNE
 etiquetas: [derechos, propiedad intelectual, plagio, publicar]
 ---

@@ -1,7 +1,7 @@
 ---
 titulo: Cómo escribir un haiku: reglas, ejemplos y consejos
 descripcion: Cómo escribir un haiku en español: la regla 5-7-5, el kigo y el kireji, ejemplos de Bashō, Buson, Issa y Tablada, y consejos para el tuyo.
-fecha: 2026-11-10
+fecha: 2026-11-08
 autor: Equipo de CISNE
 etiquetas: [haiku, escribir, formas]
 ---

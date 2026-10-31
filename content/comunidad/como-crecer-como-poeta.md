@@ -1,7 +1,7 @@
 ---
 titulo: Cómo crecer como poeta: hábitos, lectura y comunidad
 descripcion: Cómo crecer como poeta sin atajos: leer con método, escribir con constancia, reescribir, buscar lectores, recibir críticas y tener paciencia.
-fecha: 2026-11-05
+fecha: 2026-11-03
 autor: Equipo de CISNE
 etiquetas: [escritura, oficio, consejos]
 ---

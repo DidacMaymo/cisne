@@ -1,7 +1,7 @@
 ---
 titulo: Ejercicios de escritura poética para salir del bloqueo
 descripcion: 18 ejercicios de escritura poética concretos para salir del bloqueo: arrancar, mirar con los sentidos, jugar con la forma, partir de otros textos y revisar.
-fecha: 2026-11-12
+fecha: 2026-11-10
 autor: Equipo de CISNE
 etiquetas: [escribir, ejercicios, bloqueo]
 ---
