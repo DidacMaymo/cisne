@@ -116,6 +116,30 @@ export function toMeta(a: Article): ArticleMeta {
   return { slug, titulo, descripcion, fecha, autor, etiquetas, borrador }
 }
 
+/** Fecha civil de hoy en Madrid (AAAA-MM-DD), sea cual sea la zona del navegador o del servidor. */
+export function madridToday(now: Date = new Date()): string {
+  return new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Europe/Madrid',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).format(now)
+}
+
+/** Publicado = no borrador y `fecha` ≤ hoy (Madrid). Un artículo con fecha futura está programado. */
+export function isPublished(a: Pick<ArticleMeta, 'borrador' | 'fecha'>, now: Date = new Date()): boolean {
+  return !a.borrador && a.fecha <= madridToday(now)
+}
+
+/** Filtra en tiempo de ejecución. `includeHidden` (solo dev) deja borradores y programados. */
+export function visibleArticles<T extends Pick<ArticleMeta, 'borrador' | 'fecha'>>(
+  list: T[],
+  includeHidden: boolean,
+  now: Date = new Date(),
+): T[] {
+  return includeHidden ? list : list.filter((a) => isPublished(a, now))
+}
+
 /** «28 de octubre de 2026» a partir de AAAA-MM-DD (sin desfases de zona horaria). */
 export function formatArticleDate(fecha: string): string {
   return new Date(`${fecha}T00:00:00Z`).toLocaleDateString('es-ES', {

@@ -4,7 +4,7 @@
 > resume en una línea en "Hecho" y se limpia "En curso".
 
 ## En curso
-- (nada)
+- Comunidad: ~14 artículos programados uno al día (PR aparte tras F26).
 
 ## Hecho
 - 2026-10-24 — F07 Arnés de agentes y CI (líder, solo docs/config). El build estaba en rojo en esta máquina solo porque `node_modules` no estaba al día con `package-lock.json` (faltaban `@supabase/supabase-js` y `@electric-sql/pglite`); `init.sh` ahora ejecuta `npm ci` cuando pasa esto. Tras `npm install`: lint, build y `test:db` en verde.
@@ -44,6 +44,8 @@
 - 2026-10-30 — F25 Comunidad de escritores: artículos Markdown en `content/comunidad/`, sección en la portada, enlace en el pie, `/comunidad` y `/comunidad/:slug`, Worker con `BlogPosting` y sitemap (lee `dist/comunidad.json`), plantilla `_plantilla.md` y guía `docs/comunidad.md`. 3 artículos del líder en borrador hasta que el usuario los revise. APPROVED (2ª vuelta: saltos de verso en las citas).
 
 - 2026-10-30 — Comunidad: publicadas las 3 primeras entradas (dónde publicar, tipos de estrofas, concursos), revisadas por el usuario.
+
+- 2026-10-31 — F26 Programar artículos por fecha: filtro en tiempo de ejecución con la fecha de Madrid (SPA y Worker), caché de `/comunidad*` 5 min y sitemap 30 min. APPROVED. Ojo: los programados viajan en el bundle y en `comunidad.json` (no sirve para ocultar contenido sensible).
 
 ## Correcciones
 - 2026-10-27 — En F11 se dijo que producción servía el modo local: era falso. Producción ya estaba conectada a Supabase (proyecto `cisne`, de Didac). Las cifras de F11 con Supabase (680,85 → 323,41 KB, −52,5 %) son las que aplican a producción. Faltaba aplicar en producción la migración de F09 (aplicada el 2026-10-27).

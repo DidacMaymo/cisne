@@ -1,7 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { Markdown } from '../components/comunidad/Markdown'
 import { Seo } from '../components/Seo'
-import { formatArticleDate } from '../lib/comunidad'
+import { formatArticleDate, isPublished } from '../lib/comunidad'
 import { getArticle } from '../lib/comunidad-content'
 import { articleMeta } from '../lib/seo'
 import { NotFound } from './NotFound'
@@ -21,7 +21,9 @@ export function ComunidadArticulo() {
       <h1 className="mt-4 text-balance font-serif text-4xl italic leading-tight md:text-5xl">{a.titulo}</h1>
       <p className="meta mt-4">
         {a.autor} · <time dateTime={a.fecha}>{formatArticleDate(a.fecha)}</time>
-        {a.borrador && ' · borrador (solo visible en desarrollo)'}
+        {a.borrador
+          ? ' · borrador (solo visible en desarrollo)'
+          : !isPublished(a) && ' · programado (solo visible en desarrollo)'}
       </p>
       <div className="mt-10">
         <Markdown source={a.cuerpo} />

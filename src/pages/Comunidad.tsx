@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom'
 import { EmptyState } from '../components/EmptyState'
 import { Seo } from '../components/Seo'
-import { allArticles } from '../lib/comunidad-content'
-import { formatArticleDate } from '../lib/comunidad'
+import { listArticles } from '../lib/comunidad-content'
+import { formatArticleDate, isPublished } from '../lib/comunidad'
 import { COMMUNITY_META } from '../lib/seo'
 
 export function Comunidad() {
+  const allArticles = listArticles()
   return (
     <section className="mx-auto w-full max-w-pagina py-6 md:py-12">
       <Seo {...COMMUNITY_META} />
@@ -25,7 +26,7 @@ export function Comunidad() {
                 <p className="mt-2 text-ui leading-relaxed text-tinta/80">{a.descripcion}</p>
                 <p className="meta mt-2">
                   {a.autor} · {formatArticleDate(a.fecha)}
-                  {a.borrador && ' · borrador'}
+                  {a.borrador ? ' · borrador' : !isPublished(a) && ' · programado'}
                 </p>
               </Link>
             </li>

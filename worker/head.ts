@@ -1,6 +1,6 @@
 // Construye el contenido del <head> de cada página a partir de filas de las
 // vistas `public_*` de Supabase. Lógica pura: sin APIs de Cloudflare.
-import type { ArticleMeta } from '../src/lib/comunidad'
+import { isPublished, type ArticleMeta } from '../src/lib/comunidad'
 import {
   articleMeta,
   authorMeta,
@@ -132,9 +132,9 @@ export function communityHead(): HeadInput {
   return { meta: COMMUNITY_META, ogType: 'website' }
 }
 
-/** `null` = artículo inexistente o borrador: título genérico y `noindex`. */
-export function articleHead(a: ArticleMeta | null): HeadInput {
-  if (!a || a.borrador) return notFoundHead()
+/** `null` = artículo inexistente, borrador o programado (fecha futura en Madrid): genérico y `noindex`. */
+export function articleHead(a: ArticleMeta | null, now: Date = new Date()): HeadInput {
+  if (!a || !isPublished(a, now)) return notFoundHead()
   const meta = articleMeta(a)
   const url = canonicalUrl(meta.path)
   const ld: Record<string, unknown> = {

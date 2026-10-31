@@ -3,10 +3,8 @@ import { SwanDivider } from '../components/brand/SwanDivider'
 import { SwanMark } from '../components/brand/SwanMark'
 import { Seo } from '../components/Seo'
 import { formatArticleDate } from '../lib/comunidad'
-import { allArticles } from '../lib/comunidad-content'
+import { listArticles } from '../lib/comunidad-content'
 import { SITE_META } from '../lib/seo'
-
-const latest = allArticles.slice(0, 3)
 
 const doors = [
   {
@@ -35,6 +33,7 @@ const doors = [
 const principles = ['Sin fotografías', 'Sin seguidores', 'Sin rankings']
 
 export function Home() {
+  const latest = listArticles().slice(0, 3)
   return (
     <>
       <Seo {...SITE_META} />

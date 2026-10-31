@@ -63,3 +63,20 @@ Cada cambio en la rama `main` **se publica en producción** al fusionarse. Dos c
    `cisneverso.es/comunidad`.
 
 Para retirar un artículo, pon `borrador: true` y repite el proceso.
+
+## Programar un artículo
+
+Pon en `fecha` un día **futuro** (sin `borrador`) y publica como siempre. El artículo queda
+**programado**: sale solo ese día, sin volver a desplegar. Así puedes dejar escritos varios
+con fechas consecutivas y que salga uno al día.
+
+- «Hoy» es la fecha de **Madrid** (`Europe/Madrid`): a las 00:00 de Madrid ya está publicado.
+  Regla: publicado = sin `borrador` y `fecha` ≤ hoy.
+- Quien entra antes de tiempo no ve nada: ni en la portada, ni en `/comunidad`, ni en el
+  sitemap; `/comunidad/<slug>` muestra «no encontrado» con `noindex`. Un enlace de otro
+  artículo a uno aún programado lleva a ese «no encontrado» hasta su día.
+- Con `npm run dev` ves los programados (y borradores) con la marca «programado».
+- Retraso: el Worker y las cachés retienen la página hasta 5 minutos (el sitemap, 30), y un
+  navegador con la web ya abierta ve el cambio al recargar o navegar.
+- Aviso: el texto de un programado viaja dentro del JavaScript de la web (es un sitio
+  estático), así que no sirve para guardar secretos, solo para escalonar la salida.
