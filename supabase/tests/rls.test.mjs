@@ -39,7 +39,7 @@ const BEA = '22222222-2222-2222-2222-222222222222'
 await db.exec(`
   insert into auth.users (id, email, raw_user_meta_data) values
     ('${ANA}', 'ana@x.test', '{"display_name":"Ana Lía"}'),
-    ('${BEA}', 'bea@x.test', '{"display_name":"Ana Lía"}');
+    ('${BEA}', 'bea@x.test', '{"display_name":"Bea Sol"}');
 `)
 
 let failures = 0
@@ -70,7 +70,7 @@ async function fails(text, params) {
 // Perfiles creados por el trigger, con nombres de cuenta únicos.
 const profiles = await q('select id, account_name, display_name from public.profiles order by account_name')
 check('perfiles creados al registrarse', profiles.length === 2, profiles.map((p) => p.account_name).join(', '))
-check('nombre de cuenta único', profiles[0].account_name === 'ana-lia' && profiles[1].account_name === 'ana-lia-2')
+check('nombre de cuenta único', profiles[0].account_name === 'ana-lia' && profiles[1].account_name === 'bea-sol')
 
 // Ana publica: uno con su nombre, uno anónimo, uno privado, un borrador y uno con pseudónimo.
 // Los dos últimos argumentos (fuente y Cisne negro) son opcionales aquí.
@@ -149,7 +149,7 @@ await as(BEA, async () => {
   // Apoyos
   check('Bea apoya un poema de Ana', (await q('select public.toggle_poem_support($1) as on', [ids.named]))[0].on === true)
   check('Bea apoya a Ana', (await q(`select public.toggle_author_support('ana-lia') as on`))[0].on === true)
-  check('Bea no puede apoyarse a sí misma', !!(await fails(`select public.toggle_author_support('ana-lia-2')`)))
+  check('Bea no puede apoyarse a sí misma', !!(await fails(`select public.toggle_author_support('bea-sol')`)))
   check('Bea no puede apoyar un privado', !!(await fails('select public.toggle_poem_support($1)', [ids.priv])))
   const bst = (await q('select public.poem_support_state($1) as s', [ids.named]))[0].s
   check('Bea ve que apoya, sin ver el número (privado)', bst.supported === true && bst.count === null)
@@ -219,7 +219,7 @@ await as(BEA, async () => {
   check('comentario vacío rechazado', !!(await fails(`select public.add_verse_comment($1, 0, '', '   ')`, [comments.open])))
   check('Bea no lee la tabla de comentarios', (await q('select * from public.verse_comments')).length === 0)
   const [c] = await q('select * from public.public_verse_comments where id = $1', [beaComment])
-  check('la vista muestra autor y que Bea puede borrar el suyo', c.author_name === 'Ana Lía' && c.can_delete === true && c.line === 1)
+  check('la vista muestra autor y que Bea puede borrar el suyo', c.author_name === 'Bea Sol' && c.can_delete === true && c.line === 1)
   check('la vista no expone user_id', !('user_id' in c))
   // Dejar de apoyar desde los ajustes.
   const mine = (await q('select public.my_supports() as s'))[0].s
@@ -283,6 +283,106 @@ await as(ANA, async () => {
   const rows = await q('select category, reason, reporter_id from public.reports order by created_at, reason')
   check('las denuncias quedan legibles para el panel', rows.length === 2 && rows.some((r) => r.reason === 'Otro motivo — Me parece mal' && r.category === 'otro'))
 }
+
+// Nombres públicos únicos, reservados, límite de 30 días y direcciones retiradas (F27).
+const CARLA = '33333333-3333-3333-3333-333333333333'
+const DANI = '44444444-4444-4444-4444-444444444444'
+await db.exec(`
+  insert into auth.users (id, email, raw_user_meta_data) values
+    ('${CARLA}', 'carla@x.test', '{"display_name":"  ANA   LIA "}'),
+    ('${DANI}', 'dani@x.test', '{"display_name":"Cisne"}');
+`)
+{
+  const rows = await q('select id, display_name, account_name from public.profiles where id in ($1, $2)', [CARLA, DANI])
+  check('alta con nombre ya usado (otras mayúsculas, sin tilde) o reservado: perfil sin nombre, registro intacto',
+    rows.length === 2 && rows.every((r) => r.display_name === '' && /^autor(-\d+)?$/.test(r.account_name)))
+}
+const nameOf = async (id) => (await q('select display_name, account_name, display_name_changed_at as at from public.profiles where id = $1', [id]))[0]
+
+await as(BEA, async () => {
+  const setName = (name) => fails('update public.profiles set display_name = $1 where id = $2', [name, BEA])
+  check('nombre ya usado por otra persona: rechazado', (await setName('Ana Lía')) !== null)
+  check('…también con otras mayúsculas y sin tildes', (await setName('  ANA  lia ')) !== null)
+  const msg = await setName('ANA LIA')
+  check('mensaje claro de nombre ocupado', !!msg && msg.includes('ya lo usa otra persona'), msg ?? '')
+  for (const r of ['CISNE', 'Anónimo', 'sin   NOMBRE', 'Administración', 'Equipo de Cisne']) {
+    check(`nombre reservado «${r}» rechazado`, ((await setName(r)) ?? '').includes('reservado'))
+  }
+  check('el nombre no puede quedar vacío', !!(await setName('   ')))
+  check('Bea no puede escribir la fecha del último cambio',
+    !!(await fails(`update public.profiles set display_name_changed_at = null where id = $1`, [BEA])))
+  const own = await nameOf(BEA)
+  check('tras los rechazos su nombre y su fecha siguen igual', own.display_name === 'Bea Sol' && own.at === null)
+  // Solo cambian mayúsculas: mismo nombre, no cuenta como cambio.
+  check('cambiar solo mayúsculas es libre', !(await setName('BEA SOL')) && (await nameOf(BEA)).at === null)
+})
+await as(ANA, async () => {
+  const setName = (name) => fails('update public.profiles set display_name = $1 where id = $2', [name, ANA])
+  check('Ana no puede escribir account_name ni la fecha',
+    !!(await fails(`update public.profiles set account_name = 'x' where id = $1`, [ANA])) &&
+      !!(await fails(`update public.profiles set display_name_changed_at = now() where id = $1`, [ANA])))
+  check('el primer cambio de nombre es libre', !(await setName('Ana Marea')))
+  const a = await nameOf(ANA)
+  check('la dirección sigue al nombre y la BD pone la fecha', a.account_name === 'ana-marea' && a.at !== null)
+  const again = await setName('Ana Otra')
+  check('segundo cambio inmediato: rechazado con la fecha', !!again && again.includes('30 días') && /\d{1,2} de \w+ de \d{4}/.test(again), again ?? '')
+  check('la tabla de direcciones retiradas no se lee',
+    !!(await fails('select * from public.retired_account_names')))
+  check('ni se escribe', !!(await fails(`insert into public.retired_account_names (account_name, user_id) values ('zz', $1)`, [ANA])))
+})
+await as(null, async () => {
+  check('la dirección antigua da «no encontrado»', (await q(`select * from public.public_profiles where account_name = 'ana-lia'`)).length === 0)
+  check('la nueva funciona', (await q(`select * from public.public_profiles where account_name = 'ana-marea'`)).length === 1)
+  check('anon no lee retired_account_names', !!(await fails('select * from public.retired_account_names')))
+  const [p] = await q(`select author_account_name from public.public_poems where title = 'Casa de agua'`)
+  check('los poemas enlazan a la dirección nueva', p.author_account_name === 'ana-marea')
+})
+// Pasados 30 días puede volver a cambiarlo; la dirección anterior sigue reservada.
+await db.exec(`update public.profiles set display_name_changed_at = now() - interval '31 days' where id = '${ANA}'`)
+await as(ANA, async () => {
+  check('pasados 30 días puede cambiarlo otra vez', !(await fails('update public.profiles set display_name = $1 where id = $2', ['Ana del Mar', ANA])))
+  check('y su dirección cambia otra vez', (await nameOf(ANA)).account_name === 'ana-del-mar')
+})
+await as(BEA, async () => {
+  // El nombre «Ana Lía» ya está libre, pero la dirección ana-lia sigue reservada para siempre.
+  check('Bea puede usar el nombre que Ana dejó', !(await fails('update public.profiles set display_name = $1 where id = $2', ['Ana Lía', BEA])))
+  const b = await nameOf(BEA)
+  check('pero no la dirección antigua de Ana (reservada)', b.account_name === 'ana-lia-2' && b.at !== null, b.account_name)
+  check('y no puede volver a cambiar hasta pasados 30 días', !!(await fails('update public.profiles set display_name = $1 where id = $2', ['Bea Sol', BEA])))
+})
+await as(null, async () => {
+  check('la dirección retirada no redirige ni aparece para nadie', (await q(`select * from public.public_profiles where account_name in ('ana-marea', 'ana-lia')`)).length === 0)
+})
+// Primer nombre de quien se registró sin él: libre y no estrena el plazo.
+await as(CARLA, async () => {
+  check('quien no tenía nombre puede elegir uno', !(await fails('update public.profiles set display_name = $1 where id = $2', ['Carla Río', CARLA])))
+  const c = await nameOf(CARLA)
+  check('elegir el primer nombre no cuenta como cambio', c.at === null && c.account_name === 'carla-rio')
+  check('el primer cambio real después sigue libre', !(await fails('update public.profiles set display_name = $1 where id = $2', ['Carla Mar', CARLA])))
+})
+// Duplicados preexistentes: se respetan y no rompen nada.
+await db.exec(`alter table public.profiles disable trigger profiles_name_guard`)
+await db.exec(`update public.profiles set display_name = 'Carla Mar' where id = '${DANI}'`)
+await db.exec(`alter table public.profiles enable trigger profiles_name_guard`)
+await as(DANI, async () => {
+  check('un duplicado preexistente puede seguir editando su perfil', !(await fails(`update public.profiles set bio = 'hola', display_name = 'Carla Mar' where id = $1`, [DANI])))
+  check('pero no puede pasar a otro nombre ocupado', !!(await fails('update public.profiles set display_name = $1 where id = $2', ['Ana del Mar', DANI])))
+})
+
+// Pseudónimos: libres, pero no el nombre público de otra persona ni uno reservado.
+await as(BEA, async () => {
+  const withPseudo = (name, id = null) =>
+    fails(`select public.save_poem($1,'t','x','published','public','pseudonym',$2,'{}',null,'clasica',false,false)`, [id, name])
+  const taken = await withPseudo('  ANA del mar ')
+  check('poema con el nombre público de otra persona como pseudónimo: rechazado', !!taken && taken.includes('nombre público de otra persona'), taken ?? '')
+  check('también como borrador', !!(await fails(`select public.save_poem(null,'t','x','draft','public','pseudonym','Ana del Mar','{}',null,'clasica',false,false)`)))
+  check('pseudónimo reservado rechazado', ((await withPseudo('Anónimo')) ?? '').includes('reservado'))
+  check('pseudónimo libre aceptado', !(await withPseudo('La Garza')))
+  check('el mismo pseudónimo se puede repetir entre poemas', !(await withPseudo('La Garza')))
+  check('pseudónimo habitual con nombre ajeno: rechazado', !!(await fails('update public.profiles set primary_pseudonym = $1 where id = $2', ['ana DEL mar', BEA])))
+  check('pseudónimo habitual reservado: rechazado', !!(await fails('update public.profiles set primary_pseudonym = $1 where id = $2', ['Cisneverso', BEA])))
+  check('pseudónimo habitual libre: aceptado', !(await fails('update public.profiles set primary_pseudonym = $1 where id = $2', ['Gaviota', BEA])))
+})
 
 await as(BEA, () => q('select public.delete_my_account()'))
 const left = await q(`select (select count(*) from public.profiles where id = $1)::int as p,

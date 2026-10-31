@@ -101,6 +101,37 @@ describe('repositorio local: denuncias a poemas ajenos', () => {
   })
 })
 
+describe('repositorio local: nombre público', () => {
+  it('rechaza reservados (también como pseudónimo) y el vacío', async () => {
+    await expect(repos.profiles.updateMine({ displayName: 'CISNE' })).rejects.toThrow('reservado')
+    await expect(repos.profiles.updateMine({ displayName: '  ' })).rejects.toThrow('vacío')
+    await expect(repos.profiles.updateMine({ primaryPseudonym: 'Anónimo' })).rejects.toThrow('reservado')
+    await expect(
+      repos.poems.save({ ...base, publicationIdentity: 'pseudonym', displayedPseudonym: 'Sin nombre' }),
+    ).rejects.toThrow('reservado')
+  })
+
+  it('el primer cambio es libre, la dirección lo sigue y la antigua no se encuentra', async () => {
+    const p = await repos.profiles.updateMine({ displayName: 'Lucía del Mar' })
+    expect(p.accountName).toBe('lucia-del-mar')
+    expect(p.displayNameChangedAt).toBeTruthy()
+    expect((await repos.auth.account())?.accountName).toBe('lucia-del-mar')
+    expect(await repos.profiles.getPublicByAccountName('lucia-perez')).toBeNull()
+    expect((await repos.profiles.getPublicByAccountName('lucia-del-mar'))?.displayName).toBe('Lucía del Mar')
+  })
+
+  it('un segundo cambio antes de 30 días dice cuándo podrá', async () => {
+    await repos.profiles.updateMine({ displayName: 'Lucía del Mar' })
+    await expect(repos.profiles.updateMine({ displayName: 'Otra Lucía' })).rejects.toThrow(/30 días.*a partir del \d+ de/)
+  })
+
+  it('solo cambiar mayúsculas es libre y no cambia la dirección', async () => {
+    const p = await repos.profiles.updateMine({ displayName: 'LUCÍA PÉREZ' })
+    expect(p.accountName).toBe('lucia-perez')
+    expect(p.displayNameChangedAt).toBeUndefined()
+  })
+})
+
 describe('repositorio local: anonimato', () => {
   it('un poema anónimo no expone al autor', async () => {
     const p = await repos.poems.save({ ...base, publicationIdentity: 'anonymous' })

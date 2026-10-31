@@ -37,6 +37,8 @@ export type Store = {
     createdAt: string
   }[]
   reports: { userId: string; poemId: string; category: string; detail: string; createdAt: string }[]
+  /** Direcciones /autor/... abandonadas: reservadas y sin redirección. */
+  retiredAccountNames: string[]
 }
 
 export function fresh(): Store {
@@ -61,6 +63,7 @@ export function fresh(): Store {
     authorSupports: [],
     verseComments: [],
     reports: [],
+    retiredAccountNames: [],
   }
 }
 

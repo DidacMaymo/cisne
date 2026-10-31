@@ -4,6 +4,7 @@ import { repos } from '../data'
 import type { Profile } from '../data'
 import { LoadState } from '../components/LoadState'
 import { SettingsNav } from '../components/SettingsNav'
+import { formatDateEs, NAME_CHANGE_DAYS, nextNameChange } from '../data/names'
 import { countWords, MAX_BIO_WORDS, profileSchema, toErrors } from '../data/schemas'
 import { useQuery } from '../hooks/useQuery'
 
@@ -24,6 +25,7 @@ export function ProfileSettings() {
 /** Lo que verá cualquiera en tu página de autor. Solo texto: nada de fotos. */
 function ProfileForm({ profile }: { profile: Profile }) {
   const id = useId()
+  const [saved, setSaved] = useState(profile)
   const [displayName, setDisplayName] = useState(profile.displayName)
   const [primaryPseudonym, setPseudonym] = useState(profile.primaryPseudonym ?? '')
   const [bio, setBio] = useState(profile.bio ?? '')
@@ -31,6 +33,8 @@ function ProfileForm({ profile }: { profile: Profile }) {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [status, setStatus] = useState('')
   const [busy, setBusy] = useState(false)
+  // Sin nombre aún: elegirlo no cuenta como cambio, aunque la fecha fuese anterior.
+  const nextChange = saved.displayName ? nextNameChange(saved.displayNameChangedAt) : null
 
   async function submit(e: FormEvent) {
     e.preventDefault()
@@ -46,13 +50,19 @@ function ProfileForm({ profile }: { profile: Profile }) {
     setBusy(true)
     try {
       const v = parsed.data
-      await repos.profiles.updateMine({
+      const updated = await repos.profiles.updateMine({
         displayName: v.displayName,
         primaryPseudonym: v.primaryPseudonym || undefined,
         bio: v.bio || undefined,
         links: v.links,
       })
-      setStatus('Perfil guardado.')
+      setSaved(updated)
+      setDisplayName(updated.displayName)
+      setStatus(
+        updated.accountName !== saved.accountName
+          ? `Perfil guardado. Tu página de autor ahora está en /autor/${updated.accountName}.`
+          : 'Perfil guardado.',
+      )
     } catch (err) {
       setStatus(err instanceof Error ? err.message : 'No se pudo guardar.')
     } finally {
@@ -71,7 +81,7 @@ function ProfileForm({ profile }: { profile: Profile }) {
     <form onSubmit={submit} noValidate className="grid gap-10">
       <p className="text-center text-ui text-gris">
         Así te verán en{' '}
-        <Link to={`/autor/${profile.accountName}`} className="underline underline-offset-4 hover:text-tinta">
+        <Link to={`/autor/${saved.accountName}`} className="underline underline-offset-4 hover:text-tinta">
           tu página de autor
         </Link>
         . Aquí solo hay palabras: sin fotografías.
@@ -87,11 +97,19 @@ function ProfileForm({ profile }: { profile: Profile }) {
           onChange={(e) => setDisplayName(e.target.value)}
           maxLength={60}
           aria-invalid={!!errors.displayName}
+          readOnly={!!nextChange}
           aria-describedby={`${id}-nh`}
           className="campo font-serif text-3xl"
         />
         <p id={`${id}-nh`} className={`meta mt-2 ${errors.displayName ? 'text-tinta' : ''}`}>
           {errors.displayName ?? 'Tu nombre o un pseudónimo: es lo que firma tus poemas «con mi nombre».'}
+        </p>
+        <p className="meta mt-2">
+          {nextChange
+            ? `Podrás volver a cambiarlo a partir del ${formatDateEs(nextChange)}. `
+            : `Puedes cambiarlo una vez cada ${NAME_CHANGE_DAYS} días; el primer cambio es libre. `}
+          Dos personas no pueden tener el mismo nombre. Al cambiarlo, la dirección de tu página de autor cambia con él
+          (ahora es /autor/{saved.accountName}) y la anterior deja de funcionar.
         </p>
       </div>
 

@@ -12,6 +12,8 @@ export type Profile = {
   accountName: string
   displayName: string
   primaryPseudonym?: string
+  /** Cuándo cambió por última vez el nombre público (lo pone la BD). Sin valor: aún no lo ha cambiado. */
+  displayNameChangedAt?: string
   bio?: string
   /** Enlaces a redes o web personal. Solo texto: aquí no hay fotografías. */
   links?: string[]
