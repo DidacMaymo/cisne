@@ -47,7 +47,7 @@
 
 - 2026-10-31 — F26 Programar artículos por fecha: filtro en tiempo de ejecución con la fecha de Madrid (SPA y Worker), caché de `/comunidad*` 5 min y sitemap 30 min. APPROVED. Ojo: los programados viajan en el bundle y en `comunidad.json` (no sirve para ocultar contenido sensible).
 
-- 2026-10-31 — Comunidad: 14 artículos programados hasta el 11 de noviembre (3 publicados el 31 de octubre y uno al día después, a petición del usuario), investigados con fuentes y revisados por el líder.
+- 2026-10-31 — Comunidad: 14 artículos programados hasta el 13 de noviembre (3 publicados el 31 de octubre y uno al día después; el 12 y el 13, mujeres poetas e instapoesía), investigados con fuentes y revisados por el líder.
 
 ## Correcciones
 - 2026-10-27 — En F11 se dijo que producción servía el modo local: era falso. Producción ya estaba conectada a Supabase (proyecto `cisne`, de Didac). Las cifras de F11 con Supabase (680,85 → 323,41 KB, −52,5 %) son las que aplican a producción. Faltaba aplicar en producción la migración de F09 (aplicada el 2026-10-27).
