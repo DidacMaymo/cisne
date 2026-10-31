@@ -63,6 +63,8 @@ Migraciones en orden:
 1. `20261018120000_init.sql` — tablas base, vistas públicas, búsqueda, RLS, funciones.
 2. `20261019120000_fuentes_cisne_negro_apoyos.sql` — fuente del poema, «Cisne negro» (sensible), apoyos.
 3. `20261020120000_comentarios_y_apoyos.sql` — comentarios en los versos, dejar de apoyar.
+4. `20261101120000_denunciar_poema.sql` — denuncias.
+5. `20261102120000_nombres_unicos.sql` — nombre público único (triggers), 1 cambio/30 días, dirección que lo sigue, direcciones retiradas (`retired_account_names`, sin acceso), pseudónimos sin suplantación.
 
 ### Modelo
 

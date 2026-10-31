@@ -2,6 +2,7 @@ import { firstLine } from '../../lib/poem-text'
 import { countWords } from '../words'
 import { shuffleDiverse } from '../discover'
 import { foldText, normalizePoemText, normalizeTag, slugify } from '../normalize'
+import { isReservedName, nameMessages, nextNameChange, normalizeName } from '../names'
 import type { Repositories } from '../repositories'
 import type { Collection, CollectionView, Poem, PoemView, Profile, Session, Tag } from '../types'
 import { commit, fresh, LOCAL_USER_ID, readStore, type Store, type StoredPoem } from './store'
@@ -20,6 +21,19 @@ async function world(): Promise<World> {
     collections: [...s.collections, ...(seed?.collections ?? [])],
     collectionPoems: [...s.collectionPoems, ...(seed?.collectionPoems ?? [])],
   }
+}
+
+const othersOf = (w: World) => w.profiles.filter((p) => p.id !== LOCAL_USER_ID)
+
+/** Mensaje si el nombre (o pseudónimo) está reservado o es el nombre público de otra persona. */
+function nameProblem(others: Profile[], name: string, pseudonym = false): string | null {
+  const norm = normalizeName(name)
+  if (!norm) return null
+  if (isReservedName(name)) return pseudonym ? nameMessages.pseudonymReserved : nameMessages.reserved
+  if (others.some((p) => normalizeName(p.displayName) === norm)) {
+    return pseudonym ? nameMessages.pseudonymTaken : nameMessages.taken
+  }
+  return null
 }
 
 /** Id del usuario con sesión, o `null`. */
@@ -173,8 +187,11 @@ export const localRepositories: Repositories = {
     async signUp({ displayName, email, password }) {
       const w = await world()
       if (w.account) throw new Error('En este navegador ya hay una cuenta. Entra con ella.')
-      const taken = new Set(w.profiles.filter((p) => p.id !== LOCAL_USER_ID).map((p) => p.accountName))
-      const base = slugify(displayName) || 'autor'
+      const others = othersOf(w)
+      // Como en la BD: un nombre reservado o ya usado no rompe el alta; se queda sin nombre público.
+      const shown = nameProblem(others, displayName.trim()) ? '' : displayName.trim()
+      const taken = new Set([...others.map((p) => p.accountName), ...w.retiredAccountNames])
+      const base = slugify(shown) || 'autor'
       let accountName = base
       for (let n = 2; taken.has(accountName); n++) accountName = `${base}-${n}`
       const salt = crypto.randomUUID()
@@ -183,7 +200,7 @@ export const localRepositories: Repositories = {
       commit((s) => {
         s.account = { email: email.trim().toLowerCase(), accountName, createdAt: now, salt, passwordHash }
         s.signedIn = true
-        s.profile = { ...s.profile, accountName, displayName: displayName.trim(), updatedAt: now }
+        s.profile = { ...s.profile, accountName, displayName: shown, updatedAt: now }
       })
       return session(readStore())!
     },
@@ -297,6 +314,7 @@ export const localRepositories: Repositories = {
     async save(input) {
       const savedId = input.id ?? crypto.randomUUID()
       const now = new Date().toISOString()
+      const others = othersOf(await world())
       commit((s) => {
         const userId = requireMe(s)
         let existing: StoredPoem | undefined
@@ -307,6 +325,10 @@ export const localRepositories: Repositories = {
         const tagIds = [...new Set(input.tags.map((t) => ensureTag(s, t)).filter((id): id is string => !!id))]
         const pseudonym =
           input.publicationIdentity === 'pseudonym' ? input.displayedPseudonym?.trim() || undefined : undefined
+        if (pseudonym && pseudonym !== existing?.displayedPseudonym) {
+          const problem = nameProblem(others, pseudonym, true)
+          if (problem) throw new Error(problem)
+        }
         const poem: StoredPoem = {
           id: savedId,
           authorId: userId,
@@ -359,9 +381,43 @@ export const localRepositories: Repositories = {
     },
 
     async updateMine(patch) {
+      const others = othersOf(await world())
       commit((s) => {
         requireMe(s)
-        s.profile = { ...s.profile, ...patch, updatedAt: new Date().toISOString() }
+        const old = s.profile
+        const now = new Date().toISOString()
+        const next: Profile = { ...old, ...patch, updatedAt: now }
+
+        if (patch.displayName !== undefined && patch.displayName !== old.displayName) {
+          const name = patch.displayName.trim()
+          const norm = normalizeName(name)
+          if (!norm) throw new Error(nameMessages.empty)
+          next.displayName = name
+          // Solo cambian mayúsculas, tildes o espacios: sigue siendo el mismo nombre.
+          if (norm !== normalizeName(old.displayName)) {
+            const wait = old.displayName ? nextNameChange(old.displayNameChangedAt) : null
+            if (wait) throw new Error(nameMessages.tooSoon(wait))
+            const problem = nameProblem(others, name)
+            if (problem) throw new Error(problem)
+            // La dirección sigue al nombre; la anterior queda reservada y no redirige.
+            const taken = new Set(others.map((p) => p.accountName))
+            const base = slugify(name) || 'autor'
+            let candidate = base
+            for (let n = 2; candidate !== old.accountName && taken.has(candidate); n++) candidate = `${base}-${n}`
+            if (candidate !== old.accountName) {
+              s.retiredAccountNames = [...s.retiredAccountNames.filter((a) => a !== candidate), old.accountName]
+              next.accountName = candidate
+              if (s.account) s.account = { ...s.account, accountName: candidate }
+            }
+            // Elegir el primer nombre (venía vacío) no cuenta como cambio.
+            if (old.displayName) next.displayNameChangedAt = now
+          }
+        }
+        if (next.primaryPseudonym && next.primaryPseudonym !== old.primaryPseudonym) {
+          const problem = nameProblem(others, next.primaryPseudonym, true)
+          if (problem) throw new Error(problem)
+        }
+        s.profile = next
       })
       return readStore().profile
     },

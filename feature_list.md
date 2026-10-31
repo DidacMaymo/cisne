@@ -360,3 +360,19 @@
   - [x] Caché: las respuestas del Worker para `/comunidad*` y `sitemap.xml` no se quedan cacheadas más de una hora, para que el artículo del día aparezca a tiempo.
   - [x] `docs/comunidad.md` explica cómo programar (poner fecha futura) y qué ve quien entra antes de tiempo.
   - [x] `./init.sh` en verde.
+
+### F27 — Nombre público único, dirección que lo sigue y pseudónimos sin suplantación
+- **Estado:** done
+- **Depende de:** F15
+- **Qué:** el nombre público no se puede repetir ni cambiar a cada rato, la dirección `/autor/...` se actualiza al cambiarlo (sin delatar el nombre antiguo) y nadie puede firmar con pseudónimo usando el nombre público de otra persona.
+- **Probar en la UI:** Ajustes → Perfil: cambiar el nombre público → la dirección de Ajustes → Cuenta pasa a la nueva; la antigua muestra «no encontrado». Volver a cambiarlo el mismo día → mensaje con la fecha del próximo cambio posible. Con otra cuenta, intentar el mismo nombre (también con otras mayúsculas o sin tildes), «CISNE» o «Anónimo» → error claro. En el editor, firmar con pseudónimo igual al nombre público de otra persona → error.
+- **Aceptación:**
+  - [x] Normalización única (minúsculas, sin tildes ni diéresis, espacios colapsados) en SQL y en TS, con tests.
+  - [x] Nombre público único por nombre normalizado: comprobado en la BD (trigger) al crear o cambiar; los duplicados que ya existan no rompen la migración (se respetan, pero no se pueden crear nuevos).
+  - [x] Nombres reservados (al menos: cisne, cisneverso, equipo de cisne, administracion, admin, moderacion, soporte, anonimo, sin nombre) rechazados como nombre público y como pseudónimo.
+  - [x] Un cambio de nombre público cada 30 días: el primero tras el alta es libre; la fecha del último cambio la pone la BD (el usuario no puede escribirla). La UI dice cuándo podrá volver a cambiarlo.
+  - [x] Al cambiar el nombre público, `account_name` se regenera desde el nuevo nombre (único). Las direcciones anteriores quedan reservadas en una tabla no legible públicamente: nadie más puede usarlas y NO redirigen (decisión del usuario, por privacidad): la antigua da «no encontrado». SPA, Worker (head/noindex) y sitemap usan siempre la actual.
+  - [x] Pseudónimo (por poema y el habitual del perfil): se puede cambiar libremente (lo pide el brief), pero no puede coincidir, normalizado, con el nombre público de otra persona ni con un reservado. Comprobado en la BD.
+  - [x] Modo local (`localStorage`) con las mismas reglas.
+  - [x] Migración nueva, compatible con el frontend actual (se aplica antes del merge).
+  - [x] Tests de RLS/BD con Ana y Bea para todo lo anterior; `./init.sh` en verde.

@@ -4,7 +4,7 @@
 > resume en una línea en "Hecho" y se limpia "En curso".
 
 ## En curso
-- (nada)
+- F27: PR abierto; falta que el usuario aplique `20261102120000_nombres_unicos.sql` en Supabase antes del merge.
 
 ## Hecho
 - 2026-10-24 — F07 Arnés de agentes y CI (líder, solo docs/config). El build estaba en rojo en esta máquina solo porque `node_modules` no estaba al día con `package-lock.json` (faltaban `@supabase/supabase-js` y `@electric-sql/pglite`); `init.sh` ahora ejecuta `npm ci` cuando pasa esto. Tras `npm install`: lint, build y `test:db` en verde.
@@ -49,6 +49,8 @@
 
 - 2026-10-31 — Comunidad: 14 artículos programados hasta el 13 de noviembre (3 publicados el 31 de octubre y uno al día después; el 12 y el 13, mujeres poetas e instapoesía), investigados con fuentes y revisados por el líder.
 
+- 2026-10-31 — F27 Nombre público único (normalizado), reservados, un cambio cada 30 días, dirección que sigue al nombre (las antiguas reservadas, sin redirigir) y pseudónimos que no suplantan. APPROVED.
+
 ## Correcciones
 - 2026-10-27 — En F11 se dijo que producción servía el modo local: era falso. Producción ya estaba conectada a Supabase (proyecto `cisne`, de Didac). Las cifras de F11 con Supabase (680,85 → 323,41 KB, −52,5 %) son las que aplican a producción. Faltaba aplicar en producción la migración de F09 (aplicada el 2026-10-27).
 
@@ -69,3 +71,5 @@
 - F21: `LEGAL_UPDATED` es común a las tres legales (el aviso legal muestra 29 oct sin cambios de texto). Los textos de analítica asumen Web Analytics sin cookies: si se cambia el modo en Cloudflare, revisarlos.
 - F25: el enlace «Comunidad» del pie está dentro del `nav` con `aria-label="Legal"`; moverlo o renombrar la etiqueta cuando se toque el pie.
 - Comunidad: revisar cada pocos meses `editoriales-que-aceptan-manuscritos-de-poesia` (las editoriales abren y cierran la lectura; convocatorias de 2026) y el precio del ISBN en `como-autopublicar-un-poemario`.
+- F27: si un alta usa un nombre ocupado o reservado, el perfil se crea sin nombre y no se avisa; añadir un aviso en Ajustes/cabecera cuando `displayName` esté vacío.
+- F27: el pseudónimo no toma el advisory lock (carrera nombre/pseudónimo simultáneos, impacto bajo).

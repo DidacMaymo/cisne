@@ -86,6 +86,7 @@ type ProfileRow = {
   account_name: string
   display_name: string
   primary_pseudonym: string | null
+  display_name_changed_at?: string | null
   bio: string | null
   links: string[] | null
   support_visibility: Profile['supportVisibility']
@@ -119,6 +120,7 @@ function toProfile(r: ProfileRow): Profile {
     accountName: r.account_name,
     displayName: r.display_name,
     primaryPseudonym: r.primary_pseudonym ?? undefined,
+    displayNameChangedAt: r.display_name_changed_at ?? undefined,
     bio: r.bio ?? undefined,
     links: r.links ?? [],
     supportVisibility: r.support_visibility,
