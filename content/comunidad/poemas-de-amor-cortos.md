@@ -1,7 +1,7 @@
 ---
 titulo: Poemas de amor cortos de grandes poetas (con su historia)
 descripcion: Diez poemas de amor cortos de Garcilaso, Quevedo, Sor Juana, Bécquer, Machado, Storni, Lorca o Miguel Hernández, con su contexto.
-fecha: 2026-11-02
+fecha: 2026-10-31
 autor: Equipo de CISNE
 etiquetas: [amor, clasicos, poemas]
 ---

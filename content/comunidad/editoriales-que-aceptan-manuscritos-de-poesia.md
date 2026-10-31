@@ -1,7 +1,7 @@
 ---
 titulo: Editoriales de poesía: cuáles aceptan manuscritos y cómo enviarlos
 descripcion: Qué editoriales de poesía en español reciben manuscritos, cuáles solo publican por premio y cómo preparar tu envío sin caer en trampas.
-fecha: 2026-11-01
+fecha: 2026-10-31
 autor: Equipo de CISNE
 etiquetas: [editoriales, publicar, manuscritos, poemario]
 ---
