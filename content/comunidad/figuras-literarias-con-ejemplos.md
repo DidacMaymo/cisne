@@ -1,7 +1,7 @@
 ---
 titulo: Figuras literarias: las más usadas, con ejemplos
 descripcion: Metáfora, símil, anáfora, hipérbaton, aliteración, oxímoron, sinestesia y más: qué es cada figura literaria, con ejemplos clásicos y propios.
-fecha: 2026-11-04
+fecha: 2026-11-03
 autor: Equipo de CISNE
 etiquetas: [escribir, figuras literarias, recursos]
 ---
