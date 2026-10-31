@@ -4,7 +4,7 @@
 > resume en una línea en "Hecho" y se limpia "En curso".
 
 ## En curso
-- Comunidad: ~14 artículos programados uno al día (PR aparte tras F26).
+- (nada)
 
 ## Hecho
 - 2026-10-24 — F07 Arnés de agentes y CI (líder, solo docs/config). El build estaba en rojo en esta máquina solo porque `node_modules` no estaba al día con `package-lock.json` (faltaban `@supabase/supabase-js` y `@electric-sql/pglite`); `init.sh` ahora ejecuta `npm ci` cuando pasa esto. Tras `npm install`: lint, build y `test:db` en verde.
@@ -47,6 +47,8 @@
 
 - 2026-10-31 — F26 Programar artículos por fecha: filtro en tiempo de ejecución con la fecha de Madrid (SPA y Worker), caché de `/comunidad*` 5 min y sitemap 30 min. APPROVED. Ojo: los programados viajan en el bundle y en `comunidad.json` (no sirve para ocultar contenido sensible).
 
+- 2026-10-31 — Comunidad: 14 artículos programados del 1 al 14 de noviembre (uno al día), investigados con fuentes y revisados por el líder.
+
 ## Correcciones
 - 2026-10-27 — En F11 se dijo que producción servía el modo local: era falso. Producción ya estaba conectada a Supabase (proyecto `cisne`, de Didac). Las cifras de F11 con Supabase (680,85 → 323,41 KB, −52,5 %) son las que aplican a producción. Faltaba aplicar en producción la migración de F09 (aplicada el 2026-10-27).
 
@@ -66,3 +68,4 @@
 - Rendimiento: primera medida de Cloudflare Web Analytics (2026-10-29, 1 visita) da LCP 2,76 s en la portada («mejorable», el umbral bueno es 2,5 s). Esperar a tener más visitas antes de actuar; si se confirma, mirar fuentes/LCP de la portada.
 - F21: `LEGAL_UPDATED` es común a las tres legales (el aviso legal muestra 29 oct sin cambios de texto). Los textos de analítica asumen Web Analytics sin cookies: si se cambia el modo en Cloudflare, revisarlos.
 - F25: el enlace «Comunidad» del pie está dentro del `nav` con `aria-label="Legal"`; moverlo o renombrar la etiqueta cuando se toque el pie.
+- Comunidad: revisar cada pocos meses `editoriales-que-aceptan-manuscritos-de-poesia` (las editoriales abren y cierran la lectura; convocatorias de 2026) y el precio del ISBN en `como-autopublicar-un-poemario`.
