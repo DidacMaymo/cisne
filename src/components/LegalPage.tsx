@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { Link } from 'react-router-dom'
 import { CONTACT_EMAIL, LEGAL_UPDATED } from '../lib/contact'
 import { Seo } from './Seo'
 
@@ -7,6 +8,19 @@ export function ContactLink() {
     <a href={`mailto:${CONTACT_EMAIL}`} className="underline underline-offset-4">
       {CONTACT_EMAIL}
     </a>
+  )
+}
+
+/** Responsable y vías de contacto: «Equipo de CISNE», página de contacto y email. */
+export function TeamContact() {
+  return (
+    <>
+      Equipo de CISNE (CISNE, cisneverso.es), al que puedes escribir desde la{' '}
+      <Link to="/contacto" className="underline underline-offset-4">
+        página de contacto
+      </Link>{' '}
+      o a <ContactLink />
+    </>
   )
 }
 
