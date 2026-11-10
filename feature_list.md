@@ -320,9 +320,10 @@
   - [x] `./init.sh` en verde.
 
 ### U5 — Cuenta de Ko-fi (usuario)
-- **Estado:** pending
+- **Estado:** done
 - **Depende de:** F23
 - **Qué:** crear la página de Ko-fi de CISNE y pasar la URL al líder para ponerla en «Apoyar el proyecto» (`src/lib/social.ts`). Recordatorio: las donaciones son ingresos; consultar cómo declararlas.
+- **Hecho (2026-11-10):** descartada por el usuario. Sin URL, la web no muestra Ko-fi; «Apoyar el proyecto» queda solo con «compártelo y publica».
 
 ### F24 — Enlaces reales a Instagram y TikTok
 - **Estado:** done
