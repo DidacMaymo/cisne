@@ -36,7 +36,7 @@ Algunas ideas para no quedarte en blanco:
 - **Ponte restricciones:** un poema de diez versos, o sin adjetivos, o con una palabra obligatoria. Los límites estimulan.
 - **Prueba formas que no dominas.** Un soneto, un haiku, una décima. Aunque luego vuelvas al verso libre, volverás sabiendo más.
 
-Si necesitas propuestas, tienes una lista en [ejercicios de escritura poética](/comunidad/ejercicios-de-escritura-poetica).
+Si necesitas una forma con la que practicar, prueba con [el soneto](/comunidad/como-escribir-un-soneto) o [el haiku](/comunidad/como-escribir-un-haiku).
 
 ## Reescribe: ahí ocurre casi todo
 
@@ -98,4 +98,3 @@ Un buen termómetro es releer lo que escribiste hace un año. Si ves cosas que a
 - [Biblioteca Virtual Miguel de Cervantes](https://www.cervantesvirtual.com/), para leer a los clásicos gratis
 - [Palabra Virtual](https://www.palabravirtual.com/), antología de poesía en texto, audio y vídeo
 - [Cómo escribir un poema](/comunidad/como-escribir-un-poema)
-- [Ejercicios de escritura poética](/comunidad/ejercicios-de-escritura-poetica)

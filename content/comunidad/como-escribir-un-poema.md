@@ -92,7 +92,7 @@ Aquí se escribe de verdad el poema. Deja el borrador reposar al menos un día y
 
 Ningún poema sale bien a la primera, y no todos los poemas que escribas merecen salir del cajón. Es normal. Escribe con frecuencia, aunque sean poemas cortos, y guarda los borradores: a veces un verso de un poema fallido es el principio del siguiente. En CISNE puedes guardar borradores privados y publicarlos solo cuando estén listos, con tu nombre, un pseudónimo o de forma anónima.
 
-Cuando decidas compartir, escoge a lectores que te digan la verdad con cariño. Y si te atascas, prueba con estos [ejercicios de escritura poética](/comunidad/ejercicios-de-escritura-poetica).
+Cuando decidas compartir, escoge a lectores que te digan la verdad con cariño. Y si te atascas, prueba a escribir dentro de una forma fija, como [el haiku](/comunidad/como-escribir-un-haiku): sus límites ayudan a arrancar.
 
 ## Resumen rápido
 

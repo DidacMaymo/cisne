@@ -51,6 +51,8 @@
 
 - 2026-10-31 — F27 Nombre público único (normalizado), reservados, un cambio cada 30 días, dirección que sigue al nombre (las antiguas reservadas, sin redirigir) y pseudónimos que no suplantan. APPROVED.
 
+- 2026-11-10 — Comunidad: quitado «Ejercicios de escritura poética» (no gustó al usuario; enlaces internos sustituidos) y publicados hoy los 3 que quedaban (recitar, mujeres poetas, instapoesía). No queda nada programado.
+
 ## Correcciones
 - 2026-10-27 — En F11 se dijo que producción servía el modo local: era falso. Producción ya estaba conectada a Supabase (proyecto `cisne`, de Didac). Las cifras de F11 con Supabase (680,85 → 323,41 KB, −52,5 %) son las que aplican a producción. Faltaba aplicar en producción la migración de F09 (aplicada el 2026-10-27).
 

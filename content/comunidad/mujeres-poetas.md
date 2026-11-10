@@ -1,7 +1,7 @@
 ---
 titulo: Mujeres poetas en español que hay que leer: de Sor Juana a hoy
 descripcion: Diecinueve poetas mujeres de España y Latinoamérica, por épocas, con sus fechas, sus libros clave y por qué leerlas.
-fecha: 2026-11-12
+fecha: 2026-11-10
 autor: Equipo de CISNE
 etiquetas: [poetas, lecturas, clasicos]
 ---

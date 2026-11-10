@@ -138,7 +138,7 @@ El adjetivo «escondida» se queda al final del verso, separado de «senda»: du
 - **Lee en voz alta para las de sonido.** La aliteración se oye, no se ve.
 - **Revisa los epítetos.** Pregúntate de cada adjetivo si aporta algo que el sustantivo no diga ya.
 
-Si quieres practicar, elige una figura cada día y escribe tres versos que la usen sobre algo que tengas delante. Tienes más ideas en los [ejercicios de escritura poética](/comunidad/ejercicios-de-escritura-poetica).
+Si quieres practicar, elige una figura cada día y escribe tres versos que la usen sobre algo que tengas delante.
 
 ## Para seguir leyendo
 

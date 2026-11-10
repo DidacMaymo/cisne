@@ -121,4 +121,4 @@ Escribir un haiku al día durante un mes es uno de los mejores ejercicios para a
 - [Haiku en Wikipedia](https://es.wikipedia.org/wiki/Haiku), con su historia y sus variantes
 - [José Juan Tablada en Wikipedia](https://es.wikipedia.org/wiki/Jos%C3%A9_Juan_Tablada)
 - [El haiku en la poesía latinoamericana: Tablada y Borges](https://www.escritores.org/recursos-para-escritores/articulos-de-interes/27846-el-haiku-en-la-poesia-latinoamericana-tablada-y-borges), en escritores.org
-- En CISNE: [tipos de estrofas](/comunidad/tipos-de-estrofas) y [ejercicios de escritura poética](/comunidad/ejercicios-de-escritura-poetica)
+- En CISNE: [tipos de estrofas](/comunidad/tipos-de-estrofas) y [cómo escribir un poema](/comunidad/como-escribir-un-poema)
