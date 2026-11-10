@@ -3,7 +3,6 @@ import { socialLinks } from '../../lib/social'
 
 const legalLinks = [
   { to: '/sobre', label: 'Sobre CISNE' },
-  { to: '/comunidad', label: 'Comunidad' },
   { to: '/contacto', label: 'Contacto' },
   { to: '/aviso-legal', label: 'Aviso legal' },
   { to: '/privacidad', label: 'Privacidad' },
@@ -27,6 +26,11 @@ export function Footer() {
               </li>
             ))}
           </ul>
+        </nav>
+        <nav aria-label="Comunidad">
+          <Link to="/comunidad" className={linkClass}>
+            Comunidad
+          </Link>
         </nav>
         <ul aria-label="Redes" className="flex gap-x-6">
           {socialLinks.map((s) => (

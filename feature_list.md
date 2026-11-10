@@ -376,3 +376,15 @@
   - [x] Modo local (`localStorage`) con las mismas reglas.
   - [x] Migración nueva, compatible con el frontend actual (se aplica antes del merge).
   - [x] Tests de RLS/BD con Ana y Bea para todo lo anterior; `./init.sh` en verde.
+
+### F28 — Aviso de nombre público pendiente y enlace «Comunidad» del pie
+- **Estado:** done
+- **Depende de:** F27
+- **Qué:** quien tiene la cuenta sin nombre público (p. ej. porque al registrarse eligió uno ocupado o reservado, F27) ve un aviso claro que le lleva a elegirlo. El enlace «Comunidad» del pie deja de estar dentro del grupo «Legal».
+- **Probar en la UI:** cuenta sin nombre público → aviso discreto visible al entrar (y en Ajustes → Perfil) con enlace a Ajustes → Perfil; al guardar un nombre, desaparece. A 375 px no tapa nada ni desborda. Pie: «Comunidad» fuera del `nav` «Legal».
+- **Aceptación:**
+  - [x] Aviso visible para la persona con sesión y `displayName` vacío, en todas las páginas o en un sitio que vea seguro al entrar (no solo al intentar publicar), con texto que explique por qué puede estar vacío (nombre ya usado o no permitido) y enlace a Ajustes → Perfil. No aparece sin sesión ni con nombre.
+  - [x] Tras el registro, si el nombre elegido no se pudo usar, el aviso aparece sin recargar.
+  - [x] Estética sobria de CISNE, accesible (rol/texto anunciable sin ser intrusivo), sin desbordes a 375 px.
+  - [x] Pie: «Comunidad» fuera del `nav` con `aria-label="Legal"` (en su propio grupo o en otro adecuado), sin cambiar el aspecto más de lo necesario.
+  - [x] Tests donde haya lógica; `./init.sh` en verde.

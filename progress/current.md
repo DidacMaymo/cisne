@@ -53,6 +53,8 @@
 
 - 2026-11-10 — Comunidad: quitado «Ejercicios de escritura poética» (no gustó al usuario; enlaces internos sustituidos) y publicados hoy los 3 que quedaban (recitar, mujeres poetas, instapoesía). No queda nada programado.
 
+- 2026-11-10 — F28 Aviso bajo la cabecera cuando la cuenta no tiene nombre público (desaparece al guardarlo) y «Comunidad» del pie en su propio `nav`. APPROVED.
+
 ## Correcciones
 - 2026-10-27 — En F11 se dijo que producción servía el modo local: era falso. Producción ya estaba conectada a Supabase (proyecto `cisne`, de Didac). Las cifras de F11 con Supabase (680,85 → 323,41 KB, −52,5 %) son las que aplican a producción. Faltaba aplicar en producción la migración de F09 (aplicada el 2026-10-27).
 
@@ -71,7 +73,6 @@
 - F20: el Worker no se puede ejecutar en local (wrangler pide Node 22); se prueba en producción (comprobado el 2026-10-28: sitemap y metadatos de poema). Si se cambian las fuentes, regenerar `src/styles/fonts.css` con `scripts/gen-fonts.mjs`.
 - Rendimiento: primera medida de Cloudflare Web Analytics (2026-10-29, 1 visita) da LCP 2,76 s en la portada («mejorable», el umbral bueno es 2,5 s). Esperar a tener más visitas antes de actuar; si se confirma, mirar fuentes/LCP de la portada.
 - F21: `LEGAL_UPDATED` es común a las tres legales (el aviso legal muestra 29 oct sin cambios de texto). Los textos de analítica asumen Web Analytics sin cookies: si se cambia el modo en Cloudflare, revisarlos.
-- F25: el enlace «Comunidad» del pie está dentro del `nav` con `aria-label="Legal"`; moverlo o renombrar la etiqueta cuando se toque el pie.
 - Comunidad: revisar cada pocos meses `editoriales-que-aceptan-manuscritos-de-poesia` (las editoriales abren y cierran la lectura; convocatorias de 2026) y el precio del ISBN en `como-autopublicar-un-poemario`.
-- F27: si un alta usa un nombre ocupado o reservado, el perfil se crea sin nombre y no se avisa; añadir un aviso en Ajustes/cabecera cuando `displayName` esté vacío.
 - F27: el pseudónimo no toma el advisory lock (carrera nombre/pseudónimo simultáneos, impacto bajo).
+- F28: el texto del aviso está duplicado en `NameNotice.tsx` y `ProfileSettings.tsx`; si cambia, tocar los dos.

@@ -102,7 +102,10 @@ function ProfileForm({ profile }: { profile: Profile }) {
           className="campo font-serif text-3xl"
         />
         <p id={`${id}-nh`} className={`meta mt-2 ${errors.displayName ? 'text-tinta' : ''}`}>
-          {errors.displayName ?? 'Tu nombre o un pseudónimo: es lo que firma tus poemas «con mi nombre».'}
+          {errors.displayName ??
+            (saved.displayName
+              ? 'Tu nombre o un pseudónimo: es lo que firma tus poemas «con mi nombre».'
+              : 'Aún no tienes nombre público: puede que el que elegiste ya esté en uso o no esté permitido. Elige uno para poder publicar.')}
         </p>
         <p className="meta mt-2">
           {nextChange
