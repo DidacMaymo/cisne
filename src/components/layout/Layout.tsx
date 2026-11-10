@@ -4,6 +4,7 @@ import { isPrivatePath, SITE_META } from '../../lib/seo'
 import { LoadState } from '../LoadState'
 import { Seo } from '../Seo'
 import { Header } from './Header'
+import { NameNotice } from './NameNotice'
 import { MobileNav } from './MobileNav'
 import { Footer } from './Footer'
 
@@ -23,6 +24,7 @@ export function Layout() {
       </a>
       {isPrivatePath(pathname) && <Seo title={SITE_META.title} noindex />}
       <Header />
+      <NameNotice />
       <main
         id="contenido"
         className="mx-auto w-full max-w-ancho flex-1 px-6 pb-28 pt-10 md:px-10 md:pb-20 md:pt-16"
