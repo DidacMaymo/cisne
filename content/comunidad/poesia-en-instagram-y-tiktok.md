@@ -1,7 +1,7 @@
 ---
 titulo: Instapoesía: poesía en Instagram y TikTok, sus poetas y cómo publicar
 descripcion: Qué es la instapoesía, quiénes son los poetas de Instagram en español, el debate que ha abierto y cómo publicar poesía en redes con criterio.
-fecha: 2026-11-13
+fecha: 2026-11-10
 autor: Equipo de CISNE
 etiquetas: [redes, publicar, consejos]
 ---
