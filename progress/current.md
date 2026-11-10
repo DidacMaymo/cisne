@@ -61,6 +61,8 @@
 
 - 2026-11-10 — Comunidad: 10 artículos más programados del 11 al 20 de noviembre (poemas tristes, qué es la poesía, Lorca, palabras bonitas, amistad, Generación del 27, verso libre, tipos de poemas, ordenar un poemario, Navidad). Fuentes y versos verificados; solo dominio público.
 
+- 2026-11-10 — Comunidad: 8 anuncios del #CisneReto programados cada lunes (16 nov – 4 ene), con etiqueta propia por semana (`cisnereto<palabra>`) y la regla de compartir con la firma elegida. Guía en `docs/redes/cisne-reto.md`.
+
 ## Correcciones
 - 2026-10-27 — En F11 se dijo que producción servía el modo local: era falso. Producción ya estaba conectada a Supabase (proyecto `cisne`, de Didac). Las cifras de F11 con Supabase (680,85 → 323,41 KB, −52,5 %) son las que aplican a producción. Faltaba aplicar en producción la migración de F09 (aplicada el 2026-10-27).
 
