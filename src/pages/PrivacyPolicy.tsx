@@ -1,12 +1,12 @@
 import { Link } from 'react-router-dom'
-import { ContactLink, LegalPage, LegalSection } from '../components/LegalPage'
+import { ContactLink, LegalPage, LegalSection, TeamContact } from '../components/LegalPage'
 
 export function PrivacyPolicy() {
   return (
     <LegalPage title="Política de privacidad" path="/privacidad">
       <LegalSection title="Responsable">
         <p>
-          El responsable del tratamiento de tus datos es CISNE. Puedes escribirnos a <ContactLink />.
+          El responsable del tratamiento de tus datos es el <TeamContact />.
         </p>
       </LegalSection>
 
@@ -15,6 +15,11 @@ export function PrivacyPolicy() {
         <ul className="list-disc space-y-1 pl-6">
           <li>De tu cuenta: correo electrónico y contraseña (esta se guarda cifrada).</li>
           <li>De tu perfil: nombre visible, pseudónimos, biografía y enlaces.</li>
+          <li>
+            Del cambio de nombre público: la fecha del último cambio y las direcciones de página de autor anteriores.
+            Estas quedan reservadas para tu cuenta, no son públicas y las guardamos hasta que borres la cuenta, para
+            evitar que otra persona suplante tu nombre anterior.
+          </li>
           <li>De tu actividad: poemas, colecciones, guardados, apoyos, comentarios y denuncias.</li>
         </ul>
       </LegalSection>

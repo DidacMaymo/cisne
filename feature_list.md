@@ -388,3 +388,15 @@
   - [x] Estética sobria de CISNE, accesible (rol/texto anunciable sin ser intrusivo), sin desbordes a 375 px.
   - [x] Pie: «Comunidad» fuera del `nav` con `aria-label="Legal"` (en su propio grupo o en otro adecuado), sin cambiar el aspecto más de lo necesario.
   - [x] Tests donde haya lógica; `./init.sh` en verde.
+
+### F29 — Aviso legal con el Equipo de CISNE y privacidad al día
+- **Estado:** done
+- **Depende de:** F18, F27
+- **Qué:** el aviso legal y la privacidad nombran como responsable al «Equipo de CISNE» y dicen cómo contactar (página de contacto y email). La privacidad recoge lo que guarda F27.
+- **Probar en la UI:** pie → Aviso legal y Privacidad: «Equipo de CISNE» como responsable, enlace a Contacto y al email; Privacidad menciona las direcciones de autor antiguas reservadas y la fecha del último cambio de nombre. Fecha de actualización nueva.
+- **Aceptación:**
+  - [x] Aviso legal: el titular/responsable es «Equipo de CISNE» (CISNE, cisneverso.es) y se puede contactar en `/contacto` y en el email de contacto (una sola fuente: `src/lib/contact.ts`). Decisión del usuario: sin nombre, NIF ni dirección por ahora.
+  - [x] Privacidad: responsable «Equipo de CISNE»; añade que se guardan la fecha del último cambio de nombre público y las direcciones de página de autor anteriores (reservadas, no públicas) hasta que se borra la cuenta, y para qué (evitar suplantaciones).
+  - [x] Cookies y demás textos coherentes con «Equipo de CISNE» donde nombren al responsable.
+  - [x] `LEGAL_UPDATED` con la fecha de hoy.
+  - [x] `./init.sh` en verde.

@@ -4,7 +4,7 @@
 > resume en una línea en "Hecho" y se limpia "En curso".
 
 ## En curso
-- (nada)
+- (nada; 10 artículos en redacción)
 
 ## Hecho
 - 2026-10-24 — F07 Arnés de agentes y CI (líder, solo docs/config). El build estaba en rojo en esta máquina solo porque `node_modules` no estaba al día con `package-lock.json` (faltaban `@supabase/supabase-js` y `@electric-sql/pglite`); `init.sh` ahora ejecuta `npm ci` cuando pasa esto. Tras `npm install`: lint, build y `test:db` en verde.
@@ -54,6 +54,8 @@
 - 2026-11-10 — Comunidad: quitado «Ejercicios de escritura poética» (no gustó al usuario; enlaces internos sustituidos) y publicados hoy los 3 que quedaban (recitar, mujeres poetas, instapoesía). No queda nada programado.
 
 - 2026-11-10 — F28 Aviso bajo la cabecera cuando la cuenta no tiene nombre público (desaparece al guardarlo) y «Comunidad» del pie en su propio `nav`. APPROVED.
+
+- 2026-11-10 — F29 Aviso legal y privacidad con el «Equipo de CISNE» como titular y contacto; privacidad recoge lo que guarda F27. APPROVED.
 
 ## Correcciones
 - 2026-10-27 — En F11 se dijo que producción servía el modo local: era falso. Producción ya estaba conectada a Supabase (proyecto `cisne`, de Didac). Las cifras de F11 con Supabase (680,85 → 323,41 KB, −52,5 %) son las que aplican a producción. Faltaba aplicar en producción la migración de F09 (aplicada el 2026-10-27).
