@@ -3,6 +3,7 @@ import { Markdown } from '../components/comunidad/Markdown'
 import { Seo } from '../components/Seo'
 import { formatArticleDate, isPublished } from '../lib/comunidad'
 import { getArticle } from '../lib/comunidad-content'
+import { articleJsonLd } from '../lib/jsonld'
 import { articleMeta } from '../lib/seo'
 import { NotFound } from './NotFound'
 
@@ -12,7 +13,7 @@ export function ComunidadArticulo() {
   if (!a) return <NotFound />
   return (
     <article className="mx-auto w-full max-w-pagina py-6 md:py-12">
-      <Seo {...articleMeta(a)} />
+      <Seo {...articleMeta(a)} jsonLd={isPublished(a) ? articleJsonLd(a) : undefined} />
       <p className="meta">
         <Link to="/comunidad" className="underline-offset-4 hover:underline">
           Comunidad de escritores

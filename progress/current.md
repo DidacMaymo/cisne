@@ -57,6 +57,8 @@
 
 - 2026-11-10 — F29 Aviso legal y privacidad con el «Equipo de CISNE» como titular y contacto; privacidad recoge lo que guarda F27. APPROVED.
 
+- 2026-11-10 — F30 El JSON-LD de poema, autor, colección y artículo ya no se pierde al arrancar la SPA: constructores compartidos Worker/SPA en `src/lib/jsonld.ts`. APPROVED.
+
 ## Correcciones
 - 2026-10-27 — En F11 se dijo que producción servía el modo local: era falso. Producción ya estaba conectada a Supabase (proyecto `cisne`, de Didac). Las cifras de F11 con Supabase (680,85 → 323,41 KB, −52,5 %) son las que aplican a producción. Faltaba aplicar en producción la migración de F09 (aplicada el 2026-10-27).
 
@@ -78,3 +80,4 @@
 - Comunidad: revisar cada pocos meses `editoriales-que-aceptan-manuscritos-de-poesia` (las editoriales abren y cierran la lectura; convocatorias de 2026) y el precio del ISBN en `como-autopublicar-un-poemario`.
 - F27: el pseudónimo no toma el advisory lock (carrera nombre/pseudónimo simultáneos, impacto bajo).
 - F28: el texto del aviso está duplicado en `NameNotice.tsx` y `ProfileSettings.tsx`; si cambia, tocar los dos.
+- F30: `serializeJsonLd` (src) duplica el escape de `worker/html.ts`; compartirlo si se toca.

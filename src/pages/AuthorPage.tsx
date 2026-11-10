@@ -11,6 +11,7 @@ import { SupportButton } from '../components/SupportButton'
 import { SwanDivider } from '../components/brand/SwanDivider'
 import { useQuery } from '../hooks/useQuery'
 import { linkLabel } from '../lib/links'
+import { authorJsonLd } from '../lib/jsonld'
 import { authorMeta, SITE_META } from '../lib/seo'
 
 const MyCollections = lazy(() => import('./MyCollections').then((m) => ({ default: m.MyCollections })))
@@ -64,7 +65,7 @@ export function AuthorPage() {
   const links = profile.links ?? []
   return (
     <>
-      <Seo {...authorMeta(profile)} />
+      <Seo {...authorMeta(profile)} jsonLd={authorJsonLd(profile)} />
       <header className="mx-auto max-w-pagina py-4 text-center">
         <h1 className="text-balance font-serif text-5xl md:text-6xl">{profile.displayName}</h1>
         {profile.bio && (
