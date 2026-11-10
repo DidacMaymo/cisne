@@ -17,6 +17,7 @@ import { useQuery } from '../hooks/useQuery'
 import { useSavedIds } from '../hooks/useSavedIds'
 import { useSession } from '../hooks/useSession'
 import { firstLine } from '../lib/poem-text'
+import { poemJsonLd } from '../lib/jsonld'
 import { poemMeta, SITE_META } from '../lib/seo'
 
 export function PoemPage() {
@@ -63,7 +64,11 @@ export function PoemPage() {
 
   return (
     <>
-      <Seo {...poemMeta({ ...poem, title: poem.title ?? null })} noindex={notPublic} />
+      <Seo
+        {...poemMeta({ ...poem, title: poem.title ?? null })}
+        noindex={notPublic}
+        jsonLd={poemJsonLd({ ...poem, title: poem.title ?? null })}
+      />
       {(flash || notPublic) && (
         <p role="status" className="meta mb-8 text-center">
           {flash}

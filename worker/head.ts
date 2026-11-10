@@ -7,15 +7,13 @@ import {
   canonicalUrl,
   collectionMeta,
   COMMUNITY_META,
-  firstVerse,
   OG_IMAGE_URL,
   poemMeta,
   SITE_META,
-  SITE_NAME,
-  SITE_URL,
   tagMeta,
   type PageMeta,
 } from '../src/lib/seo'
+import { articleJsonLd, authorJsonLd, collectionJsonLd, poemJsonLd } from '../src/lib/jsonld'
 import { escapeHtml, jsonLdScript } from './html'
 
 export interface PoemRow {
@@ -52,8 +50,6 @@ export interface HeadInput {
   jsonLd?: Record<string, unknown>
 }
 
-const CTX = 'https://schema.org'
-
 /** Página que no existe o no es pública: título genérico y `noindex`. */
 export function notFoundHead(): HeadInput {
   return { meta: { ...SITE_META, noindex: true }, ogType: 'website' }
@@ -69,62 +65,42 @@ export function poemHead(row: PoemRow | null): HeadInput {
     authorAccountName: row.author_account_name,
     sensitive: row.sensitive,
   })
-  const ld: Record<string, unknown> = {
-    '@context': CTX,
-    '@type': 'CreativeWork',
-    name: row.title?.trim() || (row.sensitive ? '' : firstVerse(row.content)) || 'Poema',
-    genre: 'poesía',
-    inLanguage: 'es',
-    url: canonicalUrl(meta.path),
-  }
-  if (row.published_at) ld.datePublished = row.published_at
-  if (row.updated_at) ld.dateModified = row.updated_at
-  const keywords = (row.tags ?? []).map((t) => t.normalizedName).filter(Boolean)
-  if (keywords.length > 0) ld.keywords = keywords.join(', ')
-  // Solo con página de autor: un anónimo o un seudónimo no enlazan a ningún perfil, así que no hay autor.
-  if (row.author_account_name && row.author_name) {
-    ld.author = {
-      '@type': 'Person',
-      name: row.author_name,
-      url: canonicalUrl(`/autor/${encodeURIComponent(row.author_account_name)}`),
-    }
-  }
+  const ld = poemJsonLd({
+    id: row.id,
+    title: row.title,
+    content: row.content,
+    publishedAt: row.published_at,
+    updatedAt: row.updated_at,
+    authorName: row.author_name,
+    authorAccountName: row.author_account_name,
+    sensitive: row.sensitive,
+    tags: row.tags,
+  })
   return { meta, ogType: 'article', jsonLd: ld }
 }
 
 export function authorHead(row: ProfileRow | null): HeadInput {
   if (!row) return notFoundHead()
   const meta = authorMeta({ accountName: row.account_name, displayName: row.display_name, bio: row.bio })
-  const ld: Record<string, unknown> = {
-    '@context': CTX,
-    '@type': 'Person',
-    name: row.display_name,
-    url: canonicalUrl(meta.path),
-  }
-  if (row.bio?.trim()) ld.description = row.bio.trim()
-  const links = (row.links ?? []).filter((l) => /^https?:\/\//i.test(l))
-  if (links.length > 0) ld.sameAs = links
+  const ld = authorJsonLd({
+    accountName: row.account_name,
+    displayName: row.display_name,
+    bio: row.bio,
+    links: row.links,
+  })
   return { meta, ogType: 'website', jsonLd: ld }
 }
 
 export function collectionHead(row: CollectionRow | null): HeadInput {
   if (!row) return notFoundHead()
   const meta = collectionMeta({ id: row.id, title: row.title, description: row.description })
-  const ld: Record<string, unknown> = {
-    '@context': CTX,
-    '@type': 'CollectionPage',
-    name: row.title,
-    inLanguage: 'es',
-    url: canonicalUrl(meta.path),
-  }
-  if (row.description?.trim()) ld.description = row.description.trim()
-  if (row.owner_account_name && row.owner_name) {
-    ld.author = {
-      '@type': 'Person',
-      name: row.owner_name,
-      url: canonicalUrl(`/autor/${encodeURIComponent(row.owner_account_name)}`),
-    }
-  }
+  const ld = collectionJsonLd({
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    ownerName: row.owner_name,
+    ownerAccountName: row.owner_account_name,
+  })
   return { meta, ogType: 'website', jsonLd: ld }
 }
 
@@ -136,21 +112,7 @@ export function communityHead(): HeadInput {
 export function articleHead(a: ArticleMeta | null, now: Date = new Date()): HeadInput {
   if (!a || !isPublished(a, now)) return notFoundHead()
   const meta = articleMeta(a)
-  const url = canonicalUrl(meta.path)
-  const ld: Record<string, unknown> = {
-    '@context': CTX,
-    '@type': 'BlogPosting',
-    headline: a.titulo,
-    description: a.descripcion,
-    datePublished: a.fecha,
-    inLanguage: 'es',
-    mainEntityOfPage: url,
-    url,
-    author: { '@type': 'Person', name: a.autor },
-    publisher: { '@type': 'Organization', name: SITE_NAME, url: SITE_URL },
-  }
-  if (a.etiquetas.length > 0) ld.keywords = a.etiquetas.join(', ')
-  return { meta, ogType: 'article', jsonLd: ld }
+  return { meta, ogType: 'article', jsonLd: articleJsonLd(a) }
 }
 
 export function tagHead(tag: string, exists: boolean): HeadInput {

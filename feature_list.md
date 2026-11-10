@@ -400,3 +400,14 @@
   - [x] Cookies y demás textos coherentes con «Equipo de CISNE» donde nombren al responsable.
   - [x] `LEGAL_UPDATED` con la fecha de hoy.
   - [x] `./init.sh` en verde.
+
+### F30 — Los datos estructurados para Google sobreviven a la carga de la SPA
+- **Estado:** done
+- **Depende de:** F20, F25
+- **Qué:** el Worker sirve en el HTML inicial el JSON-LD de poemas (`CreativeWork` + `Person`), autores, colecciones y artículos (`BlogPosting`), pero al arrancar la SPA lo borra y solo queda el `Organization`. Google renderiza JavaScript, así que puede perder esos datos. Hay que conservarlos (o regenerarlos igual) también tras la carga y al navegar.
+- **Probar en la UI:** en producción, abrir un poema y un artículo, esperar a que cargue y contar en el DOM los `script[type="application/ld+json"]`: deben estar el de la página (`CreativeWork`/`BlogPosting`…) y el `Organization`. Navegar a otra página dentro de la web: el JSON-LD cambia al de la nueva página, sin duplicados ni restos de la anterior.
+- **Aceptación:**
+  - [x] Tras la carga directa de un poema, autor, colección, etiqueta o artículo, el DOM conserva el mismo JSON-LD que sirvió el Worker (o uno equivalente generado por la SPA desde la misma lógica: una sola fuente).
+  - [x] Al navegar dentro de la SPA, el JSON-LD se sustituye por el de la página nueva; nunca quedan dos de la misma página ni uno de la anterior. El `Organization` (F24) se mantiene siempre una vez.
+  - [x] Los poemas anónimos o con pseudónimo no exponen datos del autor real en el JSON-LD (como hoy en el Worker).
+  - [x] Tests (unitarios del componente/función de SEO); `./init.sh` en verde.

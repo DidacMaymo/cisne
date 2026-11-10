@@ -9,6 +9,7 @@ import { Seo } from '../components/Seo'
 import { ShareButton } from '../components/ShareButton'
 import { useQuery } from '../hooks/useQuery'
 import { firstLine } from '../lib/poem-text'
+import { collectionJsonLd } from '../lib/jsonld'
 import { collectionMeta, SITE_META } from '../lib/seo'
 
 const CollectionForm = lazy(() => import('../components/CollectionForm').then((m) => ({ default: m.CollectionForm })))
@@ -83,7 +84,7 @@ export function CollectionPage() {
 
   return (
     <div className="mx-auto max-w-pagina">
-      <Seo {...collectionMeta(c)} noindex={c.visibility !== 'public'} />
+      <Seo {...collectionMeta(c)} noindex={c.visibility !== 'public'} jsonLd={collectionJsonLd(c)} />
       {(flash || (isOwner && c.visibility === 'private')) && (
         <p role="status" className="meta mb-8 text-center">
           {flash}
