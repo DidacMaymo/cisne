@@ -4,7 +4,7 @@
 > resume en una línea en "Hecho" y se limpia "En curso".
 
 ## En curso
-- (nada; 10 artículos en redacción)
+- (nada)
 
 ## Hecho
 - 2026-10-24 — F07 Arnés de agentes y CI (líder, solo docs/config). El build estaba en rojo en esta máquina solo porque `node_modules` no estaba al día con `package-lock.json` (faltaban `@supabase/supabase-js` y `@electric-sql/pglite`); `init.sh` ahora ejecuta `npm ci` cuando pasa esto. Tras `npm install`: lint, build y `test:db` en verde.
@@ -58,6 +58,8 @@
 - 2026-11-10 — F29 Aviso legal y privacidad con el «Equipo de CISNE» como titular y contacto; privacidad recoge lo que guarda F27. APPROVED.
 
 - 2026-11-10 — F30 El JSON-LD de poema, autor, colección y artículo ya no se pierde al arrancar la SPA: constructores compartidos Worker/SPA en `src/lib/jsonld.ts`. APPROVED.
+
+- 2026-11-10 — Comunidad: 10 artículos más programados del 11 al 20 de noviembre (poemas tristes, qué es la poesía, Lorca, palabras bonitas, amistad, Generación del 27, verso libre, tipos de poemas, ordenar un poemario, Navidad). Fuentes y versos verificados; solo dominio público.
 
 ## Correcciones
 - 2026-10-27 — En F11 se dijo que producción servía el modo local: era falso. Producción ya estaba conectada a Supabase (proyecto `cisne`, de Didac). Las cifras de F11 con Supabase (680,85 → 323,41 KB, −52,5 %) son las que aplican a producción. Faltaba aplicar en producción la migración de F09 (aplicada el 2026-10-27).
